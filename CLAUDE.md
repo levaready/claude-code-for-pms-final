@@ -44,6 +44,9 @@ Monthly release train, point releases numbered 4.x.
   says changes to how Dispatch computes or updates it land in Supply's scheduling
   unannounced. `availability.py` says routing never changes it, so whether routing
   changes reach Supply is unverified. Ask Supply before changing its shape.
+  Clue (Halloran, 5 Sept, a Supply user with a steady-volume responder): maintenance
+  scheduling "has gotten smarter about not booking maintenance into a week he's likely
+  to be out". Not yet checked for the four responders whose offers collapsed.
 
 ### People
 - **Helen Achebe**: Director of Product, my user's boss, owns the roadmap and commitments (Chicago)

@@ -1,0 +1,389 @@
+<title>What Handlers Told Us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --ground: #f2f4f0;
+  --panel: #fbfcfa;
+  --ink: #18221f;
+  --muted: #58665f;
+  --line: #d6dcd4;
+  --accent: #0f5c55;
+  --accent-soft: #dcebe8;
+  --t1: #b03a22;
+  --t1-soft: #f6e2dc;
+  --t2: #a26a0c;
+  --t2-soft: #f4e8cf;
+  --t3: #5a6660;
+  --t3-soft: #e4e8e2;
+  --hand: #33508f;
+  --hand-soft: #dde4f3;
+  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0f1513;
+    --panel: #161e1b;
+    --ink: #e6ece8;
+    --muted: #9aa8a1;
+    --line: #2b3733;
+    --accent: #5cc4b7;
+    --accent-soft: #17332f;
+    --t1: #f08a70;
+    --t1-soft: #3a1f19;
+    --t2: #e2b04f;
+    --t2-soft: #372a11;
+    --t3: #9aa8a1;
+    --t3-soft: #222c28;
+    --hand: #8fa9e8;
+    --hand-soft: #1d2842;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0f1513;
+  --panel: #161e1b;
+  --ink: #e6ece8;
+  --muted: #9aa8a1;
+  --line: #2b3733;
+  --accent: #5cc4b7;
+  --accent-soft: #17332f;
+  --t1: #f08a70;
+  --t1-soft: #3a1f19;
+  --t2: #e2b04f;
+  --t2-soft: #372a11;
+  --t3: #9aa8a1;
+  --t3-soft: #222c28;
+  --hand: #8fa9e8;
+  --hand-soft: #1d2842;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-inline: 16px;
+  padding-block: 32px 64px;
+}
+.wrap { max-width: 880px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(30px, 5.5vw, 44px); font-weight: 700; letter-spacing: -0.01em; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.lede { max-width: 60ch; color: var(--muted); margin: 14px 0 0; font-size: 17px; }
+
+.words {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 6px;
+}
+.words h2 { font-size: 16px; margin-bottom: 8px; }
+.words dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 20px; margin: 0; font-size: 14.5px; }
+.words dt { font-weight: 600; }
+.words dd { margin: 0; color: var(--muted); }
+
+.method {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--accent-soft);
+  border-radius: 6px;
+}
+.method h2 { grid-column: 1 / -1; font-size: 16px; }
+.method p { margin: 0; font-size: 14.5px; }
+.method b { display: block; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+
+.callout {
+  margin: 24px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 6px;
+  font-size: 15.5px;
+}
+.callout strong { font-weight: 600; }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 40px 0 8px;
+}
+.toolbar h2 { font-size: 24px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.seg button {
+  font: 500 14px var(--body);
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 30px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--line);
+}
+.band h3 { font-size: 20px; }
+.band span { font-size: 14.5px; color: var(--muted); }
+.band[data-tier="1"] { border-color: var(--t1); }
+.band[data-tier="1"] h3 { color: var(--t1); }
+.band[data-tier="2"] { border-color: var(--t2); }
+.band[data-tier="2"] h3 { color: var(--t2); }
+.band[data-tier="3"] { border-color: var(--t3); }
+.band[data-tier="3"] h3 { color: var(--t3); }
+
+.signal {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 4px 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.rank {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--tier);
+  padding-top: 3px;
+}
+.signal[data-tier="1"] { --tier: var(--t1); --tier-soft: var(--t1-soft); }
+.signal[data-tier="2"] { --tier: var(--t2); --tier-soft: var(--t2-soft); }
+.signal[data-tier="3"] { --tier: var(--t3); --tier-soft: var(--t3-soft); }
+.signal h4 { font-family: var(--display); font-size: 20px; font-weight: 600; margin: 0; line-height: 1.25; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 8px 0 10px; }
+.count { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px; }
+.dots { display: inline-flex; gap: 4px; }
+.dots i { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--tier); background: transparent; display: block; }
+.dots i.on { background: var(--tier); }
+.who { font-size: 14px; color: var(--muted); }
+.tierpill {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--tier-soft);
+  color: var(--tier);
+}
+.evidence { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+.evidence li { font-size: 13.5px; padding: 3px 9px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); }
+.evidence li.gap { border-style: dashed; color: var(--muted); }
+blockquote {
+  margin: 0 0 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--line);
+  font-style: italic;
+  max-width: 62ch;
+}
+blockquote cite { display: block; font-style: normal; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.why { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; font-size: 15px; }
+.why p { margin: 0; }
+.why b { display: block; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+
+.handoff {
+  margin-top: 44px;
+  padding: 20px;
+  background: var(--hand-soft);
+  border-radius: 6px;
+}
+.handoff h2 { font-size: 22px; color: var(--hand); }
+.handoff > p { margin: 8px 0 14px; max-width: 62ch; }
+.handoff .item { padding: 12px 0; border-top: 1px solid color-mix(in srgb, var(--hand) 30%, transparent); }
+.handoff h4 { font-family: var(--display); font-size: 17.5px; margin: 0 0 4px; }
+.handoff .item p { margin: 6px 0 0; font-size: 15px; }
+
+.caveats { margin-top: 44px; font-size: 14.5px; color: var(--muted); max-width: 68ch; }
+.caveats h2 { font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+.caveats ul { margin: 0; padding-left: 18px; }
+.caveats li { margin-bottom: 4px; }
+
+@media (max-width: 520px) {
+  .signal { grid-template-columns: 1fr; }
+  .rank { font-size: 22px; padding-top: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .seg button { transition: background 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Four talks with handlers · 2 to 5 Sept 2026</p>
+  <h1>What should we look at first?</h1>
+  <p class="lede">Four handlers told us what bugs them. Here are seven problems, in the order I would look at them. The dots show how many handlers named each one. But the order is more than a vote count.</p>
+
+  <section class="words" aria-labelledby="words-h">
+    <h2 id="words-h">Words to know</h2>
+    <dl>
+      <div><dt>Handler</dt><dd>The person who looks after a responder.</dd></div>
+      <div><dt>Responder</dt><dd>The hero who answers calls for help.</dd></div>
+      <div><dt>Call</dt><dd>A request that pops up on a responder's phone. Also called an offer.</dd></div>
+      <div><dt>Update 4.2</dt><dd>The update we shipped on 12 August.</dd></div>
+      <div><dt>The four handlers</dt><dd>Ambrose, Dot, Halloran and Kip. One dot means one handler.</dd></div>
+      <div><dt>The quotes</dt><dd>These are their real words, not mine.</dd></div>
+    </dl>
+  </section>
+
+  <section class="method" aria-labelledby="method-h">
+    <h2 id="method-h">How I picked the order</h2>
+    <p><b>Harm</b>Does a responder lose work or become less safe?</p>
+    <p><b>Proof</b>Do our numbers, tickets or code agree with the handler?</p>
+    <p><b>Update 4.2</b>Did our 12 August update touch it?</p>
+    <p><b>Ready</b>Can we start now, or must we first find out why it happens?</p>
+  </section>
+
+  <p class="callout"><strong>The most important problem was named by only 2 of the 4 handlers.</strong> Some responders have almost stopped getting calls. The big overall number hides this. Two of the hardest-hit responders, Meteor Mite and Vesper, sent in no tickets. These talks are the only time their handlers were heard.</p>
+
+  <div class="toolbar">
+    <h2>The seven problems</h2>
+    <div class="seg" role="group" aria-label="Choose an order">
+      <button type="button" id="by-priority" aria-pressed="true">Most important first</button>
+      <button type="button" id="by-count" aria-pressed="false">Most handlers first</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+
+  <section class="handoff" aria-labelledby="handoff-h">
+    <h2 id="handoff-h">Not our job, but pass it on this week</h2>
+    <p>Halloran mostly talked about Supply, the gear side of Rook. It is not yours to fix. But one thing is about safety, so it should not wait.</p>
+    <div class="item">
+      <h4>Every gear request waits in one long line</h4>
+      <blockquote>“One queue, everything in it, doesn't matter if it's laces or plate.”<cite>Halloran · a cracked vest plate waited eleven days for a signature</cite></blockquote>
+      <p><b>Tell Helen now.</b> A fix for gear approvals is already planned for 4.3. Ask if it lets urgent items skip ahead.</p>
+    </div>
+    <div class="item">
+      <h4>Broken-gear reports seem to go nowhere, and gear search is weak</h4>
+      <blockquote>“I file a failure report and it goes into a void.”<cite>Halloran</cite></blockquote>
+      <p>Give this to whoever owns Supply. Neither problem is on the plan for this quarter.</p>
+    </div>
+  </section>
+
+  <section class="caveats">
+    <h2>Read this carefully</h2>
+    <ul>
+      <li>Four people is very few. Do not treat the counts like a big survey.</li>
+      <li>Some answers came after a direct question. Sofia asked Dot about quiet weeks. Halloran mentioned his missed call only at the very end.</li>
+      <li>We have not talked to the handlers of Farlight or The Undertow. Both are responders who almost stopped getting calls.</li>
+      <li>The numbers, tickets and code come from my earlier work in <code>00-rook/analysis/ticket-vs-csv.md</code>. The numbers stop on 31 August.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  var HANDLERS = ["Ambrose", "Dot", "Halloran", "Kip"];
+  var SIGNALS = [
+    { rank: 1, tier: 1, title: "Responders stop getting calls", by: ["Dot", "Kip"],
+      evidence: [["Numbers: 4 responders went from about 11 to 14 calls a week down to 0 to 2"], ["Two of them, Meteor Mite and Vesper, sent in no tickets"], ["Code: missing calls lowers a score, and it may never heal (not proven yet)", "gap"]],
+      quote: "I just want it to look less like a coincidence when I'm staring at it at midnight and one card's dead quiet and the other's on fire.", cite: "Kip",
+      why: "Some responders get no work at all, and the big overall number hides it. These two handlers are the only ones who spoke up for Meteor Mite and Vesper.",
+      next: "Send my notes to Ravi and Wen. Ask how many calls each responder got, and how each one is scored." },
+    { rank: 2, tier: 1, title: "Calls disappear before the responder can answer", by: ["Ambrose", "Dot", "Halloran"],
+      evidence: [["9 of 25 tickets say this"], ["In 4.2 the time to answer went from 90 to 60 seconds"], ["It also happens to busy responders"], ["60 seconds is longer than “a few seconds,” so something else may be going on", "gap"]],
+      quote: "there was a period where a slower-arriving response of his still landed him the job more often than not, and lately that doesn't seem to hold the way it used to.", cite: "Ambrose",
+      why: "Most handlers said it, and update 4.2 changed the time limit. But Ambrose says it happened before 4.2, so the time limit is probably not the whole story.",
+      next: "Ask Wen how fast a call reaches the phone and when the clock starts. Ask Ravi to count missed calls apart from “no” answers." },
+    { rank: 3, tier: 2, title: "Handlers can't tell when a call is live", by: ["Ambrose", "Dot", "Kip"],
+      evidence: [["Only heard in the talks", "gap"]],
+      quote: "right now Mite and Gale both just go “bing” and I have to actually look to know which one.", cite: "Kip",
+      why: "The design team can start now. It helps handlers see calls sooner. But it does not fix responders being skipped or calls being lost.",
+      next: "Talk to Sofia about a different sound for each responder and a clearer “call is live” sign." },
+    { rank: 4, tier: 2, title: "The saved filter resets without warning", by: ["Ambrose"],
+      evidence: [["Came out in 4.2"], ["No tickets about it", "gap"]],
+      quote: "I'd rather it warned me the filter had reset than simply reset it.", cite: "Ambrose",
+      why: "It is quick to fix. It is the one thing from 4.2 that a handler noticed and liked. Quiet resets make him trust it less.",
+      next: "Ask Marcus if the reset happens after each update. Then add a note that says the filter was reset." },
+    { rank: 5, tier: 3, title: "Status words are too small to read", by: ["Ambrose", "Dot"],
+      evidence: [["Only heard in the talks", "gap"]],
+      quote: "at a glance I sometimes cannot tell engaged from available without leaning in.", cite: "Ambrose",
+      why: "Two handlers said it. It is small and cheap. It fits in Sofia's screen redesign.",
+      next: "Add it to the redesign list." },
+    { rank: 6, tier: 3, title: "No dark mode", by: ["Kip"],
+      evidence: [["Only heard in the talks", "gap"]],
+      quote: "Dark mode is the thing that actually changes my night.", cite: "Kip",
+      why: "Only one handler, but he asks every time. It is about comfort, not lost work.",
+      next: "Add it to the redesign list." },
+    { rank: 7, tier: 3, title: "The tag guide is hard to find", by: ["Ambrose"],
+      evidence: [["Only heard in the talks", "gap"]],
+      quote: "It sits in a drawer off the responder detail panel and I open it perhaps once a fortnight, when a new tag appears and I don't recognize it.", cite: "Ambrose",
+      why: "Ambrose said it is not urgent. He opens it about once every two weeks.",
+      next: "Add it to the redesign list." }
+  ];
+  var BANDS = {
+    1: ["Look at first", "These responders are losing work. Ask for the numbers now."],
+    2: ["Next", "These are real and easy to fix. We can do them while we investigate."],
+    3: ["Later", "Small fixes for the screen. Add them to the redesign."]
+  };
+  var TIERNAME = { 1: "Look at first", 2: "Next", 3: "Later" };
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function card(s, showTier) {
+    var dots = HANDLERS.map(function (h) { return '<i class="' + (s.by.indexOf(h) > -1 ? "on" : "") + '"></i>'; }).join("");
+    var ev = s.evidence.map(function (e) { return '<li class="' + (e[1] || "") + '">' + esc(e[0]) + "</li>"; }).join("");
+    return '<article class="signal" data-tier="' + s.tier + '">' +
+      '<div class="rank" aria-label="Number ' + s.rank + '">' + s.rank + "</div>" +
+      "<div><h4>" + esc(s.title) + "</h4>" +
+      '<div class="meta"><span class="count"><span class="dots" aria-hidden="true">' + dots + "</span>" + s.by.length + " of 4</span>" +
+      '<span class="who">' + esc(s.by.join(", ")) + "</span>" +
+      (showTier ? '<span class="tierpill">' + TIERNAME[s.tier] + "</span>" : "") + "</div>" +
+      '<ul class="evidence">' + ev + "</ul>" +
+      "<blockquote>“" + esc(s.quote) + "”<cite>" + esc(s.cite) + "</cite></blockquote>" +
+      '<div class="why"><p><b>Why it is here</b>' + esc(s.why) + "</p><p><b>What to do</b>" + esc(s.next) + "</p></div></div></article>";
+  }
+
+  function render(mode) {
+    var out = "";
+    if (mode === "priority") {
+      var last = 0;
+      SIGNALS.forEach(function (s) {
+        if (s.tier !== last) {
+          out += '<div class="band" data-tier="' + s.tier + '"><h3>' + BANDS[s.tier][0] + "</h3><span>" + BANDS[s.tier][1] + "</span></div>";
+          last = s.tier;
+        }
+        out += card(s, false);
+      });
+    } else {
+      SIGNALS.slice().sort(function (a, b) { return b.by.length - a.by.length || a.rank - b.rank; })
+        .forEach(function (s) { out += card(s, true); });
+    }
+    document.getElementById("list").innerHTML = out;
+    document.getElementById("by-priority").setAttribute("aria-pressed", mode === "priority");
+    document.getElementById("by-count").setAttribute("aria-pressed", mode === "count");
+  }
+
+  document.getElementById("by-priority").addEventListener("click", function () { render("priority"); });
+  document.getElementById("by-count").addEventListener("click", function () { render("count"); });
+  render("priority");
+})();
+</script>

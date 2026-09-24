@@ -1,0 +1,245 @@
+<title>Handler Feedback Triage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  --ground: #f2f4f0;
+  --panel: #fbfcfa;
+  --ink: #18221f;
+  --muted: #58665f;
+  --line: #d6dcd4;
+  --accent: #0f5c55;
+  --accent-soft: #dcebe8;
+  --now: #b03a22;
+  --next: #a26a0c;
+  --later: #5a6660;
+  --hand: #33508f;
+  --hand-soft: #dde4f3;
+  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0f1513;
+    --panel: #161e1b;
+    --ink: #e6ece8;
+    --muted: #9aa8a1;
+    --line: #2b3733;
+    --accent: #5cc4b7;
+    --accent-soft: #17332f;
+    --now: #f08a70;
+    --next: #e2b04f;
+    --later: #9aa8a1;
+    --hand: #8fa9e8;
+    --hand-soft: #1d2842;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0f1513;
+  --panel: #161e1b;
+  --ink: #e6ece8;
+  --muted: #9aa8a1;
+  --line: #2b3733;
+  --accent: #5cc4b7;
+  --accent-soft: #17332f;
+  --now: #f08a70;
+  --next: #e2b04f;
+  --later: #9aa8a1;
+  --hand: #8fa9e8;
+  --hand-soft: #1d2842;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.65;
+  padding-inline: 16px;
+  padding-block: 36px 64px;
+}
+.wrap { max-width: 720px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(32px, 6vw, 46px); font-weight: 700; letter-spacing: -0.01em; }
+.sub { font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 10px 0 0; }
+.ask { font-size: clamp(22px, 4vw, 28px); font-weight: 600; margin: 36px 0 10px; }
+p { margin: 0 0 12px; max-width: 64ch; }
+.intro strong { font-weight: 600; }
+.key { display: grid; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+.key li { max-width: 64ch; }
+.key b { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; }
+.key .n { color: var(--now); } .key .x { color: var(--next); } .key .l { color: var(--later); }
+
+.callout {
+  margin: 28px 0 0;
+  padding: 16px 18px;
+  background: var(--accent-soft);
+  border-radius: 6px;
+}
+.callout h2 { font-size: 19px; color: var(--accent); margin-bottom: 6px; }
+.callout p:last-child { margin-bottom: 0; }
+
+.tier { margin-top: 44px; --c: var(--now); }
+.tier[data-t="next"] { --c: var(--next); }
+.tier[data-t="later"] { --c: var(--later); }
+.tier > header { border-bottom: 2px solid var(--c); padding-bottom: 8px; margin-bottom: 4px; }
+.tier > header h2 { font-size: 30px; color: var(--c); }
+.tier > header p { margin: 4px 0 0; color: var(--muted); font-size: 15.5px; }
+.tier > header .count { font-family: var(--mono); font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--c); }
+
+.problem { padding: 22px 0; border-bottom: 1px solid var(--line); }
+.problem h3 { font-size: 22px; font-weight: 600; }
+.pill {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 3px;
+  background: var(--hand-soft);
+  color: var(--hand);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.said { margin: 6px 0 12px; font-size: 15.5px; color: var(--muted); }
+.said strong { color: var(--ink); }
+blockquote {
+  margin: 0 0 14px;
+  padding-left: 14px;
+  border-left: 3px solid var(--c);
+  font-style: italic;
+  max-width: 60ch;
+}
+.why { margin: 0; }
+.why b { color: var(--c); }
+
+.foot { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--muted); }
+.foot p { max-width: 68ch; }
+</style>
+
+<div class="wrap">
+  <h1>Handler Feedback Triage</h1>
+  <p class="sub">We talked to 4 handlers</p>
+
+  <h2 class="ask">What should we fix first?</h2>
+
+  <div class="intro">
+    <p>We found <strong>10 problems</strong>. I sorted them by how much they hurt responders, not by how many handlers said them. A problem that only 2 handlers named can matter more than one that 3 named.</p>
+    <ul class="key">
+      <li><b class="n">Now</b> Responders are losing work, or their safety is at risk.</li>
+      <li><b class="x">Next</b> Real problems that are quick to fix, so we can do them while we investigate.</li>
+      <li><b class="l">Later</b> Small fixes and comfort. Nobody loses work because of them.</li>
+    </ul>
+    <p style="margin-top:12px">Three of the ten are about <strong>Supply</strong>, the gear side of Rook. They are not ours to fix, but we should pass them on. They have a blue tag.</p>
+  </div>
+
+  <aside class="callout">
+    <h2>Two problems may be one</h2>
+    <p>Some responders have almost stopped getting calls. And when one of them finally got a call, it was gone before they could answer. Dot saw both, and said she had never put the two side by side.</p>
+    <p>The Undertow's handler filed a ticket that says the same thing, and our numbers agree that responder was quiet. We have not proven the two share a cause. But we should not fix them as two separate problems.</p>
+  </aside>
+
+  <section class="tier" data-t="now">
+    <header>
+      <span class="count">3 problems</span>
+      <h2>Now</h2>
+      <p>These hurt the most. Start on them this week.</p>
+    </header>
+
+    <article class="problem">
+      <h3>Responders stop getting calls</h3>
+      <p class="said"><strong>2 of 4 said this:</strong> Dot, Kip</p>
+      <blockquote>“I just want it to look less like a coincidence when I'm staring at it at midnight and one card's dead quiet and the other's on fire.” <span>— Kip</span></blockquote>
+      <p class="why"><b>Why now.</b> Some responders get no work at all. Our numbers show 4 responders dropped from about 11 to 14 calls a week down to 0 to 2. The big overall number hides it. Meteor Mite and Vesper sent in no tickets, so these two handlers are the only ones who spoke up for them.</p>
+    </article>
+
+    <article class="problem">
+      <h3>Calls disappear before the responder can answer</h3>
+      <p class="said"><strong>3 of 4 said this:</strong> Ambrose, Dot, Halloran</p>
+      <blockquote>“there was a period where a slower-arriving response of his still landed him the job more often than not, and lately that doesn't seem to hold the way it used to.” <span>— Ambrose</span></blockquote>
+      <p class="why"><b>Why now.</b> Most handlers said it, and update 4.2 cut the time to answer from 90 seconds to 60. But Ambrose says it happened before 4.2, and 60 seconds is longer than the “few seconds” people describe. It also happens to busy responders. So the time limit may not be the whole story.</p>
+    </article>
+
+    <article class="problem">
+      <h3>Every gear request waits in one long line <span class="pill">Supply</span></h3>
+      <p class="said"><strong>1 of 4 said this:</strong> Halloran</p>
+      <blockquote>“One queue, everything in it, doesn't matter if it's laces or plate.” <span>— Halloran</span></blockquote>
+      <p class="why"><b>Why now.</b> A cracked vest plate waited eleven days for a signature. That is about safety. Pass it to Helen this week. A fix for approvals is already planned for 4.3, so ask if it lets urgent items skip ahead.</p>
+    </article>
+  </section>
+
+  <section class="tier" data-t="next">
+    <header>
+      <span class="count">3 problems</span>
+      <h2>Next</h2>
+      <p>Real, and easy to work on while we learn what is going on.</p>
+    </header>
+
+    <article class="problem">
+      <h3>Handlers can't tell when a call is live</h3>
+      <p class="said"><strong>3 of 4 said this:</strong> Ambrose, Dot, Kip</p>
+      <blockquote>“right now Mite and Gale both just go “bing” and I have to actually look to know which one.” <span>— Kip</span></blockquote>
+      <p class="why"><b>Why next.</b> The design team can start now. A different sound for each responder would help handlers see calls sooner. It will not stop calls from being lost, so do not treat it as the fix for the two problems above.</p>
+    </article>
+
+    <article class="problem">
+      <h3>The saved filter resets without warning</h3>
+      <p class="said"><strong>1 of 4 said this:</strong> Ambrose</p>
+      <blockquote>“I'd rather it warned me the filter had reset than simply reset it.” <span>— Ambrose</span></blockquote>
+      <p class="why"><b>Why next.</b> It is quick to fix. Saving filters came out in 4.2, and it is the one 4.2 change a handler noticed and liked. Quiet resets make him trust it less. Ask Marcus if the resets happen after each update.</p>
+    </article>
+
+    <article class="problem">
+      <h3>Broken-gear reports seem to go nowhere <span class="pill">Supply</span></h3>
+      <p class="said"><strong>1 of 4 said this:</strong> Halloran</p>
+      <blockquote>“I file a failure report and it goes into a void.” <span>— Halloran</span></blockquote>
+      <p class="why"><b>Why next.</b> Handlers send a report and never hear back. Give this to whoever owns Supply. It is not on this quarter's plan.</p>
+    </article>
+  </section>
+
+  <section class="tier" data-t="later">
+    <header>
+      <span class="count">4 problems</span>
+      <h2>Later</h2>
+      <p>Small fixes. Add them to the screen redesign list.</p>
+    </header>
+
+    <article class="problem">
+      <h3>Status words are too small to read</h3>
+      <p class="said"><strong>2 of 4 said this:</strong> Ambrose, Dot</p>
+      <blockquote>“at a glance I sometimes cannot tell engaged from available without leaning in.” <span>— Ambrose</span></blockquote>
+      <p class="why"><b>Why later.</b> Two handlers said it. It is small and cheap, and it fits in Sofia's redesign.</p>
+    </article>
+
+    <article class="problem">
+      <h3>No dark mode</h3>
+      <p class="said"><strong>1 of 4 said this:</strong> Kip</p>
+      <blockquote>“Dark mode is the thing that actually changes my night.” <span>— Kip</span></blockquote>
+      <p class="why"><b>Why later.</b> Only one handler, but he asks every time. It is about comfort, not lost work.</p>
+    </article>
+
+    <article class="problem">
+      <h3>The tag guide is hard to find</h3>
+      <p class="said"><strong>1 of 4 said this:</strong> Ambrose</p>
+      <blockquote>“It sits in a drawer off the responder detail panel and I open it perhaps once a fortnight, when a new tag appears and I don't recognize it.” <span>— Ambrose</span></blockquote>
+      <p class="why"><b>Why later.</b> Ambrose said himself that it is not urgent. He opens it about once every two weeks.</p>
+    </article>
+
+    <article class="problem">
+      <h3>Gear search is weak <span class="pill">Supply</span></h3>
+      <p class="said"><strong>1 of 4 said this:</strong> Halloran</p>
+      <blockquote>“If I don't know the exact item name I'm not finding it.” <span>— Halloran</span></blockquote>
+      <p class="why"><b>Why later.</b> It slows him down, but nobody loses work or safety. Pass it to Supply as a wish-list item.</p>
+    </article>
+  </section>
+
+  <footer class="foot">
+    <p>Interviews ran 2 to 5 September 2026, led by Sofia Marino (Product Design). The four handlers: Ambrose (for Captain Vantage), Dot (for Vesper), Halloran (for Sgt. Bulwark, and he also runs the gear cage), and Kip (for Meteor Mite and The Gale).</p>
+    <p>Four people is very few, so do not read the counts like a big survey. Some answers came after a direct question. The numbers behind “Responders stop getting calls” end on 31 August.</p>
+  </footer>
+</div>
