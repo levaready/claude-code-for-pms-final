@@ -40,9 +40,10 @@ Monthly release train, point releases numbered 4.x.
   maintenance schedule (from service interval); field failure reports can pull
   maintenance forward.
 - **The seam:** Dispatch *writes* the Responder Availability Record; Supply
-  *reads* it and schedules maintenance into low-callout periods. Any change to
-  how Dispatch computes availability or callout load silently changes Supply's
-  scheduling. Check Supply impact before changing routing.
+  *reads* it and schedules maintenance into low-callout periods. Supply's one-pager
+  says changes to how Dispatch computes or updates it land in Supply's scheduling
+  unannounced. `availability.py` says routing never changes it, so whether routing
+  changes reach Supply is unverified. Ask Supply before changing its shape.
 
 ### People
 - **Helen Achebe**: Director of Product, my user's boss, owns the roadmap and commitments (Chicago)
@@ -90,8 +91,8 @@ Monthly release train, point releases numbered 4.x.
   everyone else; config doesn't distinguish them. Wen was on PTO and has not replied in the thread.
 - **Plausible mechanism to test, not a finding:** a shorter timeout produces more
   timeouts → lowers recent-acceptance → lowers routing priority → fewer pings, which
-  would fit "phone never goes off". It would also depress callout load in the
-  Availability Record, which Supply uses to pick maintenance windows.
+  would fit "phone never goes off". Whether that reaches Supply's
+  maintenance scheduling is unverified (see 23 Sept notes).
 - **Roadmap gap:** Q3 roadmap (rev. 30 Jun) lists **Availability Confidence** (support-
   escalation driven) as a committed 4.2 item. It is absent from the 4.2 release notes, and
   Priya says some items were squeezed out and that she never reviewed with Helen which
@@ -110,3 +111,30 @@ Monthly release train, point releases numbered 4.x.
 - Ask for Ravi's weekly numbers rather than relying on ad-hoc pulls.
 - Source docs disagree in small ways (Slack says 4.2 "out" 13 Aug; release notes say
   12 Aug; Priya says Marcus pulls numbers, the directory says Ravi). Flag such conflicts.
+
+### Added 23 Sept 2026 (full read of 00-rook)
+- **Layout:** beyond `company/`, `00-rook/` holds `code/dispatch-routing/`,
+  `data/callout-history.csv` (weekly per-responder offers, 29 Jun–31 Aug; author and
+  meaning of `pings_taken` unknown), `feedback/` (tickets T-001–025, 13 Aug–5 Sep; four
+  handler interviews by Sofia, 2–5 Sep, console research) and `analysis/` (my work:
+  `ticket-vs-csv.md`, and `asks-drafts.md` with asks to Ravi, Wen, Nadia and Helen,
+  drafted but unsent as of 23 Sept). Other numbered folders are course modules.
+- **Data:** aggregate acceptance ~77% before 4.2, 54% w/c 10 Aug, 73% w/c 31 Aug; offers
+  sent flat (158–177/wk). Underneath, Farlight, Meteor Mite, The Undertow and Vesper fell
+  from ~11–14 offers/wk to 0–2 while others took more (The Gale 13→21). The headline
+  metric is aggregate, so it can't see this.
+- **Tickets vs data:** 16 of 25 tickets (9 responders) describe quiet stretches the CSV
+  doesn't show (Nightwell is the busiest in the data). Vesper and Meteor Mite, the worst
+  hit, filed none. Don't use ticket volume to say who is affected until Ravi reconciles.
+- **Routing code:** 4.2 weights are proximity .60 (was .45), recent acceptance .25 (was
+  .40), capability .15. Decline penalty .12 vs accept credit .08; timeouts scored as
+  declines; no decay (2019 TODO). Offers walk the ranked list and stop at the first yes,
+  so low rank means rarely asked, contradicting the README's "order, not whether".
+  Acceptance weight *fell* in 4.2, so the score alone doesn't obviously explain the
+  four; need per-responder scores and locations.
+- **Unresolved:** roadmap calls the weighting change and timeout cut "Internal" while
+  release notes and Priya say responder-requested; no rationale documented for 60s;
+  "gone in seconds" reports vs a 60s timeout unexplained; Availability Confidence is not
+  in the code or changelog; Sofia's console research isn't on the roadmap.
+- **Confidentiality:** interview transcripts contain incidental household detail. Keep
+  it out of anything written.

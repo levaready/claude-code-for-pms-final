@@ -24,6 +24,20 @@ built from your own questions.
 
 ### 1.
 
+is there too much information in the claude.md currently? do we need to consolidate at all at this point?
+
 ### 2.
 
+commit this
+
 ### 3.
+
+What's contradictory or missing, not just in the company documents, but across everything in 00-rook?
+
+### 4.
+
+how do we and in what order should we address what is missing
+
+### 5.
+
+build the ticket-versus-CSV table by responder, draft the asks to Ravi, Wen, Nadia and Helen
