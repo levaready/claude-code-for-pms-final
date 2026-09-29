@@ -141,3 +141,33 @@ Monthly release train, point releases numbered 4.x.
   in the code or changelog; Sofia's console research isn't on the roadmap.
 - **Confidentiality:** interview transcripts contain incidental household detail. Keep
   it out of anything written.
+
+### Added 28 Sept 2026 (tickets grouped, interviews vs. tickets compared)
+- **Files:** `02-super-hearing/` now holds `prompts.md`, two triage artifacts
+  (`interview-signals.html/.md`, `handler-feedback-triage.html/.md`) and
+  `patterns-signal-vs-noise.md` (7-row signal/noise table, most current view of the
+  investigation). Superseded rougher notes stay in `00-rook/analysis/`.
+- **Tickets grouped:** dry-spell-only 16/25, lost-offer-only 4/25, dry-spell-then-lost
+  5/25. 22 filers; 3 filed twice, all handlers, each filing dry-spell then lost-offer for
+  the *same* responder (Sung/Nightwell, Okafor/Undertow, Alvarez/Ironvale).
+- **Tickets vs. interviews barely overlap in who they cover.** 9 of the most
+  ticket-heavy responders (Nightwell, Ironvale, Stormwrack, Ashgrove, Halfmoon,
+  Falkirk, The Drift, Cindermark, Longcast) never appear in any interview. The 2
+  collapsed responders interviews *do* catch (Meteor Mite, Vesper) have zero tickets.
+  Treat the two piles as complementary blind spots, not cross-checks of each other.
+- **Severity reads are inconsistent across sources**, not just noisy in volume:
+  Halloran shrugs off a lost offer as "these things happen"; the same kind of event,
+  ticketed (T-019, The Undertow), is the only High-severity ticket in the folder.
+  Don't read one calm voice as evidence a problem is minor.
+- **Testable explanations for tickets-vs-CSV mismatch (none ruled out):** (a) weekly
+  CSV totals can hide a real multi-day dry spell inside a busier week — need daily
+  data from Ravi; (b) Ambrose confirms the console filter has silently reverted before,
+  so a similar bug could show a handler "nothing" while offers were actually sent;
+  (c) `pings_sent` may count things a handler wouldn't call a real callout.
+- **Interviews are corroboration, not a representative sample.** The four were picked
+  for Sofia's console redesign research, not to represent affected responders. If we'd
+  read only interviews we'd have undercounted scope and misrouted the lost-offer
+  problem to the console team, since that's the context it surfaced in.
+- **Least-effort, highest-leverage next step is still unsent:** the Ravi ask in
+  `00-rook/analysis/asks-drafts.md` (what `pings_sent`/`pings_taken` measure, plus
+  daily-grain data) settles the dependency most other open questions sit on.
