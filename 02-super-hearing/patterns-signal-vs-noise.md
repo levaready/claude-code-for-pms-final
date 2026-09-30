@@ -24,3 +24,36 @@ The biggest risk right now is chasing the loudest signal instead of the largest 
 ## Least effort, most impact
 
 Of the six, **row 2 is the cheapest to move and the highest-leverage**: one clarifying question to Ravi (what `pings_taken` measures, and whether it reconciles with what handlers see) settles a dependency every other row sits on. Row 1 has the highest business impact but unknown effort until diagnosed. See `analysis/asks-drafts.md` for the drafted question.
+
+## Case study: Vesper, week by week
+
+One of the four from row 1, walked through in full — handled by Aunt Dot (interviewed 3 Sep).
+
+| Week starting | Pinged | Taken |
+|---|---|---|
+| 29 Jun | 14 | 11 |
+| 6 Jul | 13 | 10 |
+| 13 Jul | 15 | 13 |
+| 20 Jul | 14 | 11 |
+| 27 Jul | 13 | 11 |
+| 3 Aug | 14 | 12 |
+| 10 Aug | 12 | 6 |
+| 17 Aug | 5 | 1 |
+| 24 Aug | 2 | 0 |
+| 31 Aug | 1 | 0 |
+
+Late June through early August: steady, 13–15 pings a week, 85–90% taken — one of the better rates in the roster. Week of 10 Aug (4.2 ships Wed the 12th): still 12 pings, but only 6 taken — the first crack, half the usual rate. Week of 17 Aug: pings fall to 5, only 1 taken — the cliff. Week of 24 Aug: 2 pings, 0 taken. Week of 31 Aug: 1 ping, 0 taken — effectively switched off.
+
+This is the shape row 8 describes for all four: a moderate first hit the week 4.2 ships, then a steepening, bottomless collapse rather than a dip-and-recover. It also matches Dot's interview independently — she described cooking for someone "home all week instead of half of it" without connecting it at the time to the phone buzzing and losing the offer before he could answer. The data shows both halves of her account happening in sequence: he loses about half his offers the week of the release, then in the two weeks after that he's barely offered anything at all.
+
+## Why the rows, not just the number
+
+The single number for Helen ("1 in 4 responders down ~80%") is the right sentence to lead with, but stopping there would have missed everything below it:
+
+- **That it's a split, not a slowdown.** The number is consistent with many shapes; the rows showed 4 collapsed while 12 held flat or grew — 6 of them now get *more* offers than before.
+- **Which four.** A share has no names. Nobody can act on "25%."
+- **That they're not being offered less, they're barely being reached at all.** The rows showed `pings_sent`, not just acceptances, falling to 0–1/wk — a different, harder problem than "declining more."
+- **That the decline is monotonic, not a one-time drop** — the whole basis for suspecting a feedback loop (row 8) rather than a single bad event. A number has no shape.
+- **The mismatch between who complains and who's hurt** (rows 2, 9) — only visible by checking tickets against real per-responder, per-week numbers.
+- **Whether Priya's seasonality story fits** (row 10) — needed the week-by-week trend and who it landed on, not an aggregate.
+- **A story that's checkable.** Vesper's case study above is what makes Dot's interview make sense as one continuous thing. If Helen asks "how do you know," the number alone has no answer — the rows do.

@@ -171,3 +171,31 @@ Monthly release train, point releases numbered 4.x.
 - **Least-effort, highest-leverage next step is still unsent:** the Ravi ask in
   `00-rook/analysis/asks-drafts.md` (what `pings_sent`/`pings_taken` measure, plus
   daily-grain data) settles the dependency most other open questions sit on.
+
+### Added 28 Sept 2026, continued (read `callout-history.csv` directly against tickets/code)
+- **Files:** `patterns-signal-vs-noise.md` is now 10 rows, plus a plain-language
+  version (`-plain.md`); `03-rewind/prompts.md` holds this session's CSV/data prompts.
+- **The one number for Helen:** 1 in 4 responders (4 of 16) are now getting offered
+  work ~80% less often than before 4.2. Lead with this over the acceptance rate, which
+  is recovering (73% and climbing) and tells the opposite story.
+- **Not a uniform slowdown — a split.** Farlight, Meteor Mite, The Undertow and Vesper
+  fell 9–11 offers/wk and never came back; the other 12 dipped in the 10 Aug transition
+  week and then held flat or grew (6 of them now get *more* offers than before 4.2).
+- **New mechanism for "never recovered" (row 8, still unconfirmed by Wen):**
+  `pings_sent`, not just accepted, falls to 0–1/wk for all four by 31 Aug — Dispatch
+  has nearly stopped reaching them, not just seeing them decline more. The drop is
+  monotonic, worse every week, unlike the other 12's dip-then-recover shape.
+  `history.py` has no score decay (open 2019 TODO) and scores only move when a
+  responder is actually offered — so a low score means fewer offers, fewer offers
+  means no chance to earn it back. Explains persistence, not the initial trigger.
+- **Ticket-filing timing tracks who's vocal, not who's affected (row 9).** First
+  ticket (13 Aug) and the CSV's first crash (week of 10 Aug) line up in aggregate.
+  Broken down by responder: only The Undertow's tickets track his real-time collapse;
+  Farlight's first ticket lags her collapse by ~2 weeks; Meteor Mite and Vesper never
+  get a ticket at all despite an identical collapse. T-002 (Ashgrove, 14 Aug) describes
+  a quiet stretch starting ~8 Aug, before 4.2 shipped — check against daily data.
+- **Priya's seasonality read (row 10): weakened, not settled.** The aggregate rate is
+  flat through the week of 3 Aug, then falls 20+ points in the single week 4.2
+  shipped — too sharp for gradual seasonal drift — and lands on 4 of 16 responders,
+  not broadly. But no year-over-year August baseline exists anywhere in `00-rook`, so
+  this can't be confirmed or ruled out without it. Still an open ask to Ravi.
