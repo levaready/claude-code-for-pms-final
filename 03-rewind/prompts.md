@@ -69,3 +69,39 @@ commit and push to 03-rewind
 ### 14.
 
 commit and push synthesis file
+
+### 15.
+
+Pick one responder from the file who went quiet. Show me every week for them, how many times we pinged them, how many they took. Then tell me what happened to that person, week by week, in plain English.
+
+### 16.
+
+add this to synthesis file
+
+### 17.
+
+Once somebody's gone quiet, what would have to happen for them to start getting pinged again?
+
+### 18.
+
+If I'd only asked for the number, not the rows, what would I have missed?
+
+### 19.
+
+add to synthesis file
+
+### 20.
+
+commit and push
+
+### 21.
+
+i want you to administer 5 agents, one to explore each area here. i want these agents to debate each other on their findings, and then align on where they feel is the root-cause to all of this. if they cannot align on that, at least help me understand what information they need to better understand how we solve this?
+
+### 22.
+
+save it as a new section in 03-rewind
+
+### 23.
+
+commit and push

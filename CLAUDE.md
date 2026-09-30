@@ -199,3 +199,28 @@ Monthly release train, point releases numbered 4.x.
   shipped — too sharp for gradual seasonal drift — and lands on 4 of 16 responders,
   not broadly. But no year-over-year August baseline exists anywhere in `00-rook`, so
   this can't be confirmed or ruled out without it. Still an open ask to Ravi.
+
+### Added 30 Sept 2026 (Vesper case study, recovery mechanics, 5-agent root-cause debate)
+- **Files:** `patterns-signal-vs-noise.md` also has a Vesper week-by-week case study
+  and a "why the rows, not just the number" note. New: `03-rewind/root-cause-debate.md`.
+- **Vesper case study:** steady ~13–15 offers/wk through early Aug, half taken the week
+  4.2 ships (12 sent/6 taken), then a cliff (5→2→1 sent, 0 taken by late Aug) — matches
+  row 8's shape exactly and Dot's interview (cooking for someone "home all week" without
+  connecting it at the time to the phone buzzing and losing the offer).
+- **Recovery mechanics (refines row 8):** proximity is 60% of the routing score vs 25%
+  for acceptance history, so a very close incident can still reach someone at rock-bottom
+  acceptance (~0.75 score even at zero history) — meaning distance, not just the penalty,
+  may be doing most of the excluding. No passive recovery exists (no decay, confirmed
+  again): a trapped responder needs either a lucky nearby incident or manual intervention.
+- **Five-agent blind debate reached consensus** (full writeup:
+  `03-rewind/root-cause-debate.md`): the 60s timeout cut is the trigger (timeouts scored
+  identically to declines), the proximity-weight increase is a secondary amplifier
+  (NOT the acceptance-weight decrease — that channel was proposed, checked against the
+  actual weight numbers, and retracted mid-debate), and the no-decay scoring trap is why
+  it doesn't self-correct. Confidence converged to medium/medium-high across all 5 agents,
+  independently matching row 8's mechanism reached by solo analysis — two methods, same
+  answer, worth real weight. Still needs: whether the four's misses were logged as
+  timeouts vs. declines server-side, Wen's confirmation of intent, per-responder
+  latency/location data, and whether Ashgrove/Halfmoon/Farlight/Stormwrack (still in
+  unresolved dry spells per tickets) are earlier-stage cases of the same trap, meaning
+  the affected population may be larger than 4.
