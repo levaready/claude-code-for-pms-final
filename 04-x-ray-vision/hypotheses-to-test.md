@@ -44,3 +44,16 @@ def record_accepted(responder):
 That's the whole list. One function. No decay, no time-based reset, no manual override — the only way a score ever rises is by being offered a callout and accepting it. This confirms H2 outright: there is no recovery mechanism, not a weak one, none at all.
 
 **One more thing worth carrying into the Wen conversation:** sitting directly above `record_declined` is a dated comment — `TODO(wen, 2019)` — asking exactly this question: should the score ease back toward neutral over time? It lays out both sides and then says "leaving it as-is for now." That's a six-year-old open decision, never made, not a recent oversight from 4.2. It tells us the *trap* predates 4.2 entirely; what 4.2 changed (the timeout) is what's pushing more people into a trap that was already there. Updates H2's confidence from "inferred" to confirmed-by-source; H2's remaining open question shifts from "does decay exist" (no, confirmed) to "was leaving it unresolved ever revisited since 2019" — still Wen's to answer.
+
+## What recovery actually requires, traced step by step (30 Sept)
+
+Walked the full chain across `availability.py` → `routing.py` → `offer.py` → `history.py` for a responder who's been quiet a month:
+
+1. A nearby incident has to come in — being generally available isn't enough.
+2. They have to score well enough to be worth reaching. Proximity is 60% of the score, so even at a rock-bottom acceptance history, being genuinely close can still carry a score around 0.75 — this is the mechanical reason H3 (proximity) matters.
+3. Everyone ranked above them *for that specific incident* has to fail first (decline or time out) before the offer reaches them at all — `offer.py` only moves down the list one person at a time.
+4. They have to answer successfully within 60 seconds when it finally reaches them.
+5. One accept only adds `ACCEPTANCE_CREDIT` (0.08) to their score — a small nudge, not a reset.
+6. Steps 1–5 have to repeat several times in a row to reach anything like a normal score, since each repeat depends on another nearby incident and another favorable ranking.
+
+**One finding worth flagging for the Wen conversation:** a month of silence likely means a *frozen* score, not a worsening one. `history.py` only updates on an actual offer outcome — if nobody's being offered anything, nothing in the scoring code runs at all. The silence itself isn't the damage; it's that nothing during that silence does anything to fix it either. This sharpens H2: the absence of decay isn't just "no recovery over time," it's "time has literally no effect in either direction."
