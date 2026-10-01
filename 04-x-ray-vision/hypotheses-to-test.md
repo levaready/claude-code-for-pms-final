@@ -16,3 +16,31 @@ Written 30 Sept 2026, derived from the routing code walkthrough (`how-routing-wo
 Every other agent in last week's debate converged on H1 as the trigger, and it has the cleanest test available — one data pull from engineering (event type + response latency for the four) settles it outright. H2 is nearly as fast to resolve: across all 6 pre-4.2 weeks and all 16 responders, there is not a single instance of a multi-week decline — that pattern only exists after 12 Aug, only for the same four people, and it never reverses. One confirmation from Wen on whether decay was ever designed in would close this out.
 
 H3 and H4 both require data nobody currently has (location/travel-time records, device delivery logs) rather than confirming a lead already in hand. H5 needs an external historical pull that hasn't been requested yet. H6 is already weakly contradicted by the ticket language on file.
+
+## H1 and H2, confirmed in the code itself (30 Sept)
+
+Read `history.py` directly. This is the entire scoring mechanism both hypotheses depend on — eleven lines, in full.
+
+**The only place points get taken away:**
+
+```python
+def record_declined(responder):
+    """They turned it down, or we ran out of time waiting. Score goes
+    down. Same either way — we asked and we didn't get a yes.
+    """
+    _set(responder, recent_acceptance(responder) - DECLINE_PENALTY)
+```
+
+A deliberate "no" and a timeout both land here, docked by the same amount. The comment inside the function says so outright: "Same either way." This directly confirms H1's premise — the system genuinely cannot tell a missed offer from a refused one.
+
+**The only place points get added back, in the entire file:**
+
+```python
+def record_accepted(responder):
+    """They took the callout. Score goes up."""
+    _set(responder, recent_acceptance(responder) + ACCEPTANCE_CREDIT)
+```
+
+That's the whole list. One function. No decay, no time-based reset, no manual override — the only way a score ever rises is by being offered a callout and accepting it. This confirms H2 outright: there is no recovery mechanism, not a weak one, none at all.
+
+**One more thing worth carrying into the Wen conversation:** sitting directly above `record_declined` is a dated comment — `TODO(wen, 2019)` — asking exactly this question: should the score ease back toward neutral over time? It lays out both sides and then says "leaving it as-is for now." That's a six-year-old open decision, never made, not a recent oversight from 4.2. It tells us the *trap* predates 4.2 entirely; what 4.2 changed (the timeout) is what's pushing more people into a trap that was already there. Updates H2's confidence from "inferred" to confirmed-by-source; H2's remaining open question shifts from "does decay exist" (no, confirmed) to "was leaving it unresolved ever revisited since 2019" — still Wen's to answer.

@@ -66,6 +66,14 @@ Two things changed, both in this same part of the code.
 
 **What this can't confirm on its own:** whether those four responders are also farther from where most incidents happen — since closeness is 60% of the score, that would make the drop hit even harder. That needs real location data, which isn't in this code.
 
+## Marcus's 14 Aug question, answered
+
+Marcus asked whether the 4.2 reweighting was meant to apply to responders who'd already been turning jobs down, or only to new ones. Answered directly from `routing.py` and `config.py` (30 Sept): **no, it applies to everyone the same way.** There's no code path that treats a responder differently based on their decline history — the same formula, same weights, run for every responder on every callout.
+
+What's probably behind the question: the formula is uniform, but the *effect* isn't, because recent-acceptance has always fed the score (unchanged since before 4.2) while what changed is how much each input counts — acceptance history down (40% to 25%), proximity up (45% to 60%). So a responder whose weak point was a shaky track record actually gets cut a little slack now, while a responder whose weak point is distance gets hit harder regardless of their track record. If someone with a rough history also happens to be far from most incidents, the two effects stack, and it looks like their history is being punished specifically — when proximity is likely doing most of the damage.
+
+**This is still an inference, not a confirmed fact — H3 in `hypotheses-to-test.md` is the specific test that would confirm or kill it.** If the four affected responders' travel-time data comes back showing they're meaningfully farther from most incidents than the other twelve, that validates the proximity explanation given above. If their locations look ordinary, this explanation doesn't hold and the "why these four" question stays open, resting more on H1/H2 (the timeout misclassification and no-decay trap) as the full story. Needs Wen's per-responder location data either way.
+
 ## Next steps
 
 1. Send the Ravi and Wen asks drafted in `00-rook/analysis/asks-drafts.md` — still unsent.
