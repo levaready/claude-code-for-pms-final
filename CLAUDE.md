@@ -224,3 +224,41 @@ Monthly release train, point releases numbered 4.x.
   latency/location data, and whether Ashgrove/Halfmoon/Farlight/Stormwrack (still in
   unresolved dry spells per tickets) are earlier-stage cases of the same trap, meaning
   the affected population may be larger than 4.
+
+### Added 30 Sept 2026, continued (routing code walkthrough, hypotheses, Slack)
+- **Files:** `04-x-ray-vision/how-routing-works.md` (plain-English walkthrough of
+  `dispatch-routing/`, no jargon, file map, Marcus's question answered) and
+  `hypotheses-to-test.md` (H1–H6 in scientific If/Then/Because framing, ranked by how
+  resolvable each is, not by plausibility).
+- **Marcus's 14 Aug Slack question is answered, and sent back to him** on the real
+  Product School class Slack (`#claude-code-for-pms-sep21-26-weeknights`): the 4.2
+  reweighting formula is identical for every responder, no code path keyed to decline
+  history. A classmate (Faran) independently posted the same conclusion with stronger
+  evidence — no clean split by pre-4.2 acceptance rate (Vesper's was great and she still
+  collapsed; Meteor Mite's was poor and also collapsed; The Drift's was as good as
+  Vesper's and he's thriving) — consistent with a blanket change, not a targeted one.
+- **H1 and H2 confirmed directly from `history.py` source** (not just inferred):
+  `record_declined` is the only place points come off, and explicitly docks a timeout
+  the same as an active decline ("Same either way"). `record_accepted` is the *only*
+  place points go back on, anywhere in the file — no decay, no reset, no manual path.
+  The no-recovery trap has a `TODO(wen, 2019)` sitting right above it, asking exactly
+  this question and left unresolved — meaning the trap predates 4.2 by years; the
+  timeout cut is what's pushing more people into a trap that already existed.
+- **Full recovery chain traced, step by step:** a quiet responder needs a nearby
+  incident + good enough proximity score to rank highly despite rock-bottom history +
+  everyone ranked above them to also fail + them to actually answer in time — and that
+  whole chain has to repeat multiple times, since one accept only adds 0.08 to the
+  score. Key finding: a month of silence likely *freezes* their score rather than
+  worsening it, since `history.py` only updates on an actual offer outcome — nothing
+  passive helps either direction.
+- **This repo can't verify "4.2 only changed configs."** Checked git history: there's
+  exactly one commit touching `dispatch-routing/`, already post-4.2 — no real diff
+  exists here. We're trusting `CHANGELOG.md` and inline comments in `config.py`, both
+  self-reported, not confirmed against an actual pre/post code diff. Would need Wen or
+  real deploy history to verify.
+- **H3 (proximity disadvantage) is still the open piece** — it's the specific test that
+  would confirm or kill the "distance, not history, is doing the real damage" claim
+  given to Marcus. No location data exists anywhere in `00-rook`.
+- **Correction/learning:** Slack tool access can appear mid-session (connector loaded
+  after initial "I can't do this" response) — worth re-checking capability before
+  telling the user something's impossible, if they ask a second time.
