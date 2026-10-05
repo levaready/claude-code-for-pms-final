@@ -112,3 +112,15 @@ add to hyphosis file
 ### 24.
 
 commit and push
+
+### 25.
+
+According to my findings in the code, for someone who's gone quiet, they would need to ___.
+
+### 26.
+
+According to my findings in the code, for someone who's gone quiet, they would need to ___. fill in the blank
+
+### 27.
+
+put the message into the slack channel

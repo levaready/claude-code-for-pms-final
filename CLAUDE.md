@@ -262,3 +262,25 @@ Monthly release train, point releases numbered 4.x.
 - **Correction/learning:** Slack tool access can appear mid-session (connector loaded
   after initial "I can't do this" response) — worth re-checking capability before
   telling the user something's impossible, if they ask a second time.
+
+### Added 5 Oct 2026 (fill-in-the-blank answer, class Slack)
+- **The class's one-line answer to "for someone who's gone quiet, they would need to
+  ___":** *get asked again and say yes, several times in a row.* `record_accepted`
+  (+0.08) is the only thing that adds points back. Posted top-level to
+  `#claude-code-for-pms-sep21-26-weeknights` (C0B8LTV13EJ) on 5 Oct, in the same format
+  classmates used. Realistic catch: the way back in needs the very score that's blocking
+  them, so they can't do it alone.
+- **Slack habits:** schemas for the Slack tools must be reloaded via ToolSearch each
+  session. Read the channel first, post top-level unless told to thread, and only send
+  when the user has asked. The connector appends "Sent using Claude" itself.
+- **Open caveats from classmates (not verified by me, but worth checking with Wen):**
+  - `history.py` keeps scores in a plain in-memory dict (`_scores = {}`, which I can
+    see in the file), so a restart would reset everyone to 0.5. Nobody bouncing back in
+    the data suggests they're persisted elsewhere, but that's inferred.
+  - Was 4.2 switched on for everyone at once, or rolled out in stages?
+  - The "duplicate push notification on re-offer" fix in the 4.2 release notes isn't
+    in the routing folder (push code is a stub). Did it change when offers reach
+    phones or when the 60s clock starts? Needs the 4.1→4.2 diff, which this repo lacks.
+  - Suggested test: replay August with old vs new weights at a 90s timeout.
+- **Fresh numbers from a classmate (unverified):** The Undertow sits at a score of 0,
+  gets ~1 offer a week, and has taken 3 of 25 since 17 Aug.
