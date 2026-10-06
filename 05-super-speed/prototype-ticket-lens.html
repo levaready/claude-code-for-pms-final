@@ -1,0 +1,382 @@
+<title>Ticket Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a support console. Ticket list on the left, ticket text beside the responder's real weekly offers on the right.
+   Amber = fewer offers than usual, teal = offers normal or up, blue = actions and the offer bars. */
+:root {
+  --ground: #edf0f4;
+  --panel: #fbfcfd;
+  --ink: #15202b;
+  --muted: #566573;
+  --line: #d3dae2;
+  --quiet: #b0520b;
+  --quiet-soft: #f8e6d6;
+  --busy: #0a6b6b;
+  --busy-soft: #d8eeee;
+  --action: #274690;
+  --action-ink: #ffffff;
+  --action-soft: #dfe5f7;
+  --ok: #1f6b3a;
+  --ok-soft: #dcefe2;
+  --band: #e3e8ef;
+  --ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0e151c;
+    --panel: #151f29;
+    --ink: #e4ebf1;
+    --muted: #93a3b2;
+    --line: #263340;
+    --quiet: #f0a35c;
+    --quiet-soft: #3a2616;
+    --busy: #5cc9c1;
+    --busy-soft: #12302f;
+    --action: #8aa4f0;
+    --action-ink: #0e151c;
+    --action-soft: #1d2842;
+    --ok: #7fd49c;
+    --ok-soft: #14301e;
+    --band: #202c38;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0e151c;
+  --panel: #151f29;
+  --ink: #e4ebf1;
+  --muted: #93a3b2;
+  --line: #263340;
+  --quiet: #f0a35c;
+  --quiet-soft: #3a2616;
+  --busy: #5cc9c1;
+  --busy-soft: #12302f;
+  --action: #8aa4f0;
+  --action-ink: #0e151c;
+  --action-soft: #1d2842;
+  --ok: #7fd49c;
+  --ok-soft: #14301e;
+  --band: #202c38;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--ui); font-size: 15px; line-height: 1.5; padding-inline: 16px; padding-block: 28px 56px; }
+.wrap { max-width: 1100px; margin-inline: auto; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(26px, 5vw, 34px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; text-wrap: balance; }
+h2 { font-size: 18px; font-weight: 700; text-wrap: balance; }
+h3 { font-size: 15px; font-weight: 700; }
+.sub { color: var(--muted); margin-top: 6px; max-width: 66ch; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; background: var(--action-soft); color: var(--action); }
+.head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.head > div { min-width: 0; }
+.banner { margin-top: 16px; padding: 10px 12px; border: 1px solid var(--line); border-left: 4px solid var(--action); background: var(--panel); border-radius: 6px; font-size: 13.5px; color: var(--muted); max-width: 80ch; }
+.banner strong { color: var(--ink); }
+.tabs { display: inline-flex; flex-wrap: wrap; margin-top: 20px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); max-width: 100%; }
+.tabs button { font: 600 14px var(--ui); color: var(--muted); background: transparent; border: 0; padding: 10px 16px; cursor: pointer; }
+.tabs button + button { border-left: 1px solid var(--line); }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--ground); }
+button:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.btn { font: 600 14px var(--ui); border-radius: 6px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--action); background: transparent; color: var(--action); }
+
+/* ticket view */
+.split { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 16px; margin-top: 18px; align-items: start; }
+.listcol { min-width: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip-btn { font: 600 12.5px var(--ui); border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 5px 10px; cursor: pointer; }
+.chip-btn[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; }
+.row { display: grid; grid-template-columns: 4px minmax(0, 1fr); text-align: left; font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px solid var(--line); padding: 0; cursor: pointer; }
+.row:last-child { border-bottom: 0; }
+.row[aria-current="true"] { background: var(--action-soft); }
+.row .bar { background: var(--line); }
+.row.v-match .bar { background: var(--quiet); }
+.row.v-nomatch .bar { background: var(--busy); }
+.row.v-close .bar { background: var(--quiet); opacity: 0.5; }
+.row.v-cant .bar { background: var(--action); opacity: 0.5; }
+.row .in { padding: 9px 12px; min-width: 0; }
+.row .top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px; }
+.row .id { font-family: var(--mono); font-weight: 500; }
+.row .date, .row .vt { color: var(--muted); font-size: 12.5px; }
+.row .who { font-weight: 600; }
+.row .gist { color: var(--muted); font-size: 13.5px; margin-top: 2px; overflow-wrap: anywhere; }
+.empty { padding: 16px; color: var(--muted); }
+.detail { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.backbtn { display: none; align-self: flex-start; }
+.dhead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.meta { color: var(--muted); font-size: 13.5px; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.cols > section { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.ticket { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 15px; background: var(--ground); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; background: var(--band); color: var(--muted); }
+.verdict { border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; }
+.verdict .vchip { align-self: flex-start; font-weight: 700; font-size: 14px; padding: 3px 10px; border-radius: 3px; }
+.verdict.v-match { background: var(--quiet-soft); } .v-match .vchip { color: var(--quiet); border: 1px solid var(--quiet); }
+.verdict.v-nomatch { background: var(--busy-soft); } .v-nomatch .vchip { color: var(--busy); border: 1px solid var(--busy); }
+.verdict.v-close { background: var(--quiet-soft); } .v-close .vchip { color: var(--quiet); border: 1px dashed var(--quiet); }
+.verdict.v-cant { background: var(--action-soft); } .v-cant .vchip { color: var(--action); border: 1px solid var(--action); }
+.verdict p + p { margin-top: 2px; }
+.small { font-size: 13px; color: var(--muted); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; }
+.fact { background: var(--ground); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.fact b { display: block; font-size: 20px; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.fact span { font-size: 12px; color: var(--muted); }
+svg.chart { width: 100%; height: auto; display: block; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .tick { fill: var(--muted); font: 10px var(--mono); }
+.chart .band { fill: var(--band); }
+.chart .sent { fill: var(--action-soft); stroke: var(--action); stroke-width: 1; }
+.chart .taken { fill: var(--action); }
+.chart .val { fill: var(--ink); font: 600 10px var(--mono); }
+.chart .usual { stroke: var(--quiet); stroke-width: 1.5; stroke-dasharray: 5 3; fill: none; }
+.chart .usualt { fill: var(--quiet); font: 600 9.5px var(--mono); }
+.chart .rel { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+.chart .relt { fill: var(--muted); font: 600 10px var(--mono); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 10px; margin-right: 5px; vertical-align: -1px; }
+.legend .l-sent { background: var(--action-soft); border: 1px solid var(--action); }
+.legend .l-taken { background: var(--action); }
+.legend .l-usual { border-top: 2px dashed var(--quiet); height: 0; }
+.legend .l-band { background: var(--band); border: 1px solid var(--line); }
+details summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--action); }
+.tablewrap { overflow-x: auto; margin-top: 8px; }
+table { border-collapse: collapse; font-size: 13px; width: 100%; }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+th { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+td.num, th.num { text-align: right; }
+
+/* silent view */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; margin-top: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--quiet); border-radius: 8px; padding: 16px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.flag { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; background: var(--quiet-soft); color: var(--quiet); }
+.section { margin-top: 22px; }
+.section > h2 { margin-bottom: 4px; }
+.tcard { margin-top: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+tr.hi td { background: var(--quiet-soft); }
+.prose { margin-top: 18px; max-width: 74ch; display: flex; flex-direction: column; gap: 14px; }
+.prose ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.prose .rule { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+@media (max-width: 760px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+  body.show-detail .listcol { display: none; }
+  body:not(.show-detail) .detail { display: none; }
+  .backbtn { display: inline-block; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .detail, .card { animation: fade 0.18s ease-out; }
+  @keyframes fade { from { opacity: 0.4; } to { opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <div>
+      <h1>Ticket Lens</h1>
+      <p class="sub">Open a support ticket and see that responder's real weekly offers right next to it. Then check whether the numbers back up what the ticket says.</p>
+    </div>
+    <span class="pill">Example data</span>
+  </div>
+  <p class="banner"><strong>Numbers come from our call history file</strong> (weekly offers sent and taken, 29 Jun to 6 Sep 2026). It is example data for this demo, for a fictional company.</p>
+
+  <div class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="tab-tickets" aria-selected="true" aria-controls="view-tickets">Tickets</button>
+    <button role="tab" id="tab-silent" aria-selected="false" aria-controls="view-silent">Quiet but silent</button>
+    <button role="tab" id="tab-how" aria-selected="false" aria-controls="view-how">How the verdict works</button>
+  </div>
+
+  <div id="view-tickets" role="tabpanel" aria-labelledby="tab-tickets">
+    <div class="split">
+      <div class="listcol">
+        <div class="filters" id="filters" role="group" aria-label="Filter tickets"></div>
+        <div class="list" id="list"></div>
+      </div>
+      <article class="detail" id="detail" aria-live="polite"></article>
+    </div>
+  </div>
+
+  <div id="view-silent" role="tabpanel" aria-labelledby="tab-silent" hidden></div>
+  <div id="view-how" role="tabpanel" aria-labelledby="tab-how" hidden></div>
+</div>
+
+<script>
+var DATA = {"weeks":["2026-06-29","2026-07-06","2026-07-13","2026-07-20","2026-07-27","2026-08-03","2026-08-10","2026-08-17","2026-08-24","2026-08-31"],"hist":{"Captain Vantage":{"handler":"Mr. Ambrose","sent":[12,13,12,11,12,12,13,15,17,18],"taken":[10,10,8,7,9,9,8,11,13,13]},"Cindermark":{"handler":"Farid Haddad","sent":[9,9,8,10,9,9,10,11,12,12],"taken":[7,8,6,7,7,8,6,8,8,9]},"Corporal Ashgrove":{"handler":"Yusuf Demir","sent":[10,11,10,9,10,10,10,8,7,7],"taken":[8,9,7,7,8,8,6,5,5,5]},"Farlight":{"handler":"Linda Pruitt","sent":[12,12,11,12,13,12,10,3,1,0],"taken":[9,9,8,9,10,8,4,0,0,0]},"Halfmoon":{"handler":"Simone Fischer","sent":[11,10,11,12,11,11,11,9,8,8],"taken":[8,7,8,8,9,8,6,5,5,7]},"Ironvale":{"handler":"Teresa Alvarez","sent":[8,8,9,8,7,8,9,10,11,12],"taken":[6,5,8,6,5,7,5,6,8,9]},"Meteor Mite":{"handler":"Kip","sent":[11,12,10,11,12,11,10,4,2,1],"taken":[7,9,6,7,9,8,4,1,0,0]},"Nightwell":{"handler":"Marjorie Sung","sent":[15,14,15,16,15,15,16,18,20,21],"taken":[11,10,12,12,11,12,9,14,13,15]},"Sgt. Bulwark":{"handler":"Halloran","sent":[9,9,10,9,8,9,10,10,11,11],"taken":[7,7,8,7,5,7,5,8,7,8]},"Sgt. Falkirk":{"handler":"Owen Bramwell","sent":[10,10,11,10,9,10,11,13,15,16],"taken":[9,8,8,8,7,8,7,9,11,11]},"Stormwrack":{"handler":"Renata Kovač","sent":[13,13,12,14,13,13,14,16,18,19],"taken":[10,11,9,12,10,10,8,12,13,15]},"The Drift":{"handler":"Beatrice Calloway","sent":[6,6,7,6,6,6,7,7,8,8],"taken":[5,5,6,5,5,5,4,5,6,5]},"The Gale":{"handler":"Kip","sent":[13,12,13,14,13,13,15,17,20,21],"taken":[10,9,10,11,11,10,9,12,14,16]},"The Longcast":{"handler":"Graham Petrov","sent":[7,7,8,7,7,7,8,8,9,9],"taken":[5,5,7,5,5,5,5,6,5,7]},"The Undertow":{"handler":"Desmond Okafor","sent":[12,11,12,13,12,12,11,4,1,1],"taken":[9,9,9,10,10,9,4,1,0,0]},"Vesper":{"handler":"Aunt Dot","sent":[14,13,15,14,13,14,12,5,2,1],"taken":[11,10,13,11,11,12,6,1,0,0]}},"tickets":[{"id":"T-001","date":"2026-08-13","filer":"Ambrose (handler)","responder":"Captain Vantage","filerType":"handler","severity":"Medium (assigned by filer)","body":"Filing this mostly so it's on record. Yesterday evening a callout came in and Captain Vantage was in the process of suiting up — coat and one boot on — when the offer moved along to someone else before he could get to his phone. This isn't the first time it's happened this year but it's the first time I've watched the clock on it myself. I'd ask that whoever reviews this at least confirm the timing is what it's meant to be, since it felt very fast."},{"id":"T-002","date":"2026-08-14","filer":"Yusuf Demir (handler)","responder":"Corporal Ashgrove","filerType":"handler","severity":"Low (assigned by filer)","body":"Corporal Ashgrove's phone hasn't gone off in six days, which is unusual for him — he's normally one of our busier responders. I checked his availability settings myself and everything looks set to available, capability tags all present, nothing obviously wrong on our end. Just flagging in case something's off on yours. Not urgent, he's not complaining, just noticed the gap."},{"id":"T-003","date":"2026-08-17","filer":"Sgt. Falkirk (responder, mobile)","responder":"Sgt. Falkirk","filerType":"responder","severity":null,"body":"gone before i even opened the app. this happen to anyone else"},{"id":"T-004","date":"2026-08-18","filer":"Marjorie Sung (handler)","responder":"Nightwell","filerType":"handler","severity":"Medium (assigned by filer)","body":"Second week running with almost nothing for Nightwell. She's asked me twice now if her account is actually active, which it is, I've checked. I don't have a good answer for her at this point. Could someone take a look and confirm there's nothing wrong on the record itself."},{"id":"T-005","date":"2026-08-19","filer":"Desmond Okafor (handler)","responder":"The Undertow","filerType":"handler","severity":"Low (assigned by filer)","body":"The Undertow has had one callout since the start of the month, which is well below his usual pace. He's aquatic-tagged and there's been no shortage of incidents that would need that tag as far as I can tell from the coverage view, so it's a little puzzling. Flagging for visibility more than anything."},{"id":"T-006","date":"2026-08-20","filer":"Corporal Ashgrove (responder, mobile)","responder":"Corporal Ashgrove","filerType":"responder","severity":null,"body":"nothing all week?? is this thing broken"},{"id":"T-007","date":"2026-08-20","filer":"The Longcast (responder, mobile)","responder":"The Longcast","filerType":"responder","severity":null,"body":"phone buzzed, by the time i unlocked it, gone. second time this week"},{"id":"T-008","date":"2026-08-21","filer":"Teresa Alvarez (handler)","responder":"Ironvale","filerType":"handler","severity":"Medium (assigned by filer)","body":"Ironvale's had no callouts since the 12th, which as far as I can remember has never happened for a full nine days straight, not since I've been handling her. She hasn't said anything to me directly but I know she's noticed, she asked if there was a way to see her own history and I had to tell her there isn't, not on her end. Can someone confirm nothing's wrong with the record."},{"id":"T-009","date":"2026-08-22","filer":"Nightwell (responder, mobile)","responder":"Nightwell","filerType":"responder","severity":null,"body":"is my account broken. nothing in like 10 days"},{"id":"T-010","date":"2026-08-23","filer":"Simone Fischer (handler)","responder":"Halfmoon","filerType":"handler","severity":"Low (assigned by filer)","body":"Halfmoon mentioned last night that she can't remember the last time she was actually offered something. I went back through what I could see on my end and it does look thin, more than a week with nothing. She's not upset about it, just confused, and honestly so am I. Wanted it on record either way."},{"id":"T-011","date":"2026-08-24","filer":"Marjorie Sung (handler)","responder":"Nightwell","filerType":"handler","severity":"Medium (assigned by filer)","body":"Different issue than the one I filed last week, so a separate ticket. This time something did come in for Nightwell, first thing in ten days, and she missed it — she says by the time she'd picked up the phone it had already moved on to someone else. She was fairly rattled about it given how long she'd been waiting for anything at all. Would like to understand if that's expected behavior or not."},{"id":"T-012","date":"2026-08-25","filer":"Graham Petrov (handler)","responder":"The Longcast","filerType":"handler","severity":"Low (assigned by filer)","body":"Flagging that The Longcast has gone quiet again this week after picking up two callouts last week. On and off like this for about a month now. Not asking for anything urgent, just want it noted in case it's part of a bigger pattern someone's tracking."},{"id":"T-013","date":"2026-08-26","filer":"The Undertow (responder, mobile)","responder":"The Undertow","filerType":"responder","severity":null,"body":"nothing again this week. starting to wonder if im still even in the system"},{"id":"T-014","date":"2026-08-27","filer":"Renata Kovač (handler)","responder":"Stormwrack","filerType":"handler","severity":"Medium (assigned by filer)","body":"Stormwrack is one of our steadiest responders and this is the quietest I've seen him since he joined, going on two years now. He hasn't raised it himself but I track his week against last year's same week out of habit and the difference is hard to miss. Would appreciate a look when someone has a moment."},{"id":"T-015","date":"2026-08-27","filer":"Cindermark (responder, mobile)","responder":"Cindermark","filerType":"responder","severity":null,"body":"almost had it. literally had my thumb on the screen and it switched to someone else. not happy"},{"id":"T-016","date":"2026-08-28","filer":"Owen Bramwell (handler)","responder":"Sgt. Falkirk","filerType":"handler","severity":"Low (assigned by filer)","body":"Sgt. Falkirk had a slow first half of August, picked up briefly, and has gone quiet again this past week. I don't have a clean way to describe the pattern beyond \"on and off,\" which isn't much of a bug report, I know, but I wanted it logged since he's asked me about it twice now."},{"id":"T-017","date":"2026-08-29","filer":"Ironvale (responder, mobile)","responder":"Ironvale","filerType":"responder","severity":null,"body":"still nothing. anyone else's app just dead lately or is it me"},{"id":"T-018","date":"2026-08-30","filer":"Linda Pruitt (handler)","responder":"Farlight","filerType":"handler","severity":"Medium (assigned by filer)","body":"Farlight has gone almost two weeks now without a single callout, which given her crowd-management tag surprises me — I'd have expected at least something during that stretch. I've double-checked her availability window is set correctly and it is. Raising this because she's started asking me directly, which she doesn't usually do, and I'd like something more to tell her than \"I don't know.\""},{"id":"T-019","date":"2026-08-31","filer":"Desmond Okafor (handler)","responder":"The Undertow","filerType":"handler","severity":"High (assigned by filer)","body":"Filing separately from my earlier ticket about the quiet stretch, since this is a different problem. Something finally came in for The Undertow today after two weeks of nothing, and he lost it before he could answer — he told me it was gone by the time he'd even finished reading who it was for. Given how long he'd been waiting, this landed badly. Would like to understand what happened here specifically."},{"id":"T-020","date":"2026-09-01","filer":"Farid Haddad (handler)","responder":"Cindermark","filerType":"handler","severity":"Low (assigned by filer)","body":"Cindermark has been quiet for about ten days now with only one callout in that window, and that one he lost before he could respond — he mentioned it to me separately, said it was gone almost instantly. Combined with the quiet stretch around it, he's asked me twice this week if something's wrong with his account. I've told him I don't know. Logging both parts here."},{"id":"T-021","date":"2026-09-02","filer":"Halfmoon (responder, mobile)","responder":"Halfmoon","filerType":"responder","severity":null,"body":"week 2 of nothing now. starting to think somethings actually wrong"},{"id":"T-022","date":"2026-09-03","filer":"Beatrice Calloway (handler)","responder":"The Drift","filerType":"handler","severity":"Medium (assigned by filer)","body":"I don't usually email support directly but I couldn't find a better channel for this. The Drift has gone almost three weeks with barely anything, two callouts total in that span where he'd normally see two or three a week. He hasn't complained, he's not the type, but I've started to worry there's something wrong with his listing that I can't see from my side. Please look into this one, it's been going on long enough that I don't think it's just a slow patch anymore."},{"id":"T-023","date":"2026-09-03","filer":"The Drift (responder, mobile)","responder":"The Drift","filerType":"responder","severity":null,"body":"first one in weeks and it vanished before i could even swipe. of course"},{"id":"T-024","date":"2026-09-04","filer":"Stormwrack (responder, mobile)","responder":"Stormwrack","filerType":"responder","severity":null,"body":"anyone know why its been so dead. not complaining just curious if its just me"},{"id":"T-025","date":"2026-09-05","filer":"Teresa Alvarez (handler)","responder":"Ironvale","filerType":"handler","severity":"Medium (assigned by filer)","body":"Following up on my ticket from two weeks ago. Ironvale finally got offered something yesterday, first one in almost a month, and it moved on to someone else before she could get to it — she said she had maybe a few seconds from the buzz to opening the app. Given how rare the offer already was, losing it that fast was pretty hard on her. Raising both parts together since I think they're related to the same account, even if I can't say how."}]};
+var QUIET_RE=/nothing|quiet|no callouts|hasn't gone off|thin\b|\bdead\b|\bslow\b|barely|without a single|can't remember the last time|only one callout|one callout since|well below|first one in|first thing in/i;
+var LOST_RE=/moved (along|on)|gone before|gone by|gone almost instantly|lost (it|one|an|that)|he lost|switched to someone|vanished|before (he|she|i) could|by the time|missed/i;
+var EXACT_RE=/since the \d+(st|nd|rd|th)|\b(six|seven|eight|nine|ten|10|two|three) (days|weeks)\b|\bweek 2\b|almost a month|about a month/i;
+function classify(text){var q=QUIET_RE.test(text),l=LOST_RE.test(text);return q&&l?"both":q?"quiet":l?"lost":"none";}
+function usualOf(h,n){n=n||6;var s=0;for(var i=0;i<n;i++)s+=h.sent[i];return s/n;}
+function weekIndexOf(weeks,date){var k=-1;for(var i=0;i<weeks.length;i++)if(weeks[i]<=date)k=i;return k;}
+function judge(t,h,weeks){
+  var type=classify(t.body),usual=usualOf(h),wi=weekIndexOf(weeks,t.date);
+  var idx=[wi];if(wi+1<weeks.length)idx.push(wi+1);
+  var win=idx.map(function(i){return h.sent[i]});
+  var avg=win.reduce(function(a,b){return a+b},0)/win.length, ratio=usual?avg/usual:0;
+  var rising=win.length>1&&win[win.length-1]>win[0];
+  var o={type:type,usual:usual,windowIdx:idx,windowAvg:avg,ratio:ratio,exact:EXACT_RE.test(t.body),verdict:null};
+  if(type==="lost"||type==="none"){o.verdict="cant";return o;}
+  if(ratio<0.5)o.verdict="match";
+  else if(ratio>=0.7||(rising&&ratio>=0.5))o.verdict="nomatch";
+  else o.verdict="close";
+  return o;
+}
+function silentList(hist,weeks,tickets){
+  var out=[];Object.keys(hist).forEach(function(n){var h=hist[n],u=usualOf(h),k=weeks.length,last=(h.sent[k-3]+h.sent[k-2]+h.sent[k-1])/3;
+    var has=tickets.filter(function(t){return t.responder===n}).length;
+    out.push({name:n,usual:u,recent:last,ratio:u?last/u:0,tickets:has});});
+  return out;}
+
+
+var weeks = DATA.weeks, hist = DATA.hist, tickets = DATA.tickets;
+var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]});}
+function fmt(d){var p=d.split("-");return (+p[2])+" "+MONTHS[+p[1]-1];}
+function r1(n){var v=Math.round(n*10)/10;return (v%1===0)?String(v):v.toFixed(1);}
+function pct(n){return Math.round(n*100)+"%";}
+
+var judged = {};
+tickets.forEach(function(t){judged[t.id]=judge(t,hist[t.responder],weeks);});
+
+var VLABEL = {match:"Offers match the complaint", nomatch:"Offers don't match", close:"Close call", cant:"Can't check with weekly numbers"};
+var VSHORT = {match:"Matches", nomatch:"Doesn't match", close:"Close call", cant:"Can't check"};
+var FILTERS = [["all","All"],["match","Offers match"],["nomatch","Offers don't match"],["close","Close call"],["cant","Can't check"]];
+var state = {filter:"all", selected:"T-001", tab:"tickets"};
+
+function gist(t){
+  var b=t.body.replace(/\s+/g," ").trim(),parts=b.match(/[^.?!]+[.?!]*/g)||[b],g=parts[0].trim();
+  for(var i=0;i<parts.length;i++){if(QUIET_RE.test(parts[i])||LOST_RE.test(parts[i])){g=parts[i].trim();break;}}
+  if(g.length>90)g=g.slice(0,87).replace(/\s+\S*$/,"")+"...";
+  return g;
+}
+
+/* chart: one shared scale for sent and taken */
+function chart(name, opt){
+  opt=opt||{};var h=hist[name],W=360,H=opt.small?170:200,L=28,R=40,T=24,B=34,pw=W-L-R,ph=H-T-B;
+  var max=0;h.sent.forEach(function(v){if(v>max)max=v;});var usual=usualOf(h);if(usual>max)max=usual;
+  var top=Math.max(4,Math.ceil(max/4)*4),slot=pw/weeks.length,bw=slot*0.62;
+  function y(v){return T+ph-(v/top)*ph;}
+  var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Weekly offers for '+esc(name)+'. Usual is about '+r1(usual)+' a week.">';
+  if(opt.win&&opt.win.length){var x0=L+opt.win[0]*slot,x1=L+(opt.win[opt.win.length-1]+1)*slot;s+='<rect class="band" x="'+x0+'" y="'+T+'" width="'+(x1-x0)+'" height="'+ph+'"/>';}
+  [0,top/2,top].forEach(function(v){s+='<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text class="tick" x="'+(L-5)+'" y="'+(y(v)+3.5)+'" text-anchor="end">'+v+'</text>';});
+  weeks.forEach(function(w,i){
+    var cx=L+i*slot+slot/2,sv=h.sent[i],tv=h.taken[i];
+    s+='<rect class="sent" x="'+(cx-bw/2)+'" y="'+y(sv)+'" width="'+bw+'" height="'+Math.max(0,y(0)-y(sv))+'"/>';
+    s+='<rect class="taken" x="'+(cx-bw*0.2)+'" y="'+y(tv)+'" width="'+(bw*0.4)+'" height="'+Math.max(0,y(0)-y(tv))+'"/>';
+    s+='<text class="val" x="'+cx+'" y="'+(y(sv)-3)+'" text-anchor="middle">'+sv+'</text>';
+    var p=w.split("-"),mo=(i===0||weeks[i-1].split("-")[1]!==p[1])?MONTHS[+p[1]-1]:"";
+    s+='<text class="tick" x="'+cx+'" y="'+(H-B+12)+'" text-anchor="middle">'+(+p[2])+'</text>';
+    if(mo)s+='<text class="tick" x="'+cx+'" y="'+(H-B+23)+'" text-anchor="middle">'+mo+'</text>';
+  });
+  s+='<line class="usual" x1="'+L+'" x2="'+(W-R+2)+'" y1="'+y(usual)+'" y2="'+y(usual)+'"/><text class="usualt" x="'+(W-R+4)+'" y="'+(y(usual)-1)+'">usual</text><text class="usualt" x="'+(W-R+4)+'" y="'+(y(usual)+10)+'">'+r1(usual)+'</text>';
+  var ri=weeks.indexOf("2026-08-10"),rx=L+ri*slot+slot*(2/7);
+  s+='<line class="rel" x1="'+rx+'" x2="'+rx+'" y1="'+(T-8)+'" y2="'+(T+ph)+'"/><text class="relt" x="'+(rx+4)+'" y="'+(T-12)+'">4.2 out, 12 Aug</text>';
+  s+='</svg>';return s;
+}
+function legend(win){return '<div class="legend"><span><i class="l-sent"></i>Offers sent</span><span><i class="l-taken"></i>Offers taken</span><span><i class="l-usual"></i>Their usual (first 6 weeks)</span>'+(win?'<span><i class="l-band"></i>Weeks checked</span>':'')+'</div>';}
+function numbersTable(name){
+  var h=hist[name],t='<details><summary>See the numbers</summary><div class="tablewrap"><table><thead><tr><th>Week starting</th><th class="num">Sent</th><th class="num">Taken</th></tr></thead><tbody>';
+  weeks.forEach(function(w,i){t+='<tr><td>'+fmt(w)+'</td><td class="num">'+h.sent[i]+'</td><td class="num">'+h.taken[i]+'</td></tr>';});
+  return t+'</tbody></table></div></details>';
+}
+
+function verdictHTML(t){
+  var j=judged[t.id],h=hist[t.responder],name=esc(t.responder);
+  var wk=j.windowIdx.map(function(i){return "the week of "+fmt(weeks[i])}).join(" and ");
+  var vals=j.windowIdx.map(function(i){return h.sent[i]}).join(" and ");
+  var u=r1(j.usual),a=r1(j.windowAvg),p=pct(j.ratio);
+  var main="",extra="";
+  var quietPart=(j.type==="quiet"||j.type==="both");
+  if(quietPart){
+    var look="Weeks checked: "+wk+" ("+vals+" offers sent, about "+a+" a week). Their usual is about "+u+" a week, so that is "+p+" of usual.";
+    if(j.verdict==="match")main="<p>The numbers agree. "+look+" That is less than half of usual.</p>";
+    else if(j.verdict==="nomatch")main="<p>The numbers do not show a quiet spell. "+look+(j.ratio>=1?" That is more than usual.":" That is 70% of usual or more.")+"</p>"+(j.ratio>=1?"":"<p class=\"small\">A dip of this size can be normal from one week to the next.</p>");
+    else main="<p>This is a close call. "+look+" That is between half and 70% of usual, so we do not force a verdict.</p>";
+    if(j.verdict==="nomatch")extra+="<p class=\"small\">A short quiet stretch can hide inside a busy week. Weekly numbers cannot see single days. Day-by-day numbers would settle it.</p>";
+  } else {
+    main="<p>We cannot test this with weekly numbers. This ticket is about one offer that moved on before the responder could answer. Our file only counts offers sent and taken each week. It does not record how long each offer stayed open.</p>";
+  }
+  if(j.type==="both")extra+="<p class=\"small\">The ticket also says an offer was lost too fast. The weekly numbers cannot test that part.</p>";
+  if(j.exact)extra+="<p class=\"small\">The ticket gives an exact count of days, or says \"since the 12th\". Weekly numbers cannot test exact days. We only compare whole weeks.</p>";
+  return '<div class="verdict v-'+j.verdict+'"><span class="vchip">'+VLABEL[j.verdict]+'</span>'+main+extra+'</div>';
+}
+
+function visible(){return tickets.filter(function(t){return state.filter==="all"||judged[t.id].verdict===state.filter;});}
+function renderFilters(){
+  var f=document.getElementById("filters"),h="";
+  FILTERS.forEach(function(x){var n=x[0]==="all"?tickets.length:tickets.filter(function(t){return judged[t.id].verdict===x[0]}).length;
+    if(x[0]==="close"&&n===0)return;
+    h+='<button class="chip-btn" data-f="'+x[0]+'" aria-pressed="'+(state.filter===x[0])+'">'+x[1]+' ('+n+')</button>';});
+  f.innerHTML=h;
+}
+function renderList(){
+  var v=visible(),el=document.getElementById("list");
+  if(!v.length){el.innerHTML='<p class="empty">No tickets in this group.</p>';return;}
+  el.innerHTML=v.map(function(t){var j=judged[t.id];
+    return '<button class="row v-'+j.verdict+'" data-id="'+t.id+'" aria-current="'+(t.id===state.selected)+'"><span class="bar"></span><span class="in"><span class="top"><span class="id">'+t.id+'</span><span class="date">'+fmt(t.date)+'</span><span class="who">'+esc(t.responder)+'</span></span><span class="gist">'+esc(gist(t))+'</span><span class="vt">'+VSHORT[j.verdict]+'</span></span></button>';}).join("");
+}
+function renderDetail(){
+  var t=tickets.filter(function(x){return x.id===state.selected})[0],el=document.getElementById("detail");
+  if(!t){el.innerHTML='<p class="empty">Pick a ticket from the list.</p>';return;}
+  var j=judged[t.id],kind={quiet:"Quiet spell",lost:"Lost an offer",both:"Quiet spell and lost an offer",none:"Unclear"}[j.type];
+  var h=hist[t.responder];
+  el.innerHTML='<button class="btn backbtn" id="back">Back to tickets</button>'+
+   '<div class="dhead"><h2>'+t.id+' &middot; '+esc(t.responder)+'</h2><div class="tags"><span class="tag">'+kind+'</span><span class="tag">From a '+t.filerType+'</span></div></div>'+
+   '<div class="cols"><section><span class="label">The ticket, word for word</span>'+
+   '<p class="meta">Filed by '+esc(t.filer)+' on '+fmt(t.date)+(t.severity?' &middot; Severity: '+esc(t.severity):'')+'</p>'+
+   '<pre class="ticket">'+esc(t.body)+'</pre></section>'+
+   '<section><span class="label">'+esc(t.responder)+"'s weekly offers</span>"+
+   chart(t.responder,{win:j.windowIdx})+legend(true)+
+   '<div class="facts"><div class="fact"><b>'+r1(j.usual)+'</b><span>usual per week</span></div><div class="fact"><b>'+r1(j.windowAvg)+'</b><span>per week, weeks checked</span></div><div class="fact"><b>'+h.taken.slice(-1)[0]+' of '+h.sent.slice(-1)[0]+'</b><span>taken, latest week</span></div></div>'+
+   verdictHTML(t)+numbersTable(t.responder)+'</section></div>';
+}
+function select(id,focusDetail){
+  state.selected=id;renderList();renderDetail();
+  if(window.matchMedia("(max-width: 760px)").matches){document.body.classList.add("show-detail");window.scrollTo(0,0);}
+}
+
+/* Quiet but silent */
+function renderSilent(){
+  var all=silentList(hist,weeks,tickets).sort(function(a,b){return a.ratio-b.ratio});
+  var silent=all.filter(function(x){return x.ratio<0.5&&x.tickets===0});
+  var wrote=all.filter(function(x){return x.ratio<0.5&&x.tickets>0});
+  var h='<div class="section"><h2>Responders who dropped a lot and never wrote in</h2><p class="sub">These responders got far fewer offers in the last 3 weeks than they usually do. No ticket mentions them, from them or from their handler. Support would never hear about them from the ticket list.</p></div>';
+  h+='<div class="cards">'+silent.map(function(x){return '<div class="card"><div class="card-top"><h2>'+esc(x.name)+'</h2><span class="flag">No tickets</span></div><p>About <b>'+r1(x.usual)+'</b> offers a week at first. About <b>'+r1(x.recent)+'</b> a week in the last 3 weeks. That is <b>'+pct(x.ratio)+'</b> of their usual.</p>'+chart(x.name,{small:true,win:[weeks.length-3,weeks.length-2,weeks.length-1]})+legend(true)+numbersTable(x.name)+'</div>';}).join("")+'</div>';
+  if(!silent.length)h+='<p class="empty">No responder matches the rule.</p>';
+  h+='<div class="section"><h2>Dropped a lot, and did write in</h2><p class="sub">For comparison. Their tickets do match the numbers.</p></div><div class="cards">'+wrote.map(function(x){return '<div class="card"><div class="card-top"><h2>'+esc(x.name)+'</h2><span class="flag">'+x.tickets+' ticket'+(x.tickets>1?'s':'')+'</span></div><p>Usual about <b>'+r1(x.usual)+'</b> a week. Last 3 weeks about <b>'+r1(x.recent)+'</b> ('+pct(x.ratio)+' of usual).</p>'+chart(x.name,{small:true,win:[weeks.length-3,weeks.length-2,weeks.length-1]})+'</div>';}).join("")+'</div>';
+  h+='<div class="section"><h2>All 16 responders</h2><p class="sub">Sorted from the biggest drop. Tickets counts every ticket that names the responder.</p><div class="tcard tablewrap"><table><thead><tr><th>Responder</th><th class="num">Usual</th><th class="num">Last 3 weeks</th><th class="num">% of usual</th><th class="num">Tickets</th></tr></thead><tbody>'+
+    all.map(function(x){return '<tr'+(x.ratio<0.5&&x.tickets===0?' class="hi"':'')+'><td>'+esc(x.name)+'</td><td class="num">'+r1(x.usual)+'</td><td class="num">'+r1(x.recent)+'</td><td class="num">'+pct(x.ratio)+'</td><td class="num">'+x.tickets+'</td></tr>';}).join("")+'</tbody></table></div></div>';
+  h+='<p class="small" style="margin-top:12px;max-width:70ch">Rule used: the average of the last 3 weeks in the file (weeks starting 17, 24 and 31 Aug) is under half of the first-6-week average, and no ticket names the responder. Shaded weeks on each chart are the 3 weeks measured.</p>';
+  document.getElementById("view-silent").innerHTML=h;
+}
+
+function renderHow(){
+  var n=function(v){return tickets.filter(function(t){return judged[t.id].verdict===v}).length};
+  document.getElementById("view-how").innerHTML='<div class="prose">'+
+  '<h2>How the verdict works</h2>'+
+  '<p>The page reads each ticket, finds the responder, and compares their weekly offers with what the ticket says. Nothing is typed in by hand for any ticket. The same rules run on all 25.</p>'+
+  '<div class="rule"><h3>Step 1. What kind of complaint is it?</h3><p>The page looks for plain phrases in the ticket text.</p><ul><li><b>Quiet spell:</b> words like "nothing", "quiet", "no callouts", "barely", "hasn\'t gone off" or "first one in weeks".</li><li><b>Lost an offer:</b> words like "moved on to someone else", "gone before", "vanished" or "by the time I".</li><li><b>Both:</b> the ticket says both things.</li></ul><p class="small">This is word matching, so it can be wrong. Read the ticket text on each page to check.</p></div>'+
+  '<div class="rule"><h3>Step 2. Their usual</h3><p>Their usual is the average offers sent per week over the first 6 weeks (29 Jun to 3 Aug). That is before release 4.2 shipped on 12 Aug.</p></div>'+
+  '<div class="rule"><h3>Step 3. For a quiet spell, compare</h3><p>Take the week the ticket was filed and the week after it (if there is one). Average the offers sent in those weeks and divide by their usual.</p><ul><li><b>Offers match the complaint:</b> under half of usual.</li><li><b>Offers don\'t match:</b> 70% of usual or more, or between half and 70% but going up from the first week to the second.</li><li><b>Close call:</b> between half and 70% and not going up. We do not force a verdict here.</li></ul></div>'+
+  '<div class="rule"><h3>Step 4. For a lost offer, say so</h3><p>The weekly file counts offers sent and offers taken. It does not say how long an offer stayed open or who it went to next. So we cannot test a lost-offer complaint. The verdict is "Can\'t check with weekly numbers". For tickets that say both things, we test the quiet part and say the lost part cannot be tested.</p></div>'+
+  '<div class="rule"><h3>What the weekly numbers cannot do</h3><ul><li>They cannot test "since the 12th", "six days" or "nine days". They only show whole weeks. Release 4.2 shipped on a Wednesday, in the middle of the week of 10 Aug.</li><li>A quiet stretch of several days can hide inside a busy week.</li><li>The last week in the file (starting 31 Aug) has no week after it, so tickets filed that week are checked on one week only.</li><li>The file does not say whether an offer was turned down or ran out of time.</li><li>They show what happened, not why it happened.</li></ul></div>'+
+  '<div class="rule"><h3>Counts right now</h3><p>Offers match: '+n("match")+'. Offers don\'t match: '+n("nomatch")+'. Close call: '+n("close")+'. Can\'t check: '+n("cant")+'. Total: '+tickets.length+'.</p></div>'+
+  '<p class="small">Numbers come from our call history file. It is example data for this demo, for a fictional company.</p></div>';
+}
+
+/* events */
+document.getElementById("filters").addEventListener("click",function(e){var b=e.target.closest("button[data-f]");if(!b)return;state.filter=b.getAttribute("data-f");renderFilters();renderList();});
+document.getElementById("list").addEventListener("click",function(e){var b=e.target.closest("button[data-id]");if(b)select(b.getAttribute("data-id"));});
+document.getElementById("detail").addEventListener("click",function(e){if(e.target.id==="back"){document.body.classList.remove("show-detail");}});
+var tabs=["tickets","silent","how"];
+function showTab(k){state.tab=k;tabs.forEach(function(t){document.getElementById("tab-"+t).setAttribute("aria-selected",t===k);document.getElementById("view-"+t).hidden=(t!==k);});}
+tabs.forEach(function(k){document.getElementById("tab-"+k).addEventListener("click",function(){showTab(k);});});
+document.querySelector(".tabs").addEventListener("keydown",function(e){var i=tabs.indexOf(state.tab);if(e.key==="ArrowRight")i=(i+1)%3;else if(e.key==="ArrowLeft")i=(i+2)%3;else return;showTab(tabs[i]);document.getElementById("tab-"+tabs[i]).focus();});
+
+renderFilters();renderList();renderDetail();renderSilent();renderHow();
+</script>

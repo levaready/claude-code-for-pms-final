@@ -1,0 +1,433 @@
+<title>Fix Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a takeaway and controls on top, then four option cards side by side, each with a headline number and a small chart.
+   Amber marks heroes who are stuck, teal marks the fixes that work, blue marks actions. */
+:root {
+  --ground: #edf0f4;
+  --panel: #fbfcfd;
+  --ink: #15202b;
+  --muted: #566573;
+  --line: #d3dae2;
+  --quiet: #b0520b;
+  --quiet-soft: #f8e6d6;
+  --busy: #0a6b6b;
+  --busy-soft: #d8eeee;
+  --action: #274690;
+  --action-ink: #ffffff;
+  --action-soft: #dfe5f7;
+  --ok: #1f6b3a;
+  --ok-soft: #dcefe2;
+  --ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0e151c; --panel: #151f29; --ink: #e4ebf1; --muted: #93a3b2; --line: #263340;
+    --quiet: #f0a35c; --quiet-soft: #3a2616; --busy: #5cc9c1; --busy-soft: #12302f;
+    --action: #8aa4f0; --action-ink: #0e151c; --action-soft: #1d2842; --ok: #7fd49c; --ok-soft: #14301e;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0e151c; --panel: #151f29; --ink: #e4ebf1; --muted: #93a3b2; --line: #263340;
+  --quiet: #f0a35c; --quiet-soft: #3a2616; --busy: #5cc9c1; --busy-soft: #12302f;
+  --action: #8aa4f0; --action-ink: #0e151c; --action-soft: #1d2842; --ok: #7fd49c; --ok-soft: #14301e;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--ui); font-size: 15px; line-height: 1.5; padding-inline: 16px; padding-block: 28px 56px; }
+.wrap { max-width: 1040px; margin-inline: auto; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(26px, 5vw, 34px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; text-wrap: balance; }
+.sub { color: var(--muted); margin-top: 6px; max-width: 62ch; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; background: var(--quiet-soft); color: var(--quiet); }
+.head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.head > div { min-width: 0; }
+button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.btn { font: 600 14px var(--ui); border-radius: 6px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--action); background: var(--action); color: var(--action-ink); }
+.btn.ghost { background: transparent; color: var(--action); }
+
+.take { margin-top: 22px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--action); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.take .lab, .label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.take p.line1 { font-size: 18px; font-weight: 600; line-height: 1.35; text-wrap: balance; }
+.take p.line2 { color: var(--muted); font-size: 14px; max-width: 80ch; }
+
+.controls { margin-top: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+.ctl { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ctl label.t { font-weight: 600; font-size: 14px; }
+.ctl .for { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.ctl .help { font-size: 12.5px; color: var(--muted); }
+.ctl input[type="range"] { width: 100%; accent-color: var(--action); }
+.ctl output { font-family: var(--mono); font-size: 14px; }
+.ctl select { font: 500 14px var(--ui); padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--ground); color: var(--ink); max-width: 100%; }
+.check { display: flex; gap: 8px; align-items: center; }
+.check input { width: 18px; height: 18px; accent-color: var(--action); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+
+.cards { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.card.bad { border-top-color: var(--quiet); }
+.card.good { border-top-color: var(--busy); }
+.card h2 { font-size: 17px; font-weight: 700; }
+.card .what { color: var(--muted); font-size: 13px; min-height: 2.6em; }
+.big { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.big small { font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.bad .big { color: var(--quiet); }
+.good .big { color: var(--busy); }
+.fact { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.fact b { color: var(--ink); font-weight: 500; }
+svg.chart { width: 100%; height: auto; display: block; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .axis { fill: var(--muted); font: 10px var(--mono); }
+.chart .mark { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .thr { stroke: var(--quiet); stroke-width: 1; stroke-dasharray: 2 3; }
+.chart .thrt { fill: var(--quiet); font: 10px var(--mono); }
+.chart .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { stroke: none; }
+.s0 { stroke: var(--quiet); color: var(--quiet); } .s1 { stroke: var(--busy); color: var(--busy); }
+.s2 { stroke: var(--action); color: var(--action); } .s3 { stroke: var(--ink); color: var(--ink); }
+.chart .dot.s0 { fill: var(--quiet); } .chart .dot.s1 { fill: var(--busy); } .chart .dot.s2 { fill: var(--action); } .chart .dot.s3 { fill: var(--ink); }
+.chart .ln.s1 { stroke-dasharray: 6 3; } .chart .ln.s2 { stroke-dasharray: 2 3; } .chart .ln.s3 { stroke-dasharray: 9 3 2 3; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 16px; font-size: 13px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 3px solid; }
+.legend i.s1 { border-top-style: dashed; } .legend i.s2 { border-top-style: dotted; } .legend i.s3 { border-top-style: dashed; border-top-width: 2px; }
+.legend i.s0 { border-color: var(--quiet); } .legend i.s1 { border-color: var(--busy); } .legend i.s2 { border-color: var(--action); } .legend i.s3 { border-color: var(--ink); }
+.last { font-size: 12.5px; color: var(--muted); }
+.last b { font-family: var(--mono); font-weight: 500; }
+.note { margin-top: 14px; color: var(--muted); font-size: 13px; max-width: 78ch; }
+.chartnote { margin-top: 8px; color: var(--muted); font-size: 13px; }
+
+.panel { margin-top: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.panel h2 { font-size: 17px; font-weight: 700; }
+.panel p { margin-top: 6px; color: var(--muted); font-size: 14px; max-width: 78ch; }
+.panel ul { margin: 10px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; max-width: 80ch; }
+.tablewrap { margin-top: 10px; overflow-x: auto; }
+table.pays { border-collapse: collapse; width: 100%; font-size: 14px; }
+table.pays th, table.pays td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+table.pays th { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+table.pays td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.pays tr.ref td { color: var(--muted); }
+
+details { margin-top: 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 600; }
+details h3 { font-size: 14px; margin-top: 14px; }
+details ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+details code { font-family: var(--mono); font-size: 12.5px; }
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <div>
+      <h1>Fix Options</h1>
+      <p class="sub">Four ways to help heroes who are getting too few offers. Change the settings and see who is still left out. "Left out" means fewer than 3 offers in a week.</p>
+    </div>
+    <span class="pill">Example numbers, not a prediction</span>
+  </div>
+
+  <section class="take" aria-live="polite">
+    <span class="lab">Where each option ends up</span>
+    <p class="line1" id="take1"></p>
+    <p class="line2" id="take2"></p>
+  </section>
+
+  <section class="controls" aria-label="Settings">
+    <div class="ctl">
+      <label class="t" for="c-timeout">Time to answer an offer</label>
+      <span class="for">Options B and D</span>
+      <input type="range" id="c-timeout" min="30" max="120" step="5" value="90">
+      <output for="c-timeout" id="o-timeout"></output>
+      <span class="help">Release 4.2 cut this from 90 to 60 seconds. Options A and C keep 60.</span>
+    </div>
+    <div class="ctl">
+      <label class="t" for="c-heal">How fast a low place in line recovers on its own</label>
+      <span class="for">Option C</span>
+      <input type="range" id="c-heal" min="0" max="50" step="5" value="15">
+      <output for="c-heal" id="o-heal"></output>
+      <span class="help">Each week, a low place in line moves this share of the way back up to the middle.</span>
+    </div>
+    <div class="ctl">
+      <span class="t" id="l-reset">One-time lift</span>
+      <span class="for">Option D</span>
+      <label class="check" for="c-reset"><input type="checkbox" id="c-reset" checked> <span>Move everyone below the middle up to the middle</span></label>
+      <span class="help">Turn it off to see option D with only the 90 second fix.</span>
+    </div>
+    <div class="ctl">
+      <label class="t" for="c-week">Fix starts in</label>
+      <span class="for">Options B, C and D</span>
+      <select id="c-week"></select>
+      <span class="help">Release 4.2 starts in week 7.</span>
+    </div>
+    <div class="ctl">
+      <span class="t">Made-up runs</span>
+      <span class="for">All options</span>
+      <div class="row"><button type="button" class="btn ghost" id="b-new">Try different runs</button><button type="button" class="btn ghost" id="b-def">Reset settings</button></div>
+      <span class="help" id="h-seed"></span>
+    </div>
+  </section>
+
+  <div class="legend" id="legend" aria-label="Chart key"></div>
+  <div class="cards" id="cards"></div>
+  <p class="chartnote">Each chart shows weekly offers for the same four example heroes: the ones who got the fewest offers late in the run when we do nothing. The scale is the same in all four charts. The dashed vertical lines mark release 4.2 and when the fix starts. The short dotted line is 3 offers, our line for "left out". "Back to normal" means getting at least half of their own usual offers, and at least 3, every week from then to the end.</p>
+
+  <section class="panel" aria-labelledby="pays-h">
+    <h2 id="pays-h">Who pays for the fix?</h2>
+    <p>Offers are shared out, so when a left-out hero gets offers back, other heroes usually get fewer. A longer time limit also means fewer offers get passed down the line. This follows the 4 heroes carrying the most extra load when the fix starts. It shows their average offers a week.</p>
+    <div class="tablewrap"><table class="pays" id="pays"></table></div>
+  </section>
+
+  <section class="panel" aria-labelledby="stand-h">
+    <h2 id="stand-h">What stands out in this run</h2>
+    <ul id="stands"></ul>
+  </section>
+
+  <details open>
+    <summary>Assumptions (what is real and what is made up)</summary>
+    <h3>Taken from the real code</h3>
+    <ul>
+      <li>Each hero has a score that sets their place in line. It starts at 0.5, goes down 0.12 for a no or a timeout (they count the same), and goes up 0.08 for a yes. It stays between 0 and 1.</li>
+      <li>Nothing moves the score back on its own. It only changes when a hero is offered a job and answers.</li>
+      <li>Before 4.2: 90 seconds, and the line is set by distance 0.45, recent yeses 0.40, skills 0.15. From 4.2: 60 seconds, 0.60, 0.25, 0.15.</li>
+      <li>An incident offers the job to heroes down the line, one at a time, and stops at the first yes. Each gets up to the time limit.</li>
+    </ul>
+    <h3>Made up for this model (we do not know these)</h3>
+    <ul>
+      <li>How long each hero usually takes to answer. We spread them from 10 to 66 seconds, so several are near the 60 to 90 second zone. Answer times vary a bit from offer to offer.</li>
+      <li>How far each hero is from each incident, which heroes are free for an incident (40 in 100), and which skills a job needs.</li>
+      <li>About 150 incidents a week, which gives about 165 offers a week, close to the real total. Heroes say yes 90 to 99 percent of the time when they have time to answer.</li>
+      <li>The 16 heroes here are made-up heroes. They are not the real four. Which ones get left out comes from the made-up run.</li>
+      <li>The model runs 20 weeks, from 29 Jun to 9 Nov. Weeks after 31 Aug are made up, since we don't have that data yet.</li>
+      <li>In the real data, the four left-out heroes did not recover in the weeks we have. In this model some recover on their own by luck, even when we do nothing. So the model may make the problem look easier to climb out of than it really is.</li>
+      <li>Option D's one-time lift only moves scores below 0.5 up to 0.5. Option C's recovery also only lifts low scores.</li>
+    </ul>
+    <h3>Not checked</h3>
+    <ul>
+      <li>Whether the real routing works exactly like the code files say. We have one commit, after 4.2, so we cannot compare against the old code.</li>
+      <li>Whether timeouts are logged as no answer or as a decline. The code scores them the same either way.</li>
+      <li>What this means for Supply. Supply is the team that books gear maintenance, and it reads the availability record that Dispatch writes. A one-time lift or a recovery rule could change what Supply sees, so we would check with them first.</li>
+      <li>We have not asked Wen. The model has a lot of noise, so each number is the average of 10 made-up runs, and the charts show only the first run. Real life will differ.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+(function () {
+/* ---- the model (toy). Constants are copied from dispatch-routing/config.py and history.py ---- */
+function rng(seed) { var s = seed >>> 0; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+var OLD = { timeout: 90, wP: 0.45, wA: 0.40, wC: 0.15 };   /* before 4.2 */
+var NEW = { timeout: 60, wP: 0.60, wA: 0.25, wC: 0.15 };   /* from 4.2 */
+var CREDIT = 0.08, PEN = 0.12, HORIZON = 45, NEUTRAL = 0.5, WEEKS = 20, SHIFT = 6;
+/* ASSUMED: usual answer time in seconds for 16 heroes (spread, some near 60-90s) */
+var MED = [10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 57, 60, 63, 66];
+/* ASSUMED: how far each hero usually is from help (minutes) */
+var DIST = [14, 16, 18, 20, 22, 24, 26, 28, 15, 17, 19, 21, 23, 25, 27, 29];
+function build(seed) {
+  var r = rng(seed * 7919 + 13), n = 16, idx = [], i, j, R = [];
+  for (i = 0; i < n; i++) idx.push(i);
+  for (i = n - 1; i > 0; i--) { j = Math.floor(r() * (i + 1)); var t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+  for (i = 0; i < n; i++) {
+    var caps = []; while (caps.length < 3) { var c = Math.floor(r() * 7); if (caps.indexOf(c) < 0) caps.push(c); }
+    R.push({ med: MED[idx[i]], dist: DIST[i], willing: 0.9 + 0.09 * r(), caps: caps });
+  }
+  return R;
+}
+/* opt: A none, B timeout only, C heal only, D reset + timeout */
+function run(opt, p, seed) {
+  var R = build(seed), r = rng(seed * 104729 + 7), n = R.length, sc = [], out = [], i;
+  for (i = 0; i < n; i++) { sc.push(NEUTRAL); out.push([]); }
+  for (var w = 0; w < WEEKS; w++) {
+    var fixed = w >= p.fixWeek, cfg = w >= SHIFT ? NEW : OLD, timeout = cfg.timeout;
+    if (fixed && (opt === "B" || opt === "D")) timeout = p.timeout;
+    if (fixed && opt === "D" && p.reset && w === p.fixWeek) for (i = 0; i < n; i++) if (sc[i] < NEUTRAL) sc[i] = NEUTRAL;
+    if (fixed && opt === "C") for (i = 0; i < n; i++) if (sc[i] < NEUTRAL) sc[i] += (NEUTRAL - sc[i]) * p.heal;
+    var cnt = []; for (i = 0; i < n; i++) cnt.push(0);
+    for (var k = 0; k < p.incidents; k++) {
+      var need = [], nn = 1 + Math.floor(r() * 2);
+      while (need.length < nn) { var c = Math.floor(r() * 7); if (need.indexOf(c) < 0) need.push(c); }
+      var list = [];
+      for (i = 0; i < n; i++) {
+        if (r() > p.avail) continue;
+        var mins = 0.6 * (2 + 46 * r()) + 0.4 * R[i].dist * (0.5 + r());
+        var prox = mins >= HORIZON ? 0 : 1 - mins / HORIZON;
+        var m = 0; for (var q = 0; q < need.length; q++) if (R[i].caps.indexOf(need[q]) >= 0) m++;
+        list.push({ i: i, s: cfg.wP * prox + cfg.wA * sc[i] + cfg.wC * (m / need.length) });
+      }
+      list.sort(function (a, b) { return b.s - a.s; });
+      for (var L = 0; L < list.length; L++) {
+        var x = list[L].i; cnt[x]++;
+        var willing = r() < R[x].willing;
+        var u = r(), v = r(), z = Math.sqrt(-2 * Math.log(u + 1e-12)) * Math.cos(6.2832 * v);
+        var rt = R[x].med * Math.exp(0.35 * z);
+        if (willing && rt <= timeout) { sc[x] = Math.min(1, sc[x] + CREDIT); break; }
+        sc[x] = Math.max(0, sc[x] - PEN);   /* a decline and a timeout cost the same */
+      }
+    }
+    for (i = 0; i < n; i++) out[i].push(cnt[i]);
+  }
+  return { offers: out, R: R };
+}
+/* Averages over several made-up runs. Everything before the fix week is identical for all four options,
+   so the "busy heroes" are picked from the weeks just before the fix, which cannot favour any option. */
+function summarize(p, runs) {
+  var opts = ["A", "B", "C", "D"], res = {}, s, w;
+  opts.forEach(function (o) { res[o] = { end: 0, preN: 0, stillN: 0, backN: 0, backWeeks: 0, pays: 0 }; });
+  var baseSum = 0, beforeSum = 0;
+  for (s = 0; s < runs; s++) {
+    var rr = {};
+    opts.forEach(function (o) { rr[o] = run(o, p, p.seed + s); });
+    var A = rr.A.offers, tot = [];
+    A.forEach(function (a, i) { var t = 0; for (w = SHIFT; w < p.fixWeek; w++) t += a[w]; tot.push({ i: i, t: t }); });
+    tot.sort(function (a, b) { return b.t - a.t || a.i - b.i; });
+    var busy = tot.slice(0, 4).map(function (d) { return d.i; }), base = 0, bef = 0;
+    busy.forEach(function (i) { for (w = 0; w < SHIFT; w++) base += A[i][w]; for (w = SHIFT; w < p.fixWeek; w++) bef += A[i][w]; });
+    baseSum += base / (4 * SHIFT); beforeSum += bef / (4 * (p.fixWeek - SHIFT));
+    opts.forEach(function (o) {
+      var off = rr[o].offers, q = res[o];
+      off.forEach(function (a) {
+        if (a[WEEKS - 1] < 3) q.end++;
+        if (a[p.fixWeek - 1] < 3 && a[p.fixWeek - 2] < 3) {
+          q.preN++; if (a[WEEKS - 1] < 3) q.stillN++;
+          var usual = 0, found = -1, w2; for (w2 = 0; w2 < SHIFT; w2++) usual += a[w2]; usual /= SHIFT;
+          var need = Math.max(3, usual / 2), j = WEEKS - 1;
+          while (j >= p.fixWeek && a[j] >= need) j--;          /* back to normal only counts if it lasts to the end */
+          if (j < WEEKS - 1) found = (j + 1) - p.fixWeek + 1;
+          if (found > 0) { q.backN++; q.backWeeks += found; }
+        }
+      });
+      var tail = 0; busy.forEach(function (i) { tail += off[i][WEEKS - 1] + off[i][WEEKS - 2] + off[i][WEEKS - 3]; });
+      q.pays += tail / 12;
+    });
+  }
+  opts.forEach(function (o) {
+    var q = res[o];
+    q.pre = q.preN / runs; q.still = q.stillN / runs; q.end = q.end / runs; q.pays = q.pays / runs;
+    q.backShare = q.preN > 0 ? q.backN / q.preN : 0;
+    q.backAvg = q.backN > 0 ? q.backWeeks / q.backN : 0;
+    q.first = run(o, p, p.seed);
+  });
+  res.base = baseSum / runs; res.before = beforeSum / runs;
+  return res;
+}
+
+
+  var DEF = { timeout: 90, heal: 15, reset: true, week: 10, seed: 1 };
+  var NAMES = "ABCDEFGHIJKLMNOP";
+  var DATES = ["29 Jun","6 Jul","13 Jul","20 Jul","27 Jul","3 Aug","10 Aug","17 Aug","24 Aug","31 Aug","7 Sep","14 Sep","21 Sep","28 Sep","5 Oct","12 Oct","19 Oct","26 Oct","2 Nov","9 Nov"];
+  var OPTS = [
+    { k: "A", name: "A. Do nothing", what: "Keep the 60 second limit. Nothing else changes." },
+    { k: "B", name: "B. Back to 90 seconds", what: "Only put the time limit back. Places in line stay as they are." },
+    { k: "C", name: "C. Let places in line recover", what: "Keep 60 seconds. Low places in line slowly move back up each week." },
+    { k: "D", name: "D. One-time lift and 90 seconds", what: "Move low places in line up once, and put the limit back to 90 seconds." }
+  ];
+  var st = { timeout: DEF.timeout, heal: DEF.heal, reset: DEF.reset, week: DEF.week, seed: DEF.seed };
+  var $ = function (id) { return document.getElementById(id); };
+  function f1(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+
+  var sel = $("c-week");
+  for (var w = 7; w <= 11; w++) { var o = document.createElement("option"); o.value = w; o.textContent = "Week " + (w + 1) + " (" + DATES[w] + ")"; sel.appendChild(o); }
+
+  function chart(opt, ex, maxY, fixW, label) {
+    var W = 320, H = 150, pl = 28, pr = 10, pt = 10, pb = 24, n = WEEKS;
+    function x(i) { return pl + (W - pl - pr) * i / (n - 1); }
+    function y(v) { return pt + (H - pt - pb) * (1 - v / maxY); }
+    var g = "";
+    [0, maxY / 2, maxY].forEach(function (t) {
+      g += '<line class="grid" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(t) + '" y2="' + y(t) + '"/><text class="axis" x="' + (pl - 5) + '" y="' + (y(t) + 3) + '" text-anchor="end">' + t + '</text>';
+    });
+    g += '<line class="thr" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(3) + '" y2="' + y(3) + '"/>';
+    g += '<line class="mark" x1="' + x(6) + '" x2="' + x(6) + '" y1="' + pt + '" y2="' + (H - pb) + '"/><text class="axis" x="' + (x(6) + 3) + '" y="' + (pt + 8) + '">4.2</text>';
+    if (opt !== "A") g += '<line class="mark" x1="' + x(fixW) + '" x2="' + x(fixW) + '" y1="' + pt + '" y2="' + (H - pb) + '"/><text class="axis" x="' + (x(fixW) + 3) + '" y="' + (pt + 8) + '">fix</text>';
+    var ls = "";
+    ex.forEach(function (e, j) {
+      var pts = e.series.map(function (v, i) { return x(i).toFixed(1) + "," + y(v).toFixed(1); }).join(" ");
+      ls += '<polyline class="ln s' + j + '" points="' + pts + '"/><circle class="dot s' + j + '" cx="' + x(n - 1) + '" cy="' + y(e.series[n - 1]) + '" r="3"/>';
+    });
+    g += '<text class="axis" x="' + pl + '" y="' + (H - 7) + '">' + DATES[0] + '</text><text class="axis" x="' + (W - pr) + '" y="' + (H - 7) + '" text-anchor="end">' + DATES[n - 1] + '</text>';
+    return '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + label + '">' + g + ls + "</svg>";
+  }
+
+  function render() {
+    var p = { fixWeek: st.week, timeout: st.timeout, heal: st.heal / 100, reset: st.reset, incidents: 150, avail: 0.4, seed: st.seed };
+    var S = summarize(p, 10);
+    $("o-timeout").textContent = st.timeout + " seconds";
+    $("o-heal").textContent = st.heal + "% a week";
+    $("h-seed").textContent = "Run set " + st.seed + ": each number is the average of 10 made-up runs. The charts show the first run.";
+
+    /* example heroes: fewest offers in the last 3 weeks when we do nothing, run 1 */
+    var A = S.A.first, idx = [];
+    A.offers.forEach(function (a, i) { idx.push({ i: i, t: a[WEEKS - 1] + a[WEEKS - 2] + a[WEEKS - 3] }); });
+    idx.sort(function (a, b) { return a.t - b.t || a.i - b.i; });
+    var pick = idx.slice(0, 4).map(function (d) { return d.i; });
+    var maxV = 0;
+    ["A", "B", "C", "D"].forEach(function (o) { pick.forEach(function (i) { S[o].first.offers[i].forEach(function (v) { if (v > maxV) maxV = v; }); }); });
+    var maxY = Math.max(10, Math.ceil(maxV / 10) * 10);
+
+    $("legend").innerHTML = pick.map(function (i, j) {
+      return '<span><i class="s' + j + '"></i>Hero ' + NAMES[i] + ' <span class="last">(usually answers in ' + A.R[i].med + 's)</span></span>';
+    }).join("");
+
+    function backTxt(s) {
+      if (s.preN === 0) return "none were left out when the fix started";
+      return Math.round(s.backShare * 10) + " in 10" + (s.backN > 0 ? " · about " + (Math.round(s.backAvg * 10) / 10) + " weeks" : "");
+    }
+    $("cards").innerHTML = OPTS.map(function (op) {
+      var s = S[op.k];
+      var ex = pick.map(function (i) { return { series: s.first.offers[i] }; });
+      var last = pick.map(function (i, j) { return '<span style="color:var(--ink)">Hero ' + NAMES[i] + ' <b>' + s.first.offers[i][WEEKS - 1] + '</b></span>'; }).join(" · ");
+      return '<article class="card"><h2>' + op.name + '</h2><p class="what">' + op.what + '</p>' +
+        '<div class="big">' + f1(s.end) + ' <small>of 16 heroes left out at the end</small></div>' +
+        '<div class="fact">Fewer than 3 offers in the last week. Average of 10 runs.</div>' +
+        '<div class="fact">Already left out 2 weeks before the fix: <b>' + f1(s.pre) + '</b> · still left out: <b>' + f1(s.still) + '</b></div>' +
+        '<div class="fact">Of those, back to normal and staying there: <b>' + backTxt(s) + '</b></div>' +
+        chart(op.k, ex, maxY, st.week, op.name + ": weekly offers for four example heroes") +
+        '<p class="last">Last week: ' + last + '</p></article>';
+    }).join("");
+
+    var A_ = S.A, B_ = S.B, C_ = S.C, D_ = S.D;
+    function per10(a, b) { return Math.round(a / b * 10); }
+
+    /* neutral results at the top: numbers only, no ranking */
+    $("take1").textContent = "Heroes left out at the end, out of 16: A " + f1(A_.end) + " · B " + f1(B_.end) + " · C " + f1(C_.end) + " · D " + f1(D_.end) + ".";
+    $("take2").textContent = "Made-up model, so the numbers show the shape of the problem, not a forecast. Scroll down for who pays for each option and how long recovery takes.";
+
+    /* who pays */
+    var rows = '<tr><th>Option</th><th>Busy heroes: offers a week</th><th>Compared with right before the fix</th></tr>' +
+      '<tr class="ref"><td>Before 4.2</td><td class="num">' + f1(S.base) + '</td><td class="num">' + (S.base - S.before >= 0 ? "+" : "") + f1(S.base - S.before) + '</td></tr>' +
+      '<tr class="ref"><td>Right before the fix</td><td class="num">' + f1(S.before) + '</td><td class="num">0.0</td></tr>';
+    OPTS.forEach(function (op) {
+      var d = S[op.k].pays - S.before;
+      rows += '<tr><td>' + op.name + '</td><td class="num">' + f1(S[op.k].pays) + '</td><td class="num">' + (d >= 0 ? "+" : "") + f1(d) + '</td></tr>';
+    });
+    $("pays").innerHTML = rows;
+
+    /* what stands out: plain facts from this run, no winner named */
+    var items = [];
+    if (B_.pre < 0.3) {
+      items.push("Very few heroes were left out when the fix starts in this setup (" + f1(B_.pre) + " on average), so try a later fix week to see the effect.");
+    } else {
+      items.push("Putting the time back to " + st.timeout + " seconds alone leaves about " + per10(B_.still, B_.pre) + " in every 10 already-left-out heroes still left out" +
+        (st.reset ? "; adding the one-time lift leaves about " + per10(D_.still, B_.pre) + "." : "; option D without the lift leaves about " + per10(D_.still, B_.pre) + "."));
+    }
+    items.push("Of the heroes already left out when the fix starts, back to normal and staying there to the end: A " + backTxt(A_) + "; B " + backTxt(B_) + "; C " + backTxt(C_) + "; D " + backTxt(D_) + ".");
+    items.push("The busy heroes go from " + f1(S.before) + " offers a week right before the fix to " + f1(A_.pays) + " (A), " + f1(B_.pays) + " (B), " + f1(C_.pays) + " (C) and " + f1(D_.pays) + " (D).");
+    if ((A_.end - B_.end) > (B_.pre - B_.still) + 0.2) items.push("Most of the gain from the 90 second limit here is fewer heroes falling behind in the first place, not left-out heroes getting back.");
+    $("stands").innerHTML = items.map(function (t) { return "<li>" + t + "</li>"; }).join("");
+  }
+
+  $("c-timeout").addEventListener("input", function (e) { st.timeout = +e.target.value; render(); });
+  $("c-heal").addEventListener("input", function (e) { st.heal = +e.target.value; render(); });
+  $("c-reset").addEventListener("change", function (e) { st.reset = e.target.checked; render(); });
+  $("c-week").addEventListener("change", function (e) { st.week = +e.target.value; render(); });
+  $("b-new").addEventListener("click", function () { st.seed += 10; render(); });
+  $("b-def").addEventListener("click", function () {
+    st = { timeout: DEF.timeout, heal: DEF.heal, reset: DEF.reset, week: DEF.week, seed: DEF.seed };
+    $("c-timeout").value = st.timeout; $("c-heal").value = st.heal; $("c-reset").checked = st.reset; sel.value = st.week; render();
+  });
+  sel.value = st.week;
+  render();
+})();
+</script>

@@ -1,0 +1,476 @@
+<title>Quiet Count</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: two big tiles on top, controls, two small charts on one shared week scale, then the list and a mini chart. */
+:root {
+  --ground: #edf0f4;
+  --panel: #fbfcfd;
+  --ink: #15202b;
+  --muted: #566573;
+  --line: #d3dae2;
+  --quiet: #b0520b;
+  --quiet-soft: #f8e6d6;
+  --busy: #0a6b6b;
+  --busy-soft: #d8eeee;
+  --action: #274690;
+  --action-ink: #ffffff;
+  --action-soft: #dfe5f7;
+  --ok: #1f6b3a;
+  --ok-soft: #dcefe2;
+  --ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0e151c;
+    --panel: #151f29;
+    --ink: #e4ebf1;
+    --muted: #93a3b2;
+    --line: #263340;
+    --quiet: #f0a35c;
+    --quiet-soft: #3a2616;
+    --busy: #5cc9c1;
+    --busy-soft: #12302f;
+    --action: #8aa4f0;
+    --action-ink: #0e151c;
+    --action-soft: #1d2842;
+    --ok: #7fd49c;
+    --ok-soft: #14301e;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0e151c;
+  --panel: #151f29;
+  --ink: #e4ebf1;
+  --muted: #93a3b2;
+  --line: #263340;
+  --quiet: #f0a35c;
+  --quiet-soft: #3a2616;
+  --busy: #5cc9c1;
+  --busy-soft: #12302f;
+  --action: #8aa4f0;
+  --action-ink: #0e151c;
+  --action-soft: #1d2842;
+  --ok: #7fd49c;
+  --ok-soft: #14301e;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 860px; margin-inline: auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(26px, 5vw, 34px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; text-wrap: balance; }
+h2 { font-size: 17px; font-weight: 700; }
+.sub { color: var(--muted); margin-top: 6px; max-width: 62ch; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; background: var(--action-soft); color: var(--action); }
+.head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.head > div { min-width: 0; }
+button:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+
+.take { background: var(--action-soft); border-radius: 8px; padding: 12px 16px; font-size: 16px; font-weight: 600; }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.tile.old { border-top: 4px solid var(--action); }
+.tile.new { border-top: 4px solid var(--quiet); }
+.tile .num { font-family: var(--mono); font-weight: 500; font-size: clamp(34px, 9vw, 54px); line-height: 1.05; letter-spacing: -0.02em; }
+.tile.old .num { color: var(--action); }
+.tile.new .num { color: var(--quiet); }
+.tile .num small { font-size: 0.4em; color: var(--muted); letter-spacing: 0; }
+.tile .what { font-weight: 700; font-size: 15px; }
+.tile .says { font-size: 13px; color: var(--muted); }
+.tile .status { align-self: flex-start; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; }
+.status.good { background: var(--ok-soft); color: var(--ok); }
+.status.bad { background: var(--quiet-soft); color: var(--quiet); }
+
+.weeks { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 6px; }
+.weeks button { font: 600 13px var(--ui); color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 4px; cursor: pointer; }
+.weeks button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+.weeks button.after { border-bottom: 3px solid var(--quiet); }
+input[type="range"] { width: 100%; accent-color: var(--action); }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.rule { border: 2px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: var(--panel); min-width: 0; }
+.rule.on { border-color: var(--action); }
+.rule label.pick { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; font-weight: 700; }
+.rule label.pick input { margin-top: 4px; accent-color: var(--action); }
+.rule .ctl { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.rule .ctl input[type="range"] { flex: 1; min-width: 0; }
+.rule .ctl output { font-family: var(--mono); min-width: 4.5ch; text-align: right; }
+.rule .hint { font-size: 13px; color: var(--muted); }
+.key { display: inline-block; width: 22px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 4px; }
+
+svg.chart { width: 100%; max-width: 600px; height: auto; display: block; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .tick { fill: var(--muted); font: 10.5px var(--mono); }
+.chart .axis { stroke: var(--muted); stroke-width: 1; }
+.chart .rel { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.chart .sel { fill: var(--action-soft); }
+.chart .ln { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.chart .val { font: 600 11px var(--mono); }
+.chart .note { fill: var(--muted); font: 10.5px var(--mono); }
+.chart .hit { fill: transparent; cursor: pointer; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.cap { color: var(--muted); font-size: 12.5px; }
+
+.finds { display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; }
+.finds p { max-width: 72ch; }
+.finds .ok { color: var(--ok); font-weight: 600; }
+
+.flaglist { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 8px; }
+.flaglist button { font: 600 14px var(--ui); text-align: left; border: 1px solid var(--line); border-left: 4px solid var(--quiet); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 8px 10px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.flaglist button span { font: 12px var(--mono); color: var(--muted); font-weight: 400; }
+.flaglist button[aria-pressed="true"] { background: var(--quiet-soft); }
+.empty { color: var(--muted); font-size: 14px; }
+
+.tbl { overflow-x: auto; margin-top: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font: 500 11.5px var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+tr.cur td { background: var(--action-soft); }
+
+details { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 600; }
+details ul { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+.prop { color: var(--muted); font-size: 12.5px; font-style: italic; max-width: 70ch; }
+@media (max-width: 420px) { .tiles { gap: 8px; } .tile { padding: 10px; } }
+</style>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <h1>Quiet Count</h1>
+      <p class="sub">A number that counts the heroes who are being left out. The acceptance rate cannot see them.</p>
+    </div>
+    <span class="pill">Example data</span>
+  </div>
+
+  <p class="take" id="take" aria-live="polite"></p>
+
+  <div class="tiles">
+    <div class="tile old">
+      <span class="label">Old headline</span>
+      <span class="what">Acceptance rate</span>
+      <span class="num" id="accNum"></span>
+      <span class="status" id="accStatus"></span>
+      <span class="says" id="accSays"></span>
+    </div>
+    <div class="tile new">
+      <span class="label">New number</span>
+      <span class="what">Quiet count</span>
+      <span class="num" id="quietNum"></span>
+      <span class="status" id="quietStatus"></span>
+      <span class="says" id="quietSays"></span>
+    </div>
+  </div>
+
+  <section class="card" aria-labelledby="hWeek">
+    <h2 id="hWeek">Pick a week</h2>
+    <label class="cap" for="weekRange">Slide to scrub time, or press a week.</label>
+    <input type="range" id="weekRange" min="0" max="9" step="1" value="9">
+    <div class="weeks" id="weekBtns" role="group" aria-label="Weeks"></div>
+  </section>
+
+  <section class="card" aria-labelledby="hRule">
+    <h2 id="hRule">What does "quiet" mean?</h2>
+    <div class="rules">
+      <div class="rule" id="ruleA">
+        <label class="pick"><input type="radio" name="rule" id="pickA" value="A"><span>Rule A: a fixed number<br><span class="cap" style="font-weight:400">Quiet if a hero got fewer than N offers this week.</span></span></label>
+        <div class="ctl"><label for="nIn">N</label><input type="range" id="nIn" min="1" max="8" step="1" value="3"><output id="nOut" for="nIn"></output></div>
+        <p class="hint">Same bar for everyone. A hero who normally gets 6 offers and a hero who normally gets 15 are judged the same.</p>
+      </div>
+      <div class="rule" id="ruleB">
+        <label class="pick"><input type="radio" name="rule" id="pickB" value="B"><span>Rule B: against their own usual<br><span class="cap" style="font-weight:400">Quiet if a hero got less than X% of the offers they usually get.</span></span></label>
+        <div class="ctl"><label for="xIn">X</label><input type="range" id="xIn" min="10" max="90" step="5" value="50"><output id="xOut" for="xIn"></output></div>
+        <p class="hint">Usual means that hero's average over the first 6 weeks (29 Jun to 3 Aug), before the release.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="hTime">
+    <h2 id="hTime">Watching it over time</h2>
+    <div class="legend" id="legend"></div>
+    <svg class="chart" id="chartAcc" role="img" aria-label="Acceptance rate by week, percent"></svg>
+    <svg class="chart" id="chartQuiet" role="img" aria-label="Quiet count by week, number of heroes"></svg>
+    <p class="cap">Two charts, two scales. Top: percent, 0 to 100. Bottom: number of heroes, 0 to 16. Both share the same weeks. The dashed line is release 4.2 (Wed 12 Aug).</p>
+    <div class="finds" id="finds"></div>
+  </section>
+
+  <section class="card" aria-labelledby="hList">
+    <h2 id="hList">Heroes left out in the selected week</h2>
+    <div id="flagList"></div>
+    <div id="miniWrap">
+      <p class="label" id="miniTitle"></p>
+      <svg class="chart" id="chartMini" role="img" aria-label="Offers per week for one hero compared to their usual"></svg>
+      <p class="cap" id="miniCap"></p>
+    </div>
+  </section>
+
+  <details>
+    <summary>All weeks in numbers</summary>
+    <div class="tbl"><table id="tbl"></table></div>
+  </details>
+
+  <details>
+    <summary>How this works</summary>
+    <ul>
+      <li>Every hero gets offers (calls for help) from Dispatch. The file tells us, for each hero and week, how many offers were sent and how many the hero took.</li>
+      <li><b>Acceptance rate</b> is offers taken divided by offers sent, for everyone added together. It is a good number for "are heroes saying yes?" It cannot tell if some heroes stopped getting offers at all.</li>
+      <li><b>Quiet count</b> is how many heroes are left out this week. It counts people, not offers. One hero going quiet moves it from 0 to 1, even when the rate barely moves.</li>
+      <li>Rule A uses one fixed bar (fewer than N offers). Rule B compares each hero to their own usual, so it fits heroes who normally get few offers and heroes who normally get many.</li>
+      <li>"Weeks after release" counts from the week of 10 Aug, which holds the 12 Aug release. The week of 17 Aug is 1 week after.</li>
+      <li>"False alarm" here means a hero flagged who is not one of the four (Farlight, Meteor Mite, The Undertow, Vesper) that the team found in this file. That list comes from the file itself: it is the group whose offers fell to 0 to 2 a week and stayed there.</li>
+      <li>Everything on this page is worked out in the page from the 160 rows of the call history file. Nothing is typed in by hand except the list of four names.</li>
+    </ul>
+  </details>
+  <p class="prop">Example data from our call history file. Rook Industries is a fictional company made for a PM course. A teaching prototype, not a real product.</p>
+</div>
+<script>
+var RAW = [["2026-06-29","Captain Vantage",12,10],["2026-06-29","Cindermark",9,7],["2026-06-29","Corporal Ashgrove",10,8],["2026-06-29","Farlight",12,9],["2026-06-29","Halfmoon",11,8],["2026-06-29","Ironvale",8,6],["2026-06-29","Meteor Mite",11,7],["2026-06-29","Nightwell",15,11],["2026-06-29","Sgt. Bulwark",9,7],["2026-06-29","Sgt. Falkirk",10,9],["2026-06-29","Stormwrack",13,10],["2026-06-29","The Drift",6,5],["2026-06-29","The Gale",13,10],["2026-06-29","The Longcast",7,5],["2026-06-29","The Undertow",12,9],["2026-06-29","Vesper",14,11],["2026-07-06","Captain Vantage",13,10],["2026-07-06","Cindermark",9,8],["2026-07-06","Corporal Ashgrove",11,9],["2026-07-06","Farlight",12,9],["2026-07-06","Halfmoon",10,7],["2026-07-06","Ironvale",8,5],["2026-07-06","Meteor Mite",12,9],["2026-07-06","Nightwell",14,10],["2026-07-06","Sgt. Bulwark",9,7],["2026-07-06","Sgt. Falkirk",10,8],["2026-07-06","Stormwrack",13,11],["2026-07-06","The Drift",6,5],["2026-07-06","The Gale",12,9],["2026-07-06","The Longcast",7,5],["2026-07-06","The Undertow",11,9],["2026-07-06","Vesper",13,10],["2026-07-13","Captain Vantage",12,8],["2026-07-13","Cindermark",8,6],["2026-07-13","Corporal Ashgrove",10,7],["2026-07-13","Farlight",11,8],["2026-07-13","Halfmoon",11,8],["2026-07-13","Ironvale",9,8],["2026-07-13","Meteor Mite",10,6],["2026-07-13","Nightwell",15,12],["2026-07-13","Sgt. Bulwark",10,8],["2026-07-13","Sgt. Falkirk",11,8],["2026-07-13","Stormwrack",12,9],["2026-07-13","The Drift",7,6],["2026-07-13","The Gale",13,10],["2026-07-13","The Longcast",8,7],["2026-07-13","The Undertow",12,9],["2026-07-13","Vesper",15,13],["2026-07-20","Captain Vantage",11,7],["2026-07-20","Cindermark",10,7],["2026-07-20","Corporal Ashgrove",9,7],["2026-07-20","Farlight",12,9],["2026-07-20","Halfmoon",12,8],["2026-07-20","Ironvale",8,6],["2026-07-20","Meteor Mite",11,7],["2026-07-20","Nightwell",16,12],["2026-07-20","Sgt. Bulwark",9,7],["2026-07-20","Sgt. Falkirk",10,8],["2026-07-20","Stormwrack",14,12],["2026-07-20","The Drift",6,5],["2026-07-20","The Gale",14,11],["2026-07-20","The Longcast",7,5],["2026-07-20","The Undertow",13,10],["2026-07-20","Vesper",14,11],["2026-07-27","Captain Vantage",12,9],["2026-07-27","Cindermark",9,7],["2026-07-27","Corporal Ashgrove",10,8],["2026-07-27","Farlight",13,10],["2026-07-27","Halfmoon",11,9],["2026-07-27","Ironvale",7,5],["2026-07-27","Meteor Mite",12,9],["2026-07-27","Nightwell",15,11],["2026-07-27","Sgt. Bulwark",8,5],["2026-07-27","Sgt. Falkirk",9,7],["2026-07-27","Stormwrack",13,10],["2026-07-27","The Drift",6,5],["2026-07-27","The Gale",13,11],["2026-07-27","The Longcast",7,5],["2026-07-27","The Undertow",12,10],["2026-07-27","Vesper",13,11],["2026-08-03","Captain Vantage",12,9],["2026-08-03","Cindermark",9,8],["2026-08-03","Corporal Ashgrove",10,8],["2026-08-03","Farlight",12,8],["2026-08-03","Halfmoon",11,8],["2026-08-03","Ironvale",8,7],["2026-08-03","Meteor Mite",11,8],["2026-08-03","Nightwell",15,12],["2026-08-03","Sgt. Bulwark",9,7],["2026-08-03","Sgt. Falkirk",10,8],["2026-08-03","Stormwrack",13,10],["2026-08-03","The Drift",6,5],["2026-08-03","The Gale",13,10],["2026-08-03","The Longcast",7,5],["2026-08-03","The Undertow",12,9],["2026-08-03","Vesper",14,12],["2026-08-10","Captain Vantage",13,8],["2026-08-10","Cindermark",10,6],["2026-08-10","Corporal Ashgrove",10,6],["2026-08-10","Farlight",10,4],["2026-08-10","Halfmoon",11,6],["2026-08-10","Ironvale",9,5],["2026-08-10","Meteor Mite",10,4],["2026-08-10","Nightwell",16,9],["2026-08-10","Sgt. Bulwark",10,5],["2026-08-10","Sgt. Falkirk",11,7],["2026-08-10","Stormwrack",14,8],["2026-08-10","The Drift",7,4],["2026-08-10","The Gale",15,9],["2026-08-10","The Longcast",8,5],["2026-08-10","The Undertow",11,4],["2026-08-10","Vesper",12,6],["2026-08-17","Captain Vantage",15,11],["2026-08-17","Cindermark",11,8],["2026-08-17","Corporal Ashgrove",8,5],["2026-08-17","Farlight",3,0],["2026-08-17","Halfmoon",9,5],["2026-08-17","Ironvale",10,6],["2026-08-17","Meteor Mite",4,1],["2026-08-17","Nightwell",18,14],["2026-08-17","Sgt. Bulwark",10,8],["2026-08-17","Sgt. Falkirk",13,9],["2026-08-17","Stormwrack",16,12],["2026-08-17","The Drift",7,5],["2026-08-17","The Gale",17,12],["2026-08-17","The Longcast",8,6],["2026-08-17","The Undertow",4,1],["2026-08-17","Vesper",5,1],["2026-08-24","Captain Vantage",17,13],["2026-08-24","Cindermark",12,8],["2026-08-24","Corporal Ashgrove",7,5],["2026-08-24","Farlight",1,0],["2026-08-24","Halfmoon",8,5],["2026-08-24","Ironvale",11,8],["2026-08-24","Meteor Mite",2,0],["2026-08-24","Nightwell",20,13],["2026-08-24","Sgt. Bulwark",11,7],["2026-08-24","Sgt. Falkirk",15,11],["2026-08-24","Stormwrack",18,13],["2026-08-24","The Drift",8,6],["2026-08-24","The Gale",20,14],["2026-08-24","The Longcast",9,5],["2026-08-24","The Undertow",1,0],["2026-08-24","Vesper",2,0],["2026-08-31","Captain Vantage",18,13],["2026-08-31","Cindermark",12,9],["2026-08-31","Corporal Ashgrove",7,5],["2026-08-31","Farlight",0,0],["2026-08-31","Halfmoon",8,7],["2026-08-31","Ironvale",12,9],["2026-08-31","Meteor Mite",1,0],["2026-08-31","Nightwell",21,15],["2026-08-31","Sgt. Bulwark",11,8],["2026-08-31","Sgt. Falkirk",16,11],["2026-08-31","Stormwrack",19,15],["2026-08-31","The Drift",8,5],["2026-08-31","The Gale",21,16],["2026-08-31","The Longcast",9,7],["2026-08-31","The Undertow",1,0],["2026-08-31","Vesper",1,0]];
+var KNOWN = ["Farlight", "Meteor Mite", "The Undertow", "Vesper"];
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var weeks = [], names = [], D = {};
+RAW.forEach(function (r) {
+  if (weeks.indexOf(r[0]) < 0) weeks.push(r[0]);
+  if (names.indexOf(r[1]) < 0) names.push(r[1]);
+});
+weeks.sort(); names.sort();
+names.forEach(function (n) { D[n] = weeks.map(function () { return [0, 0]; }); });
+RAW.forEach(function (r) { D[r[1]][weeks.indexOf(r[0])] = [r[2], r[3]]; });
+var W = weeks.length, REL = 6, REL_FRAC = REL + 2 / 7; // 12 Aug is a Wednesday, 2 days into the week of 10 Aug
+function fmt(w) { var p = w.split("-"); return +p[2] + " " + MON[+p[1] - 1]; }
+var usual = {};
+names.forEach(function (n) { usual[n] = D[n].slice(0, 6).reduce(function (a, b) { return a + b[0]; }, 0) / 6; });
+var sent = [], taken = [], acc = [];
+weeks.forEach(function (w, i) {
+  var s = 0, t = 0;
+  names.forEach(function (n) { s += D[n][i][0]; t += D[n][i][1]; });
+  sent.push(s); taken.push(t); acc.push(100 * t / s);
+});
+var baseAcc = 100 * taken.slice(0, 6).reduce(function (a, b) { return a + b; }, 0) / sent.slice(0, 6).reduce(function (a, b) { return a + b; }, 0);
+
+var st = { week: W - 1, rule: "B", N: 3, X: 50, who: "Vesper" };
+function flagged(rule, i) {
+  return names.filter(function (n) {
+    var o = D[n][i][0];
+    return rule === "A" ? o < st.N : o < st.X / 100 * usual[n];
+  });
+}
+function counts(rule) { return weeks.map(function (w, i) { return flagged(rule, i).length; }); }
+function firstWeek(arr) { for (var i = 0; i < arr.length; i++) if (arr[i] > 0) return i; return -1; }
+function $(id) { return document.getElementById(id); }
+function pct(v) { return (Math.round(v * 10) / 10).toFixed(1) + "%"; }
+function plural(n, a, b) { return n === 1 ? a : b; }
+
+/* ---------- charts: one scale per chart, built from the same x and y functions ---------- */
+var CW = 480, ML = 38, MR = 44;
+function xAt(i) { return ML + (CW - ML - MR) * (i + 0.5) / W; }
+function xFrac(f) { return xAt(f); }
+function grid(top, h, y, ticks, fmtTick) {
+  var s = "";
+  ticks.forEach(function (t) {
+    s += '<line class="grid" x1="' + ML + '" x2="' + (CW - MR) + '" y1="' + y(t).toFixed(1) + '" y2="' + y(t).toFixed(1) + '"/>' +
+      '<text class="tick" x="' + (ML - 6) + '" y="' + (y(t) + 3.5).toFixed(1) + '" text-anchor="end">' + fmtTick(t) + '</text>';
+  });
+  return s;
+}
+function selBand(top, h) {
+  var bw = (CW - ML - MR) / W;
+  return '<rect class="sel" x="' + (xAt(st.week) - bw / 2).toFixed(1) + '" y="' + top + '" width="' + bw.toFixed(1) + '" height="' + h + '"/>';
+}
+function hits(top, h) {
+  var bw = (CW - ML - MR) / W, s = "";
+  for (var i = 0; i < W; i++) s += '<rect class="hit" data-w="' + i + '" x="' + (xAt(i) - bw / 2).toFixed(1) + '" y="' + top + '" width="' + bw.toFixed(1) + '" height="' + h + '"/>';
+  return s;
+}
+function relLine(top, bottom, label) {
+  var x = xFrac(REL_FRAC).toFixed(1);
+  return '<line class="rel" x1="' + x + '" x2="' + x + '" y1="' + top + '" y2="' + bottom + '"/>' +
+    (label ? '<text class="note" x="' + (+x + 4) + '" y="' + (top + 9) + '">4.2 ships 12 Aug</text>' : "");
+}
+function path(vals, y) {
+  return vals.map(function (v, i) { return (i ? "L" : "M") + xAt(i).toFixed(1) + " " + y(v).toFixed(1); }).join(" ");
+}
+function drawAcc() {
+  var H = 150, top = 18, bot = H - 10, y = function (v) { return bot - (bot - top) * v / 100; };
+  var s = grid(top, bot - top, y, [0, 50, 100], function (t) { return t + "%"; });
+  s += selBand(top, bot - top) + relLine(top, bot, true);
+  s += '<path class="ln" stroke="var(--action)" d="' + path(acc, y) + '"/>';
+  acc.forEach(function (v, i) {
+    s += '<circle cx="' + xAt(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="' + (i === st.week ? 5 : 3) + '" fill="var(--action)"/>';
+  });
+  var sx = xAt(st.week), sy = y(acc[st.week]);
+  var lab = pct(acc[st.week]);
+  var ly = sy < top + 24 ? sy + 17 : sy - 9;
+  var anchor = st.week >= W - 2 ? "end" : "middle";
+  s += '<text class="val" fill="var(--action)" x="' + (anchor === "end" ? sx + 8 : sx) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '">' + lab + '</text>';
+  s += '<text class="note" x="' + ML + '" y="10">Acceptance rate (percent)</text>';
+  s += hits(top, bot - top);
+  $("chartAcc").setAttribute("viewBox", "0 0 " + CW + " " + H);
+  $("chartAcc").innerHTML = s;
+}
+function drawQuiet(cA, cB) {
+  var H = 175, top = 18, bot = 135, y = function (v) { return bot - (bot - top) * v / 16; };
+  var s = grid(top, bot - top, y, [0, 4, 8, 12, 16], function (t) { return t; });
+  s += selBand(top, bot - top) + relLine(top, bot, false);
+  s += '<path class="ln" stroke="var(--quiet)" stroke-dasharray="7 4" d="' + path(cA, y) + '"/>';
+  s += '<path class="ln" stroke="var(--busy)" d="' + path(cB, y) + '"/>';
+  cA.forEach(function (v, i) { s += '<rect x="' + (xAt(i) - 3.5).toFixed(1) + '" y="' + (y(v) - 3.5).toFixed(1) + '" width="7" height="7" fill="var(--quiet)"/>'; });
+  cB.forEach(function (v, i) { s += '<circle cx="' + xAt(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="3.5" fill="var(--busy)"/>'; });
+  var a = cA[st.week], b = cB[st.week], sx = xAt(st.week);
+  var anchor = st.week >= W - 2 ? "end" : "middle", tx = anchor === "end" ? sx + 8 : sx;
+  var ya = y(a), yb = y(b);
+  var aUp = ya <= yb; // higher mark (smaller y) gets its label above
+  if (a === b) s += '<text class="val" fill="var(--ink)" x="' + tx + '" y="' + (ya - 9).toFixed(1) + '" text-anchor="' + anchor + '">A and B: ' + a + '</text>';
+  else {
+    s += '<text class="val" fill="var(--quiet)" x="' + tx + '" y="' + (aUp ? ya - 9 : ya + 17).toFixed(1) + '" text-anchor="' + anchor + '">A: ' + a + '</text>';
+    s += '<text class="val" fill="var(--busy)" x="' + tx + '" y="' + (aUp ? yb + 17 : yb - 9).toFixed(1) + '" text-anchor="' + anchor + '">B: ' + b + '</text>';
+  }
+  s += '<text class="note" x="' + ML + '" y="10">Quiet count (heroes, out of ' + names.length + ')</text>';
+  weeks.forEach(function (w, i) {
+    var p = w.split("-"), x = xAt(i).toFixed(1);
+    s += '<text class="tick" x="' + x + '" y="' + (bot + 16) + '" text-anchor="middle">' + (+p[2]) + '</text>';
+    if (i === 0 || p[1] !== weeks[i - 1].split("-")[1]) s += '<text class="tick" x="' + x + '" y="' + (bot + 29) + '" text-anchor="middle">' + MON[+p[1] - 1] + '</text>';
+  });
+  s += hits(top, bot - top);
+  $("chartQuiet").setAttribute("viewBox", "0 0 " + CW + " " + H);
+  $("chartQuiet").innerHTML = s;
+}
+function drawMini(n, rule) {
+  var H = 170, top = 20, bot = 135, vals = D[n].map(function (d) { return d[0]; });
+  var mx = Math.max.apply(null, vals.concat([usual[n]])), top16 = Math.ceil(mx / 4) * 4, y = function (v) { return bot - (bot - top) * v / top16; };
+  var ticks = []; for (var t = 0; t <= top16; t += 4) ticks.push(t);
+  var s = grid(top, bot - top, y, ticks, function (t) { return t; });
+  var bw = (CW - ML - MR) / W;
+  vals.forEach(function (v, i) {
+    var f = rule === "A" ? v < st.N : v < st.X / 100 * usual[n];
+    var h = Math.max(0, y(0) - y(v));
+    s += '<rect x="' + (xAt(i) - bw * 0.3).toFixed(1) + '" y="' + y(v).toFixed(1) + '" width="' + (bw * 0.6).toFixed(1) + '" height="' + h.toFixed(1) + '" fill="' + (f ? "var(--quiet)" : "var(--busy)") + '"' + (i === st.week ? ' stroke="var(--ink)" stroke-width="2"' : "") + '/>';
+    s += '<text class="val" fill="var(--ink)" x="' + xAt(i).toFixed(1) + '" y="' + (y(v) - 4).toFixed(1) + '" text-anchor="middle">' + v + '</text>';
+  });
+  var uy = y(usual[n]).toFixed(1);
+  s += '<line class="rel" x1="' + ML + '" x2="' + (CW - MR) + '" y1="' + uy + '" y2="' + uy + '"/>';
+  s += '<text class="note" x="' + (CW - MR + 4) + '" y="' + (+uy + 4) + '">usual ' + (Math.round(usual[n] * 10) / 10) + '</text>';
+  weeks.forEach(function (w, i) {
+    var p = w.split("-"), x = xAt(i).toFixed(1);
+    s += '<text class="tick" x="' + x + '" y="' + (bot + 16) + '" text-anchor="middle">' + (+p[2]) + '</text>';
+    if (i === 0 || p[1] !== weeks[i - 1].split("-")[1]) s += '<text class="tick" x="' + x + '" y="' + (bot + 29) + '" text-anchor="middle">' + MON[+p[1] - 1] + '</text>';
+  });
+  s += '<text class="note" x="' + ML + '" y="10">Offers sent per week</text>';
+  $("chartMini").setAttribute("viewBox", "0 0 " + CW + " " + H);
+  $("chartMini").innerHTML = s;
+}
+
+/* ---------- page ---------- */
+function render() {
+  var i = st.week, r = st.rule;
+  var cA = counts("A"), cB = counts("B"), cur = r === "A" ? cA : cB, q = cur[i];
+  $("nOut").textContent = st.N; $("xOut").textContent = st.X + "%";
+  $("ruleA").className = "rule" + (r === "A" ? " on" : ""); $("ruleB").className = "rule" + (r === "B" ? " on" : "");
+  $("pickA").checked = r === "A"; $("pickB").checked = r === "B";
+  $("weekRange").value = i;
+  Array.prototype.forEach.call($("weekBtns").children, function (b, k) { b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+
+  // tiles
+  $("accNum").textContent = pct(acc[i]);
+  var diff = acc[i] - baseAcc;
+  $("accStatus").className = "status " + (diff > -8 ? "good" : "bad");
+  $("accStatus").textContent = diff > -8 ? "Looks fine" : "Looks bad";
+  $("accSays").textContent = "Offers taken: " + taken[i] + " of " + sent[i] + ". Usual before the release: " + pct(baseAcc) + ".";
+  $("quietNum").innerHTML = q + " <small>of " + names.length + "</small>";
+  $("quietStatus").className = "status " + (q === 0 ? "good" : "bad");
+  $("quietStatus").textContent = q === 0 ? "Nobody left out" : "Heroes left out";
+  var other = r === "A" ? cB[i] : cA[i];
+  $("quietSays").textContent = "Using Rule " + r + ". Rule " + (r === "A" ? "B" : "A") + " says " + other + ".";
+
+  // takeaway
+  var t;
+  if (q > 0 && acc[i] >= baseAcc - 8) t = "Acceptance looks fine at " + pct(acc[i]) + ", but " + q + " of " + names.length + " heroes are being left out.";
+  else if (q > 0) t = "Acceptance fell to " + pct(acc[i]) + ", and " + q + " of " + names.length + " heroes are being left out.";
+  else if (acc[i] < baseAcc - 8) t = "Acceptance fell to " + pct(acc[i]) + ", but nobody is being left out. Offers still reach everyone.";
+  else t = "Acceptance is " + pct(acc[i]) + " and nobody is being left out. All quiet.";
+  t += " Week of " + fmt(weeks[i]) + ".";
+  $("take").textContent = t;
+
+  // charts
+  $("legend").innerHTML =
+    '<span><span class="key" style="border-color:var(--action)"></span>Acceptance rate</span>' +
+    '<span><span class="key" style="border-color:var(--quiet);border-top-style:dashed"></span>Quiet count, Rule A (N = ' + st.N + ')</span>' +
+    '<span><span class="key" style="border-color:var(--busy)"></span>Quiet count, Rule B (X = ' + st.X + '%)</span>';
+  drawAcc(); drawQuiet(cA, cB);
+
+  // findings
+  var fa = firstWeek(cA), fb = firstWeek(cB), F = "";
+  function when(f) { return f < 0 ? null : "the week of " + fmt(weeks[f]) + ", " + (f - REL) + " " + plural(f - REL, "week", "weeks") + " after the release"; }
+  var dropWk = -1; for (var k = REL; k < W; k++) if (acc[k] < baseAcc - 8) { dropWk = k; break; }
+  F += "<p><b>Rule A</b> (fewer than " + st.N + " offers) " + (fa < 0 ? "never flagged anyone." : "first flagged a problem in " + when(fa) + " (" + cA[fa] + " " + plural(cA[fa], "hero", "heroes") + ").") + "</p>";
+  F += "<p><b>Rule B</b> (under " + st.X + "% of their usual) " + (fb < 0 ? "never flagged anyone." : "first flagged a problem in " + when(fb) + " (" + cB[fb] + " " + plural(cB[fb], "hero", "heroes") + ").") + "</p>";
+  if (fa >= 0 && fb >= 0) {
+    if (fb < fa) F += "<p><b>Rule B was earlier</b> by " + (fa - fb) + " " + plural(fa - fb, "week", "weeks") + ". In the week of " + fmt(weeks[fb]) + " the hardest hit heroes still had " + Math.min.apply(null, flagged("B", fb).map(function (n) { return D[n][fb][0]; })) + " to " + Math.max.apply(null, flagged("B", fb).map(function (n) { return D[n][fb][0]; })) + " offers. That is under half of their usual, but not under a fixed bar of " + st.N + ".</p>";
+    else if (fa < fb) F += "<p><b>Rule A was earlier</b> by " + (fb - fa) + " " + plural(fb - fa, "week", "weeks") + " with these settings.</p>";
+    else F += "<p>Both rules flagged in the same week with these settings.</p>";
+  }
+  if (dropWk >= 0) F += "<p>For comparison, the acceptance rate dropped in the week of " + fmt(weeks[dropWk]) + " (" + pct(acc[dropWk]) + ") and was back to " + pct(acc[W - 1]) + " by the week of " + fmt(weeks[W - 1]) + ", while the quiet count was still " + cur[W - 1] + ". Acceptance noticed first, but only the quiet count kept saying there was a problem.</p>";
+  function fa2(rule) {
+    var out = [];
+    weeks.forEach(function (w, j) { flagged(rule, j).forEach(function (n) { if (KNOWN.indexOf(n) < 0) out.push(n + " (" + fmt(w) + ")"); }); });
+    return out;
+  }
+  var xa = fa2("A"), xb = fa2("B");
+  F += xa.length ? "<p><b>False alarms, Rule A:</b> " + xa.length + " (" + xa.join(", ") + ").</p>" : '<p class="ok">False alarms, Rule A: none. It never flagged anyone outside the four.</p>';
+  F += xb.length ? "<p><b>False alarms, Rule B:</b> " + xb.length + " (" + xb.join(", ") + ").</p>" : '<p class="ok">False alarms, Rule B: none. It never flagged anyone outside the four.</p>';
+  F += '<p class="cap">Try Rule B at 80% or Rule A with N = 8 to watch false alarms appear. A bar that is too high flags normal weeks.</p>';
+  $("finds").innerHTML = F;
+
+  // list
+  var fl = flagged(r, i), L = "";
+  if (!fl.length) L = '<p class="empty">Nobody is quiet in the week of ' + fmt(weeks[i]) + ' under Rule ' + r + '. Slide to a later week to see the heroes who get left out.</p>';
+  else {
+    L = '<div class="flaglist">' + fl.map(function (n) {
+      return '<button type="button" data-who="' + n.replace(/"/g, "&quot;") + '" aria-pressed="' + (n === st.who ? "true" : "false") + '">' + n + '<span>' + D[n][i][0] + ' offers, usual ' + (Math.round(usual[n] * 10) / 10) + '</span></button>';
+    }).join("") + "</div>";
+  }
+  $("flagList").innerHTML = L;
+  $("miniTitle").textContent = st.who + ": offers per week against their own usual";
+  drawMini(st.who, r);
+  var u = usual[st.who], o = D[st.who][i][0];
+  $("miniCap").textContent = "Week of " + fmt(weeks[i]) + ": " + o + " " + plural(o, "offer", "offers") + " against a usual " + (Math.round(u * 10) / 10) + " (" + Math.round(100 * o / u) + "%). Orange bars are quiet weeks under Rule " + r + ". The dashed line is their usual. The outlined bar is the selected week.";
+
+  // table
+  var T = "<tr><th>Week of</th><th>Accept.</th><th>Quiet A</th><th>Quiet B</th></tr>";
+  weeks.forEach(function (w, j) { T += '<tr' + (j === i ? ' class="cur"' : "") + "><td>" + fmt(w) + (j === REL ? " (4.2)" : "") + "</td><td>" + pct(acc[j]) + "</td><td>" + cA[j] + "</td><td>" + cB[j] + "</td></tr>"; });
+  $("tbl").innerHTML = T;
+}
+
+weeks.forEach(function (w, i) {
+  var b = document.createElement("button");
+  b.type = "button"; b.textContent = fmt(w); b.setAttribute("aria-pressed", "false");
+  if (i >= REL) b.className = "after";
+  b.title = i >= REL ? "Release week or later" : "Before the release";
+  b.addEventListener("click", function () { st.week = i; render(); });
+  $("weekBtns").appendChild(b);
+});
+$("weekRange").addEventListener("input", function (e) { st.week = +e.target.value; render(); });
+$("pickA").addEventListener("change", function () { st.rule = "A"; render(); });
+$("pickB").addEventListener("change", function () { st.rule = "B"; render(); });
+$("nIn").addEventListener("input", function (e) { st.N = +e.target.value; st.rule = "A"; render(); });
+$("xIn").addEventListener("input", function (e) { st.X = +e.target.value; st.rule = "B"; render(); });
+$("flagList").addEventListener("click", function (e) { var b = e.target.closest("button[data-who]"); if (b) { st.who = b.getAttribute("data-who"); render(); } });
+["chartAcc", "chartQuiet"].forEach(function (id) {
+  $(id).addEventListener("click", function (e) { var w = e.target.getAttribute && e.target.getAttribute("data-w"); if (w !== null && w !== undefined) { st.week = +w; render(); } });
+});
+render();
+</script>

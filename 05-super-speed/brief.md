@@ -1,7 +1,7 @@
 # Helping heroes who stopped getting calls
 
 **To:** Helen · **From:** LeVar · 5 Oct 2026 · Draft
-**Click-through:** https://claude.ai/artifact/AuFs5bqWq7WATcEVfNyrrq (source: `prototype.html`)
+**Click-throughs** (private until shared): [Responder and handler screens](https://claude.ai/artifact/AuFs5bqWq7WATcEVfNyrrq) · [Fix Options](https://claude.ai/artifact/Ft5NLqwLCY6EX5z5WugKmM) · [Ticket Lens](https://claude.ai/artifact/L2Jg8YNAchqVpbgVy7oYiq) · [Quiet Count](https://claude.ai/artifact/TzBq1QanRnq4LNcfLWiQsk)
 
 **Short answer:** Don't just change a number. Show when someone has gone quiet, and give them a way back. Two people need to see it: the handler who watches, and the responder it happens to.
 
@@ -19,34 +19,34 @@ The button uses the "override" that handlers already have (added in 4.0). Helpin
 
 ## What a quiet responder would feel
 
-1. **A "My offers" screen.** It shows how many offers they got, took, and didn't take in four weeks. A short message says: *your account is fine, a few missed offers moved you down the list, we moved you back up.* It also says we can't tell them when the next offer will come, because that depends on where help is needed.
-2. **A comeback offer.** The first offer after a long quiet time gets extra time to answer. If the time runs out, it doesn't count against them. Today it goes the other way. Five tickets say a hero waited weeks, then the first offer disappeared in seconds.
+1. **A message first, before any fix.** Short and plain: *A change in August cut offers for some people. It isn't your fault. We're fixing it. Expect an update by [date].* In a practice round with simulated heroes, every hero who had gone quiet asked for this without being prompted. Several had assumed the app had dropped them. One said the silence was worse than the fix.
+2. **A "My offers" screen.** It shows how many offers they got, took, and didn't take in four weeks. It says their account is fine and that we can't say when the next offer will come, because that depends on where help is needed.
+3. **A comeback offer.** The first offer after a long quiet time gets extra time to answer. If the time runs out, it doesn't count against them. Today it goes the other way. Five tickets say a hero waited weeks, then the first offer disappeared in seconds.
 
 *"starting to wonder if im still even in the system"* (The Undertow, ticket T-013).
 
 ## The rule underneath
 
 - Running out of time is not the same as saying no. It should cost less.
-- A hero's place in line should heal after a quiet time. Today it stays stuck.
-- A one-time fix for the four heroes who are stuck right now.
+- A hero's place in line should recover after a quiet time. Today it stays stuck.
+- A one-time lift for the four heroes who are left out right now.
 
 This answers Wen's question from 2019. These four didn't stop taking work. We stopped asking them.
 
-## What we're doing next
+## What's built so far
 
-**Starting now: a side-by-side of the fix options.** It lets us try three fixes and see who stays stuck: put the timer back to 90 seconds, let scores heal, or give the stuck heroes a one-time fix. The main thing it shows is that putting the timer back alone doesn't help the four heroes who are stuck today, because their scores don't change. It will use example numbers, since we don't have real response times yet, and it will say so.
-
-**Right after that:**
-- **A support view.** When a ticket says "nothing for 10 days", the agent sees that hero's real offers next to it. That would have shown who was really quiet and who wasn't.
-- **A health tile.** It shows the usual success rate next to "heroes getting fewer than 3 offers a week." Today's 73% hides the four.
+- **Fix Options.** Try the fixes side by side: put the timer back to 90 seconds, let places in line recover, or give left-out heroes a one-time lift. In the model, putting the timer back alone leaves about 8 in 10 already-left-out heroes still left out. Adding the lift brings most of them back, in about 3 weeks. It also shows who pays: the busy heroes get fewer offers. The numbers are examples, not a forecast.
+- **Ticket Lens.** Shows each ticket next to the hero's real weekly offers. 15 of 25 tickets don't match the data. It finds Vesper and Meteor Mite, who dropped a lot and never wrote in.
+- **Quiet Count.** Puts the usual success rate next to a count of heroes left out. The rule "under half of their own usual offers" flags the four a week sooner than "fewer than 3 offers".
 
 ## What I need from you
 
-1. OK to start with the fix options side-by-side.
+1. OK to send affected heroes the message, with a date we can keep.
 2. OK to bring Wen in this week to design the rule.
+3. OK to try the screens with 2 or 3 real heroes, through Kip or Dot.
 
 ## What we still don't know
 
 - Why 60 seconds was picked, and what the records show. Wen can tell us.
 - **Biggest risk:** if these heroes also live far from where help is usually needed, moving them up the line may not bring calls back. Distance counts for 60% of how the line is ordered. We need location information first.
-- We haven't talked to a responder. The responder screens are built from tickets.
+- We haven't talked to a real responder. A practice round with simulated heroes shaped these screens, but it isn't real feedback.
