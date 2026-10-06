@@ -32,9 +32,18 @@ The button uses the "override" that handlers already have (added in 4.0). Helpin
 
 This answers Wen's question from 2019. These four didn't stop taking work. We stopped asking them.
 
+## What we're doing next
+
+**Starting now: a side-by-side of the fix options.** It lets us try three fixes and see who stays stuck: put the timer back to 90 seconds, let scores heal, or give the stuck heroes a one-time fix. The main thing it shows is that putting the timer back alone doesn't help the four heroes who are stuck today, because their scores don't change. It will use example numbers, since we don't have real response times yet, and it will say so.
+
+**Right after that:**
+- **A support view.** When a ticket says "nothing for 10 days", the agent sees that hero's real offers next to it. That would have shown who was really quiet and who wasn't.
+- **A health tile.** It shows the usual success rate next to "heroes getting fewer than 3 offers a week." Today's 73% hides the four.
+
 ## What I need from you
 
-OK to bring Wen in this week to design the rule.
+1. OK to start with the fix options side-by-side.
+2. OK to bring Wen in this week to design the rule.
 
 ## What we still don't know
 
