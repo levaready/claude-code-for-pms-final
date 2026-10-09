@@ -1,0 +1,449 @@
+<title>Beacon Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a night-city comic. A skyline of signal beacons sits above two hero cards (handler view),
+   and a phone with a big alert ring (hero view). One committed look: dark night, comic outlines,
+   primary hero colors. Red = a hero going quiet, gold = hero power, cyan = signal, blue = frame. */
+:root {
+  color-scheme: dark;
+  --night: #060a20;
+  --night2: #0c1236;
+  --panel: #131b4a;
+  --panel2: #1c2766;
+  --ink: #f5f7ff;
+  --muted: #b3bcf0;
+  --dim: #7380c4;
+  --blue: #2f6bff;
+  --blue-d: #14247a;
+  --red: #ff3a4e;
+  --red-t: #ff8793;
+  --red-d: #6e1020;
+  --gold: #ffc931;
+  --gold-d: #7a5800;
+  --sky: #3fdcff;
+  --violet: #8f4bff;
+  --ok: #43e08c;
+  --edge: #03051a;
+  --display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --ui: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--night);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.45;
+  padding-inline: 16px;
+  padding-block: 24px 64px;
+  position: relative;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 480px at 50% -8%, rgba(63, 90, 255, 0.55), transparent 65%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.07) 1.3px, transparent 1.6px) 0 0 / 15px 15px;
+}
+.wrap { position: relative; z-index: 1; max-width: 940px; margin-inline: auto; }
+h1, h2, h3, p { margin: 0; }
+button { font-family: inherit; }
+button:focus-visible, summary:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+/* poster header */
+.poster { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; }
+.poster > div { min-width: 0; }
+.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sky); }
+h1.logo {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(54px, 13vw, 104px);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: linear-gradient(180deg, #fff3b0 0%, var(--gold) 45%, #ff7a1a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(4px 4px 0 var(--red-d));
+  margin-top: 6px;
+}
+.sub { margin-top: 10px; max-width: 54ch; color: var(--muted); font-size: 17px; }
+.stamp {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--night); background: var(--sky); padding: 6px 10px; border: 3px solid var(--edge);
+  transform: rotate(-2deg); box-shadow: 4px 4px 0 var(--blue-d);
+}
+
+/* tabs: two angled comic buttons */
+.tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.tabs button {
+  font-family: var(--display); font-weight: 400; font-size: 19px; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ink); background: var(--panel); border: 3px solid var(--blue); padding: 10px 22px 8px;
+  cursor: pointer; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+.tabs button[aria-selected="true"] { background: var(--gold); color: var(--night); border-color: var(--gold); }
+
+/* buttons */
+.btn {
+  font-family: var(--display); font-weight: 400; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; padding: 12px 22px 10px; border: 3px solid var(--edge); border-radius: 4px;
+  background: var(--gold); color: var(--night); box-shadow: 4px 4px 0 var(--gold-d);
+}
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--gold-d); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--blue); box-shadow: 4px 4px 0 var(--blue-d); }
+.btn.sm { font-size: 16px; padding: 9px 16px 7px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* the skyline scene */
+.scene { margin-top: 22px; border: 3px solid var(--blue); border-radius: 6px; box-shadow: 6px 6px 0 var(--blue-d); overflow: hidden; background: #0a1040; }
+.scene svg { display: block; width: 100%; height: auto; }
+.towers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; text-align: center; }
+.towers div { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.05em; font-size: 18px; }
+.towers small { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+.towers .t-mite { color: var(--red-t); }
+.towers .t-gale { color: var(--gold); }
+.beam { transition: opacity 0.6s; }
+.lamp { transition: fill 0.4s; }
+@media (prefers-reduced-motion: no-preference) {
+  .beam.gale { animation: pulse 3.2s ease-in-out infinite; }
+  .beam.mite.dim { animation: flicker 3.4s steps(1) infinite; }
+  .beam.mite.lit { animation: pulse 2.4s ease-in-out infinite; }
+}
+@keyframes pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+@keyframes flicker { 0%, 100% { opacity: 0.4; } 8% { opacity: 0.12; } 14% { opacity: 0.42; } 55% { opacity: 0.3; } 60% { opacity: 0.1; } 66% { opacity: 0.4; } }
+
+/* hero cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 22px; margin-top: 24px; }
+.card { position: relative; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 0 0 16px; background: var(--panel); border: 3px solid var(--c); border-radius: 6px; box-shadow: 6px 6px 0 var(--cd); }
+.card.quiet { --c: var(--red); --cd: var(--red-d); }
+.card.busy { --c: var(--gold); --cd: var(--gold-d); }
+.ribbon { background: var(--c); color: var(--night); padding: 10px 92px 10px 16px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 78%); margin: -3px -3px 0; padding-bottom: 22px; }
+.ribbon h2 { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; }
+.ribbon .who { font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+.burst { position: absolute; z-index: 2; top: -16px; right: -12px; width: 92px; height: 92px; transform: rotate(8deg); filter: drop-shadow(3px 3px 0 var(--edge)); }
+.burst text { font-family: var(--display); font-size: 17px; letter-spacing: 0.04em; text-anchor: middle; }
+.card > :not(.ribbon):not(.burst) { margin-inline: 16px; }
+.bignum { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.bignum b { font-family: var(--display); font-weight: 400; font-size: 84px; line-height: 0.9; color: var(--c); filter: drop-shadow(3px 3px 0 var(--edge)); }
+.bignum span { font-family: var(--display); font-size: 20px; text-transform: uppercase; letter-spacing: 0.04em; }
+.bignum i { font-style: normal; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.fact { font-family: var(--mono); font-size: 13px; letter-spacing: 0.03em; color: var(--c); }
+.card svg.bars { width: 100%; height: auto; display: block; background: rgba(4, 6, 26, 0.55); border: 2px solid var(--blue-d); border-radius: 4px; }
+.bars .grid { stroke: #2a3690; stroke-width: 1; }
+.bars .axis { fill: var(--muted); font: 10px var(--mono); }
+.bars .rel { stroke: var(--sky); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.bars .val { font: 12px var(--mono); fill: var(--ink); font-weight: 500; }
+.reason { font-size: 16.5px; }
+
+/* speech bubble for the confirm step */
+.bubble { position: relative; background: var(--ink); color: var(--night); border: 3px solid var(--edge); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px; font-weight: 600; }
+.bubble::after { content: ""; position: absolute; top: -14px; left: 28px; border: 8px solid transparent; border-bottom: 14px solid var(--ink); border-top: 0; }
+.bubble strong { font-family: var(--display); font-weight: 400; font-size: 21px; text-transform: uppercase; letter-spacing: 0.03em; }
+.bubble .btn { box-shadow: 3px 3px 0 var(--gold-d); }
+.bubble .btn.ghost { color: var(--night); border-color: var(--night); box-shadow: 3px 3px 0 #9aa3d6; }
+.done { border: 3px solid var(--sky); border-radius: 8px; padding: 12px 14px; background: rgba(63, 220, 255, 0.12); display: flex; flex-direction: column; gap: 10px; }
+.done strong { font-family: var(--display); font-weight: 400; font-size: 22px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sky); }
+.note { margin-top: 18px; color: var(--muted); font-size: 14.5px; max-width: 80ch; }
+
+/* hero phone */
+.stage { display: flex; justify-content: center; margin-top: 26px; }
+.phone { width: min(100%, 380px); background: linear-gradient(180deg, #17205a 0%, #0c1236 100%); border: 4px solid var(--blue); border-radius: 36px; box-shadow: 8px 8px 0 var(--blue-d); padding: 18px 16px 22px; display: flex; flex-direction: column; gap: 14px; }
+.phone::before { content: ""; align-self: center; width: 90px; height: 8px; border-radius: 4px; background: var(--edge); margin-bottom: 2px; }
+.steps { display: flex; gap: 6px; }
+.steps span { flex: 1; text-align: center; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.04em; font-size: 13px; padding: 5px 2px 3px; background: rgba(4, 6, 26, 0.6); color: var(--dim); border-bottom: 3px solid var(--panel2); }
+.steps span[aria-current="step"] { color: var(--night); background: var(--gold); border-color: var(--gold); }
+.phone h2 { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; }
+.phone .who { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sky); }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tile { background: var(--panel); border: 3px solid var(--blue); border-radius: 6px; padding: 8px 4px 6px; text-align: center; box-shadow: 3px 3px 0 var(--blue-d); }
+.tile b { display: block; font-family: var(--display); font-weight: 400; font-size: 40px; line-height: 1; }
+.tile span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.tile.hot b { color: var(--red-t); }
+.minibars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; align-items: end; height: 96px; padding-top: 4px; }
+.mb { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; height: 100%; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.mb i { display: block; width: 100%; border: 2px solid var(--edge); border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #ff8793, var(--red)); min-height: 4px; }
+.bulletin { background: var(--ink); color: var(--night); border: 3px solid var(--edge); border-left: 12px solid var(--gold); border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; box-shadow: 4px 4px 0 var(--gold-d); }
+.bulletin .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #3a45a0; font-weight: 500; }
+.bulletin b { font-family: var(--display); font-weight: 400; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.02em; }
+.bulletin span { font-size: 15.5px; font-weight: 600; }
+.bulletin small { font-size: 13.5px; color: #3a4170; font-weight: 600; }
+.prop { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); }
+
+.alertbox { position: relative; display: grid; place-items: center; padding: 14px 0 6px; }
+.alertbox .rings { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.alertbox .rings i { position: absolute; width: 150px; height: 150px; border: 3px solid var(--sky); border-radius: 50%; opacity: 0.35; }
+.alertbox .rings i:nth-child(2) { width: 190px; height: 190px; opacity: 0.22; }
+.alertbox .rings i:nth-child(3) { width: 230px; height: 230px; opacity: 0.12; }
+@media (prefers-reduced-motion: no-preference) {
+  .alertbox .rings i { animation: ring 2.4s ease-out infinite; }
+  .alertbox .rings i:nth-child(2) { animation-delay: 0.6s; }
+  .alertbox .rings i:nth-child(3) { animation-delay: 1.2s; }
+}
+@keyframes ring { 0% { transform: scale(0.7); opacity: 0.6; } 100% { transform: scale(1.15); opacity: 0; } }
+.dial { position: relative; z-index: 1; width: 170px; height: 170px; }
+.dial svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.dial .track { fill: var(--night); stroke: var(--panel2); stroke-width: 12; }
+.dial .prog { fill: none; stroke: var(--gold); stroke-width: 12; stroke-linecap: round; }
+.dial .t { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+.dial .t b { font-family: var(--display); font-weight: 400; font-size: 48px; line-height: 1; }
+.dial .t span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.callout { background: rgba(63, 220, 255, 0.12); border: 3px solid var(--sky); border-radius: 8px; padding: 10px 12px; font-size: 15.5px; }
+.callout b { font-family: var(--display); font-weight: 400; font-size: 20px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sky); display: block; }
+.demo { font-size: 12.5px; color: var(--dim); }
+.result { border: 3px solid var(--edge); border-radius: 8px; padding: 18px 14px 16px; display: flex; flex-direction: column; gap: 8px; text-align: center; align-items: center; }
+.result.taken { background: linear-gradient(180deg, #ffe27a, var(--gold)); color: var(--night); box-shadow: 5px 5px 0 var(--gold-d); }
+.result.ranout { background: var(--panel2); border-color: var(--sky); box-shadow: 5px 5px 0 var(--blue-d); }
+.result h3 { font-family: var(--display); font-weight: 400; font-size: 38px; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; }
+.result p { font-weight: 600; font-size: 16px; }
+.result svg { width: 120px; height: 120px; }
+
+details { margin-top: 34px; border: 3px solid var(--blue); border-radius: 6px; background: var(--panel); padding: 12px 16px; }
+summary { cursor: pointer; font-family: var(--display); font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; }
+details ul { margin: 12px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: var(--muted); font-size: 15.5px; }
+</style>
+
+<div class="wrap">
+  <header class="poster">
+    <div>
+      <p class="kicker">Rook Dispatch · week of 31 Aug</p>
+      <h1 class="logo">Beacon Watch</h1>
+      <p class="sub">When a hero stops getting offers, their beacon goes dim. This shows how Kip would spot it and light it back up, and what that hero would see on their phone.</p>
+    </div>
+    <span class="stamp">Example numbers from our call history file</span>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Choose a view">
+    <button type="button" role="tab" id="tab-handler" aria-selected="true" aria-controls="view-handler">Kip's watchtower</button>
+    <button type="button" role="tab" id="tab-hero" aria-selected="false" aria-controls="view-hero">The hero's phone</button>
+  </div>
+
+  <section id="view-handler" role="tabpanel" aria-labelledby="tab-handler">
+    <div class="scene" id="scene"></div>
+    <div class="towers" aria-hidden="true">
+      <div class="t-mite">Meteor Mite<small id="tw-mite"></small></div>
+      <div class="t-gale">The Gale<small id="tw-gale"></small></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <p class="note">A card says Quiet when a hero gets far fewer offers than their own usual (their average over 6 weeks). The 50% line is an example for Ravi to help pick. The bars show offers each week from 29 Jun to 31 Aug. The dashed line is when release 4.2 came out on 12 Aug.</p>
+  </section>
+
+  <section id="view-hero" role="tabpanel" aria-labelledby="tab-hero" hidden>
+    <div class="stage"><div class="phone" id="phone"></div></div>
+    <p class="note" style="text-align:center; margin-inline:auto;">The words on these screens are proposed. The numbers are Meteor Mite's last four weeks from our call history file.</p>
+  </section>
+
+  <details>
+    <summary>What this depends on</summary>
+    <ul>
+      <li>We don't know yet if these heroes also live far from where most help is needed. Distance counts for 60% of how the line is ordered, so moving someone up may not bring calls back by itself. We need location information from Wen.</li>
+      <li>The code already knows the difference between running out of time and saying no, but it counts them the same. We would count them differently.</li>
+      <li>We don't know why 60 seconds was picked, or what the records show for these heroes.</li>
+      <li>We haven't talked to a real hero. The screens are built from tickets and a practice round with simulated heroes.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+(function () {
+  var WEEKS = ["29 Jun","6 Jul","13 Jul","20 Jul","27 Jul","3 Aug","10 Aug","17 Aug","24 Aug","31 Aug"];
+  var MITE = [11,12,10,11,12,11,10,4,2,1];
+  var MITE_TAKEN = [7,9,6,7,9,8,4,1,0,0];
+  var GALE = [13,12,13,14,13,13,15,17,20,21];
+  function avg6(a) { var s = 0; for (var i = 0; i < 6; i++) s += a[i]; return s / 6; }
+  function bind(id, fn) { var el = document.getElementById(id); if (el) el.addEventListener("click", fn); }
+  function focusId(id) { var el = document.getElementById(id); if (el) el.focus(); }
+
+  /* a jagged comic starburst */
+  function burstPts(cx, cy, n, ro, ri) {
+    var p = [], i, a, r;
+    for (i = 0; i < n * 2; i++) { a = Math.PI * i / n; r = i % 2 === 0 ? ro : ri; p.push((cx + r * Math.sin(a)).toFixed(1) + "," + (cy - r * Math.cos(a)).toFixed(1)); }
+    return p.join(" ");
+  }
+  function burst(label, fill, ink) {
+    return "<svg class='burst' viewBox='0 0 120 120' role='img' aria-label='" + label + "'><polygon points='" + burstPts(60, 60, 12, 58, 40) + "' fill='" + fill + "' stroke='#03051a' stroke-width='4' stroke-linejoin='round'/><text x='60' y='68' fill='" + ink + "'>" + label + "</text></svg>";
+  }
+
+  /* weekly offers as power bars, one shared scale (0 to 22) */
+  function bars(data, kind, id) {
+    var W = 330, H = 150, pl = 28, pr = 10, pt = 16, pb = 24, max = 22, n = data.length, g = "", i;
+    var slot = (W - pl - pr) / n, bw = slot * 0.66;
+    function x(i) { return pl + slot * i + (slot - bw) / 2; }
+    function y(v) { return pt + (H - pt - pb) * (1 - v / max); }
+    var hot = kind === "quiet" ? ["#ff8793", "#ff3a4e"] : ["#ffe27a", "#ffa51f"];
+    var cool = ["#7fe6ff", "#2f6bff"];
+    g += "<defs><linearGradient id='gc" + id + "' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + cool[0] + "'/><stop offset='1' stop-color='" + cool[1] + "'/></linearGradient>" +
+         "<linearGradient id='gh" + id + "' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + hot[0] + "'/><stop offset='1' stop-color='" + hot[1] + "'/></linearGradient></defs>";
+    [0, 10, 20].forEach(function (t) {
+      g += "<line class='grid' x1='" + pl + "' x2='" + (W - pr) + "' y1='" + y(t) + "' y2='" + y(t) + "'/><text class='axis' x='" + (pl - 5) + "' y='" + (y(t) + 3) + "' text-anchor='end'>" + t + "</text>";
+    });
+    for (i = 0; i < n; i++) {
+      var h = Math.max(2, y(0) - y(data[i]));
+      g += "<rect x='" + x(i).toFixed(1) + "' y='" + (y(0) - h).toFixed(1) + "' width='" + bw.toFixed(1) + "' height='" + h.toFixed(1) + "' fill='url(#" + (i < 6 ? "gc" : "gh") + id + ")' stroke='#03051a' stroke-width='1.5'/>";
+    }
+    var rx = pl + slot * 6;
+    g += "<line class='rel' x1='" + rx + "' x2='" + rx + "' y1='" + (pt - 6) + "' y2='" + (H - pb) + "'/>";
+    g += "<polygon points='" + (rx - 6) + "," + (pt - 4) + " " + (rx + 2) + "," + (pt - 4) + " " + (rx - 1) + "," + (pt + 5) + " " + (rx + 5) + "," + (pt + 5) + " " + (rx - 5) + "," + (pt + 17) + " " + (rx - 2) + "," + (pt + 7) + " " + (rx - 7) + "," + (pt + 7) + "' fill='#ffc931' stroke='#03051a' stroke-width='1'/>";
+    g += "<text class='axis' x='" + (rx + 8) + "' y='" + (pt + 8) + "'>4.2</text>";
+    var last = data[n - 1];
+    g += "<text class='val' x='" + (x(n - 1) + bw / 2) + "' y='" + (y(last) - 5) + "' text-anchor='middle'>" + last + "</text>";
+    g += "<text class='axis' x='" + pl + "' y='" + (H - 7) + "'>" + WEEKS[0] + "</text><text class='axis' x='" + (W - pr) + "' y='" + (H - 7) + "' text-anchor='end'>" + WEEKS[n - 1] + "</text>";
+    return "<svg class='bars' viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" +
+      (kind === "quiet" ? "Meteor Mite offers each week, dropping from about 11 to 1 after release 4.2" : "The Gale offers each week, rising from about 13 to 21 after release 4.2") + "'>" + g + "</svg>";
+  }
+
+  /* the night skyline with two signal beacons */
+  function skyline(lit) {
+    var W = 800, H = 250, s = "", i, seed = 7;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    s += "<defs>" +
+      "<linearGradient id='sky' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#080d38'/><stop offset='0.65' stop-color='#1b2a8a'/><stop offset='1' stop-color='#4a2f9a'/></linearGradient>" +
+      "<linearGradient id='bGold' x1='0' y1='1' x2='0' y2='0'><stop offset='0' stop-color='#ffd447' stop-opacity='0.95'/><stop offset='1' stop-color='#ffc931' stop-opacity='0'/></linearGradient>" +
+      "<linearGradient id='bDim' x1='0' y1='1' x2='0' y2='0'><stop offset='0' stop-color='#ff3a4e' stop-opacity='0.8'/><stop offset='1' stop-color='#ff3a4e' stop-opacity='0'/></linearGradient>" +
+      "<linearGradient id='bLit' x1='0' y1='1' x2='0' y2='0'><stop offset='0' stop-color='#9ff0ff' stop-opacity='1'/><stop offset='1' stop-color='#3fdcff' stop-opacity='0'/></linearGradient></defs>";
+    s += "<rect width='800' height='250' fill='url(#sky)'/>";
+    for (i = 0; i < 46; i++) s += "<circle cx='" + Math.round(rnd() * 800) + "' cy='" + Math.round(rnd() * 120) + "' r='" + (rnd() > 0.85 ? 1.8 : 1) + "' fill='#ffffff' opacity='" + (0.35 + rnd() * 0.5).toFixed(2) + "'/>";
+    s += "<circle cx='690' cy='46' r='24' fill='#f5f7ff'/><circle cx='700' cy='40' r='22' fill='#1b2a8a'/>";
+    /* beams (behind the buildings) */
+    s += "<polygon id='beam-mite' class='beam mite " + (lit ? "lit" : "dim") + "' points='200,118 118,-20 282,-20' fill='url(#" + (lit ? "bLit" : "bDim") + ")' opacity='" + (lit ? 1 : 0.4) + "'/>";
+    s += "<polygon class='beam gale' points='600,118 480,-20 720,-20' fill='url(#bGold)'/>";
+    /* city blocks */
+    var x = -10;
+    while (x < 820) {
+      var w = 34 + Math.round(rnd() * 46), h = 40 + Math.round(rnd() * 78);
+      if ((x > 150 && x < 250) || (x > 550 && x < 650)) { x += w - 6; continue; }
+      s += "<rect x='" + x + "' y='" + (H - h) + "' width='" + w + "' height='" + h + "' fill='#0b1030' stroke='#03051a' stroke-width='3'/>";
+      for (var wy = H - h + 10; wy < H - 10; wy += 14) for (var wx = x + 7; wx < x + w - 8; wx += 12) if (rnd() > 0.7) s += "<rect x='" + wx + "' y='" + wy + "' width='5' height='7' fill='#ffd447' opacity='0.85'/>";
+      x += w + 4;
+    }
+    /* the two beacon towers */
+    function tower(cx, dim) {
+      var t = "<rect x='" + (cx - 24) + "' y='122' width='48' height='128' fill='#101846' stroke='#03051a' stroke-width='3'/>";
+      t += "<rect x='" + (cx - 14) + "' y='112' width='28' height='12' fill='#1c2766' stroke='#03051a' stroke-width='3'/>";
+      for (var yy = 136; yy < 240; yy += 16) t += "<rect x='" + (cx - 12) + "' y='" + yy + "' width='7' height='9' fill='" + (dim ? "#3a4bb8" : "#ffd447") + "' opacity='" + (dim ? 0.5 : 0.9) + "'/><rect x='" + (cx + 5) + "' y='" + yy + "' width='7' height='9' fill='" + (dim ? "#3a4bb8" : "#ffd447") + "' opacity='" + (dim ? 0.5 : 0.9) + "'/>";
+      return t;
+    }
+    s += tower(200, !lit) + tower(600, false);
+    s += "<circle id='lamp-mite' class='lamp' cx='200' cy='112' r='11' fill='" + (lit ? "#9ff0ff" : "#6e1020") + "' stroke='#03051a' stroke-width='3'/>";
+    s += "<circle class='lamp' cx='600' cy='112' r='11' fill='#fff1a8' stroke='#03051a' stroke-width='3'/>";
+    return "<svg viewBox='0 0 800 250' role='img' aria-label='A night skyline with two signal towers. The tower for Meteor Mite " + (lit ? "now shines a bright beam" : "has a dim, flickering beam") + ". The tower for The Gale blazes gold.'>" + s + "</svg>";
+  }
+
+  /* ---------- handler view ---------- */
+  var fair = "idle";
+  function renderHandler() {
+    var mu = Math.round(avg6(MITE)), mNow = MITE[9], mDown = Math.round((1 - mNow / avg6(MITE)) * 100);
+    var gu = Math.round(avg6(GALE)), gNow = GALE[9], gUp = Math.round((gNow / avg6(GALE) - 1) * 100);
+    var lit = fair === "applied", action;
+    if (fair === "idle") {
+      action = "<div class='row'><button type='button' class='btn' id='fair-open'>Give a fair shot</button></div>";
+    } else if (fair === "confirm") {
+      action = "<div class='bubble'><strong>Move Meteor Mite up the line?</strong><span>They will be asked sooner for upcoming calls. This uses the override handlers already have, and it is saved in the override log.</span>" +
+               "<div class='row'><button type='button' class='btn sm' id='fair-yes'>Move them up</button><button type='button' class='btn ghost sm' id='fair-no'>Cancel</button></div></div>";
+    } else {
+      action = "<div class='done'><strong>Fair shot is on</strong><span>Meteor Mite moved up the line, and the beacon is lit. Offers also depend on where help is needed.</span><div class='row'><button type='button' class='btn ghost sm' id='fair-undo'>Undo</button></div></div>";
+    }
+    document.getElementById("scene").innerHTML = skyline(lit);
+    document.getElementById("tw-mite").textContent = lit ? "beacon lit · fair shot on" : "signal weak · " + mNow + " offer this week";
+    document.getElementById("tw-gale").textContent = "overdrive · " + gNow + " offers this week";
+    document.getElementById("cards").innerHTML =
+      "<article class='card quiet'>" + burst(lit ? "BOOSTED" : "QUIET", lit ? "#3fdcff" : "#f5f7ff", lit ? "#03051a" : "#6e1020") +
+        "<div class='ribbon'><h2>Meteor Mite</h2><span class='who'>Handler: Kip</span></div>" +
+        "<div class='bignum'><b>" + mNow + "</b><span>offer this week</span><i>usually " + mu + "</i></div>" +
+        "<div class='fact'>Down " + mDown + "% from their usual</div>" +
+        bars(MITE, "quiet", "m") +
+        "<p class='reason'>Calls aren't reaching them. A few missed calls pushed them down the list.</p>" +
+        action + "</article>" +
+      "<article class='card busy'>" + burst("BUSY", "#f5f7ff", "#7a5800") +
+        "<div class='ribbon'><h2>The Gale</h2><span class='who'>Handler: Kip</span></div>" +
+        "<div class='bignum'><b>" + gNow + "</b><span>offers this week</span><i>usually " + gu + "</i></div>" +
+        "<div class='fact'>Up " + gUp + "% from their usual</div>" +
+        bars(GALE, "busy", "g") +
+        "<p class='reason'>Doing extra work while others are quiet. Keep an eye on it if it keeps going up.</p></article>";
+    bind("fair-open", function () { fair = "confirm"; renderHandler(); focusId("fair-yes"); });
+    bind("fair-yes", function () { fair = "applied"; renderHandler(); focusId("fair-undo"); });
+    bind("fair-no", function () { fair = "idle"; renderHandler(); focusId("fair-open"); });
+    bind("fair-undo", function () { fair = "idle"; renderHandler(); focusId("fair-open"); });
+  }
+
+  /* ---------- hero phone ---------- */
+  var step = 1, remaining = 120, timerId = null, outcome = null, C = 2 * Math.PI * 68;
+  function fmt(s) { var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+  function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+  function stepper() {
+    var labels = ["My offers", "New offer", "Result"];
+    return "<div class='steps' aria-label='Demo progress'>" + labels.map(function (l, i) { return "<span" + (step === i + 1 ? " aria-current='step'" : "") + ">" + (i + 1) + " " + l + "</span>"; }).join("") + "</div>";
+  }
+  function star(fill) { return "<svg viewBox='0 0 120 120' aria-hidden='true'><polygon points='" + burstPts(60, 60, 12, 58, 38) + "' fill='" + fill + "' stroke='#03051a' stroke-width='4' stroke-linejoin='round'/></svg>"; }
+
+  function renderPhone() {
+    var html = stepper();
+    if (step === 1) {
+      var offered = MITE.slice(6).reduce(function (a, b) { return a + b; }, 0);
+      var taken = MITE_TAKEN.slice(6).reduce(function (a, b) { return a + b; }, 0);
+      var bs = MITE.slice(6).map(function (v, i) { return "<div class='mb'><span>" + v + "</span><i style='height:" + Math.max(4, v * 7) + "px'></i><span>" + WEEKS[6 + i].replace(" ", " ") + "</span></div>"; }).join("");
+      html += "<div><p class='who'>Meteor Mite</p><h2>My offers</h2></div>" +
+        "<div class='tiles'><div class='tile'><b>" + offered + "</b><span>Offered</span></div><div class='tile'><b>" + taken + "</b><span>Taken</span></div><div class='tile hot'><b>" + (offered - taken) + "</b><span>Not taken</span></div></div>" +
+        "<div class='minibars' aria-label='Offers per week, last four weeks'>" + bs + "</div>" +
+        "<div class='bulletin'><span class='tag'>Bulletin from Dispatch</span><b>A change in August cut offers for some people. It isn't your fault.</b><span>Your account is fine. A few missed offers moved you down the line. We're fixing it. Expect an update by [date to confirm].</span><small>We can't say when your next offer will come. It depends on where help is needed.</small></div>" +
+        "<p class='prop'>Example words</p>" +
+        "<button type='button' class='btn' id='to-offer'>See your next offer</button>";
+    } else if (step === 2) {
+      html += "<div><p class='who'>First offer in 3 weeks</p><h2>New call near you</h2></div>" +
+        "<div class='alertbox'><div class='rings' aria-hidden='true'><i></i><i></i><i></i></div>" +
+        "<div class='dial'><svg viewBox='0 0 160 160' aria-hidden='true'><circle class='track' cx='80' cy='80' r='68'/><circle class='prog' id='prog' cx='80' cy='80' r='68' stroke-dasharray='" + C.toFixed(1) + "' stroke-dashoffset='" + (C * (1 - remaining / 120)).toFixed(1) + "'/></svg>" +
+        "<div class='t'><div><b id='timer'>" + fmt(remaining) + "</b><br><span>to answer</span></div></div></div></div>" +
+        "<div class='callout'><b>Extra time</b>Your first offer back gets 2 minutes, not 1. If time runs out, it won't count against you.</div>" +
+        "<div class='row'><button type='button' class='btn' id='take'>Take it</button><button type='button' class='btn ghost' id='runout'>Let it run out</button></div>" +
+        "<p class='demo'>\"Let it run out\" is just for the demo. The 2 minutes is an example.</p>" +
+        "<p class='prop'>Example of how it could work</p>";
+    } else {
+      if (outcome === "taken") {
+        html += "<div class='result taken'>" + star("#ffffff") + "<h3>You took it</h3><p>Each offer you take helps your record. It takes a few in a row to get back to where you were.</p></div>";
+      } else {
+        html += "<div class='result ranout'>" + star("#3fdcff") + "<h3>Time ran out on this one</h3><p>It won't count against you. You'll still get other offers.</p></div>";
+      }
+      html += "<p class='prop'>Example words</p><button type='button' class='btn ghost' id='restart'>Start over</button>";
+    }
+    document.getElementById("phone").innerHTML = html;
+    bind("to-offer", function () { goOffer(); });
+    bind("take", function () { stopTimer(); outcome = "taken"; step = 3; renderPhone(); focusId("restart"); });
+    bind("runout", function () { stopTimer(); outcome = "ranout"; step = 3; renderPhone(); focusId("restart"); });
+    bind("restart", function () { step = 1; remaining = 120; outcome = null; renderPhone(); focusId("to-offer"); });
+  }
+  function goOffer() {
+    step = 2; remaining = 120; outcome = null; renderPhone(); focusId("take"); stopTimer();
+    timerId = setInterval(function () {
+      remaining -= 1;
+      var t = document.getElementById("timer"), p = document.getElementById("prog");
+      if (t) t.textContent = fmt(remaining);
+      if (p) p.setAttribute("stroke-dashoffset", (C * (1 - remaining / 120)).toFixed(1));
+      if (remaining <= 0) { stopTimer(); outcome = "ranout"; step = 3; renderPhone(); focusId("restart"); }
+    }, 1000);
+  }
+
+  /* ---------- tabs ---------- */
+  function show(which) {
+    var h = which === "handler";
+    document.getElementById("view-handler").hidden = !h;
+    document.getElementById("view-hero").hidden = h;
+    document.getElementById("tab-handler").setAttribute("aria-selected", h);
+    document.getElementById("tab-hero").setAttribute("aria-selected", !h);
+    if (h) stopTimer(); else { step = 1; outcome = null; renderPhone(); }
+  }
+  document.getElementById("tab-handler").addEventListener("click", function () { show("handler"); });
+  document.getElementById("tab-hero").addEventListener("click", function () { show("hero"); });
+
+  renderHandler();
+  renderPhone();
+})();
+</script>

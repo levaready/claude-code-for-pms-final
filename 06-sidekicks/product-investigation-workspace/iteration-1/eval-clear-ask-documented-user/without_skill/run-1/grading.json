@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+      "passed": false,
+      "evidence": "No score or confidence statement."
+    },
+    {
+      "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+      "passed": false,
+      "evidence": "Greets Maya and summarizes the data but does not restate ask, audience, goal and role."
+    },
+    {
+      "text": "Does not interrogate the user: asks no blocking question (at most one non-blocking)",
+      "passed": true,
+      "evidence": "No identity or goal questions. It asks one question (draft now or wait?) and lists four data requests; graded on intent."
+    },
+    {
+      "text": "Saves a charter file that records the four dimensions with their evidence",
+      "passed": false,
+      "evidence": "No charter file; only reply.md and analysis-notes.md."
+    },
+    {
+      "text": "Starts real work by reading the evidence files and writing at least one phase output",
+      "passed": true,
+      "evidence": "Read all evidence, computed the per-plan split, wrote analysis-notes.md."
+    },
+    {
+      "text": "Takes no outward action and says it will check before sending or committing anything",
+      "passed": false,
+      "evidence": "Says it 'sent nothing' but never says it will check first."
+    },
+    {
+      "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+      "passed": true,
+      "evidence": "'This is a consistent story, but it's a guess, not a finding.'"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 4,
+    "total": 7,
+    "pass_rate": 0.43
+  }
+}

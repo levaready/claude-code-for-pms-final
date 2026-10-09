@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Does not build a prototype",
+      "passed": true,
+      "evidence": "Nothing built."
+    },
+    {
+      "text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience",
+      "passed": true,
+      "evidence": "'The dashboard thing most likely means the idea in dashboard-notes.txt'."
+    },
+    {
+      "text": "Asks who the dashboard is for or what decision it supports",
+      "passed": true,
+      "evidence": "Q1 audience, Q3 what it should help someone decide."
+    },
+    {
+      "text": "States a gate or confidence score below 95 and names the weakest dimension",
+      "passed": true,
+      "evidence": "'Gate score: 55 (lowest: who you are / the audience)'."
+    },
+    {
+      "text": "Asks no more than four questions, each with a best-guess default",
+      "passed": true,
+      "evidence": "Four questions, each with '(my guess: ...)'."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

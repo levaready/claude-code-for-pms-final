@@ -1,0 +1,5 @@
+T-101 (6 Oct): Tried to start the annual plan, the price shown at checkout was different from the pricing page. Closed the tab.
+T-102 (6 Oct): Where did the annual discount go? It used to say "save 20%".
+T-103 (7 Oct): Checkout kept asking me to pick a plan again after I picked one.
+T-104 (7 Oct): Love the new page design but I can't tell what is included in Studio vs Team.
+T-105 (8 Oct): Charged monthly price when I selected annual. Support please fix.

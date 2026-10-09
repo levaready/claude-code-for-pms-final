@@ -1,0 +1,29 @@
+Invoice Reminders — one-pager
+Product, Billing
+28 September 2026
+
+Problem
+
+Customers on net-30 terms pay late 22% of the time, and most of the late
+ones say nobody reminded them. Finance chases these by hand and estimates it
+costs about 14 hours a week. Late payments also push our cash forecast out
+by roughly two weeks.
+
+Proposal
+
+Send an automatic email reminder five days before an invoice is due and
+another two days after it is overdue.
+
+Owner
+
+To be decided once the quarter's roadmap is set.
+
+Success measure
+
+Late payments on net-30 invoices fall from 22% to under 15% within one
+quarter of release.
+
+Scope
+
+Two reminder emails on net-30 invoices. No text messages, no changes to
+payment terms, no customer portal.

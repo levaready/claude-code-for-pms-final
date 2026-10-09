@@ -1,0 +1,25 @@
+Partner API Keys — one-pager
+Product, Platform
+3 October 2026
+
+Problem
+
+Partners wait about three days to get an API key, because every request goes
+through a support ticket and a manual approval. Two partners told us they
+paused their integration work while they waited, and the delay shows up in
+every partner onboarding we have measured this year.
+
+Proposal
+
+Let an approved partner create and revoke their own API keys from the
+partner dashboard, with no support ticket needed.
+
+Scope
+
+Self-serve key creation and revocation for partners who are already
+approved. New partner approval stays manual, and there are no changes to
+rate limits or pricing.
+
+Open questions
+
+Whether key creation should send an alert to the partner's admin contact.

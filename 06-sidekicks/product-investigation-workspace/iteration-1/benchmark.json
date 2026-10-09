@@ -1,0 +1,353 @@
+{
+  "metadata": {
+    "skill_name": "product-investigation",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-09T00:05:33Z",
+    "evals_run": [
+      0,
+      1,
+      2
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 23.7,
+        "tokens": 60417,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build a prototype",
+          "passed": true,
+          "evidence": "No prototype built; outputs are reply.md and a draft charter marked gate not passed."
+        },
+        {
+          "text": "Says it is unclear which dashboard is meant and asks which",
+          "passed": false,
+          "evidence": "The notes name one dashboard (early-warning accounts), so it did not say which dashboard was unclear. It questioned the audience and the question it answers instead. The assertion was badly designed because the fixture settles which dashboard."
+        },
+        {
+          "text": "Asks who the dashboard is for or what decision it supports",
+          "passed": true,
+          "evidence": "Q1 asks who the first audience is; Q3 asks what it needs to do and by when."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate score: 55 (lowest: Who you are / the goal, the audience for the dashboard)'."
+        },
+        {
+          "text": "Asks no more than four questions, each with a best-guess default",
+          "passed": true,
+          "evidence": "Four questions, each with '(my guess: ...)'."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 47.3,
+        "tokens": 65600,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+          "passed": true,
+          "evidence": "'Gate: passed at 95'; charter cites CLAUDE.md lines and the user's message."
+        },
+        {
+          "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": true,
+          "evidence": "Four read-back lines: ask, who you are, goal, my role."
+        },
+        {
+          "text": "Does not interrogate the user: asks no blocking question (at most one non-blocking)",
+          "passed": true,
+          "evidence": "No question about who the user is or what they want. It does ask four questions about gaps in the evidence (metric definition, rollout, other changes, checking the price); none blocked the work. The assertion wording is ambiguous, so this is graded on intent."
+        },
+        {
+          "text": "Saves a charter file that records the four dimensions with their evidence",
+          "passed": true,
+          "evidence": "charter.md has the four sections, each with evidence and a score."
+        },
+        {
+          "text": "Starts real work by reading the evidence files and writing at least one phase output",
+          "passed": true,
+          "evidence": "Wrote working-context.md and evidence-map.md after reading all three evidence files."
+        },
+        {
+          "text": "Takes no outward action and says it will check before sending or committing anything",
+          "passed": true,
+          "evidence": "'I haven't sent anything'; role line says it checks before anything is emailed, posted, committed or pushed."
+        },
+        {
+          "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+          "passed": true,
+          "evidence": "'No cause named'; tickets 'hint at things to check, not proof'."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 20.7,
+        "tokens": 60115,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Presents no findings or causes for the signup drop before asking questions",
+          "passed": true,
+          "evidence": "Reply says 'I haven't analyzed anything yet' and gives no numbers or causes."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate score: about 40 (lowest: who you are, and the goal)'."
+        },
+        {
+          "text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": true,
+          "evidence": "All four dimensions listed with scores (about 60, below 40, below 40, about 75)."
+        },
+        {
+          "text": "Asks no more than four questions",
+          "passed": true,
+          "evidence": "Four numbered questions."
+        },
+        {
+          "text": "Gives a best-guess default with every question",
+          "passed": true,
+          "evidence": "Each question ends with '(my guess: ...)'."
+        },
+        {
+          "text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)",
+          "passed": true,
+          "evidence": "Outputs contain only reply.md and charter.md."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.4,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "time_seconds": 17.0,
+        "tokens": 54700,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build a prototype",
+          "passed": true,
+          "evidence": "Built nothing; asks first."
+        },
+        {
+          "text": "Says it is unclear which dashboard is meant and asks which",
+          "passed": false,
+          "evidence": "Same as the other run: the notes settle which dashboard. The assertion was badly designed."
+        },
+        {
+          "text": "Asks who the dashboard is for or what decision it supports",
+          "passed": true,
+          "evidence": "Q1 asks who it is for first, and whether Priya has answered."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": false,
+          "evidence": "No score or confidence statement."
+        },
+        {
+          "text": "Asks no more than four questions, each with a best-guess default",
+          "passed": false,
+          "evidence": "Four questions, but only one has a stated guess; the others do not."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.43,
+        "passed": 3,
+        "failed": 4,
+        "total": 7,
+        "time_seconds": 33.6,
+        "tokens": 57683,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+          "passed": false,
+          "evidence": "No score or confidence statement."
+        },
+        {
+          "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": false,
+          "evidence": "Greets Maya and summarizes the data but does not restate ask, audience, goal and role."
+        },
+        {
+          "text": "Does not interrogate the user: asks no blocking question (at most one non-blocking)",
+          "passed": true,
+          "evidence": "No identity or goal questions. It asks one question (draft now or wait?) and lists four data requests; graded on intent."
+        },
+        {
+          "text": "Saves a charter file that records the four dimensions with their evidence",
+          "passed": false,
+          "evidence": "No charter file; only reply.md and analysis-notes.md."
+        },
+        {
+          "text": "Starts real work by reading the evidence files and writing at least one phase output",
+          "passed": true,
+          "evidence": "Read all evidence, computed the per-plan split, wrote analysis-notes.md."
+        },
+        {
+          "text": "Takes no outward action and says it will check before sending or committing anything",
+          "passed": false,
+          "evidence": "Says it 'sent nothing' but never says it will check first."
+        },
+        {
+          "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+          "passed": true,
+          "evidence": "'This is a consistent story, but it's a guess, not a finding.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": 21.3,
+        "tokens": 55022,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Presents no findings or causes for the signup drop before asking questions",
+          "passed": false,
+          "evidence": "Reports the 32% step drop, the week it began, and flat ad spend before asking anything (no cause claimed, but findings were presented)."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": false,
+          "evidence": "No score or confidence statement."
+        },
+        {
+          "text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": false,
+          "evidence": "Asks about the product and what the boss wants; never covers who the user is, or the assistant's role."
+        },
+        {
+          "text": "Asks no more than four questions",
+          "passed": true,
+          "evidence": "Four questions."
+        },
+        {
+          "text": "Gives a best-guess default with every question",
+          "passed": false,
+          "evidence": "No guesses offered with the questions."
+        },
+        {
+          "text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)",
+          "passed": true,
+          "evidence": "Only reply.md."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.9333,
+        "stddev": 0.1155,
+        "min": 0.8,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 30.5667,
+        "stddev": 14.5689,
+        "min": 20.7,
+        "max": 47.3
+      },
+      "tokens": {
+        "mean": 62044.0,
+        "stddev": 3083.2861,
+        "min": 60115,
+        "max": 65600
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.3867,
+        "stddev": 0.0513,
+        "min": 0.33,
+        "max": 0.43
+      },
+      "time_seconds": {
+        "mean": 23.9667,
+        "stddev": 8.6153,
+        "min": 17.0,
+        "max": 33.6
+      },
+      "tokens": {
+        "mean": 55801.6667,
+        "stddev": 1637.2179,
+        "min": 54700,
+        "max": 57683
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.55",
+      "time_seconds": "+6.6",
+      "tokens": "+6242"
+    }
+  },
+  "notes": []
+}

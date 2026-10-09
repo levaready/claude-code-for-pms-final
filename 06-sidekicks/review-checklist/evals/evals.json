@@ -1,0 +1,39 @@
+{
+  "skill_name": "review-checklist",
+  "evals": [
+    {
+      "id": 1,
+      "name": "real-briefs",
+      "prompt": "run the review checklist on 06-sidekicks/briefs",
+      "expected_output": "One flag per brief, each on a different check.",
+      "files": [],
+      "assertions": [
+        "bulk-callout.txt: flags 'owner named' and no other check",
+        "routing-override-audit-log.txt: flags 'success measure' and no other check",
+        "requisition-approval-chains.txt: flags 'scope stays bounded' and no other check",
+        "handler-phone-app.txt: flags 'problem stated before fix' and no other check",
+        "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+        "Every flag quotes or points to the line in the brief that decided it",
+        "Does not rewrite the brief or propose replacement text"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "fresh-briefs",
+      "prompt": "check the briefs in the fresh-briefs folder",
+      "expected_output": "One clean brief, four briefs with one flag each, one brief with two flags.",
+      "files": [],
+      "assertions": [
+        "saved-searches.txt: clean, with no flags",
+        "invoice-reminders.txt: flags 'owner named' and no other check",
+        "onboarding-checklist.txt: flags 'success measure' and no other check",
+        "export-to-csv.txt: flags 'scope stays bounded' and no other check",
+        "smart-notifications.txt: flags 'problem stated before fix' and no other check",
+        "partner-api-keys.txt: flags both 'owner named' and 'success measure' and nothing else",
+        "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+        "Every flag quotes or points to the line in the brief that decided it",
+        "Does not rewrite the brief or propose replacement text"
+      ]
+    }
+  ]
+}

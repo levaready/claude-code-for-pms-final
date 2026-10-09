@@ -1,0 +1,547 @@
+{
+  "metadata": {
+    "skill_name": "product-investigation",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-09T00:09:58Z",
+    "evals_run": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 26.4,
+        "tokens": 60469,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build a prototype",
+          "passed": true,
+          "evidence": "Nothing built."
+        },
+        {
+          "text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience",
+          "passed": true,
+          "evidence": "'The dashboard thing most likely means the idea in dashboard-notes.txt'."
+        },
+        {
+          "text": "Asks who the dashboard is for or what decision it supports",
+          "passed": true,
+          "evidence": "Q1 audience, Q3 what it should help someone decide."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate score: 55 (lowest: who you are / the audience)'."
+        },
+        {
+          "text": "Asks no more than four questions, each with a best-guess default",
+          "passed": true,
+          "evidence": "Four questions, each with '(my guess: ...)'."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.89,
+        "passed": 8,
+        "failed": 1,
+        "total": 9,
+        "time_seconds": 49.8,
+        "tokens": 65847,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+          "passed": true,
+          "evidence": "'Confidence gate: 95' with evidence from CLAUDE.md."
+        },
+        {
+          "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": true,
+          "evidence": "Four read-back lines."
+        },
+        {
+          "text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three",
+          "passed": true,
+          "evidence": "No gate questions. Three questions about evidence and owners."
+        },
+        {
+          "text": "Saves a charter file that records the four dimensions with their evidence",
+          "passed": true,
+          "evidence": "charter.md written."
+        },
+        {
+          "text": "Starts real work by reading the evidence files and writing at least one phase output",
+          "passed": true,
+          "evidence": "Wrote working-context.md and evidence-map.md."
+        },
+        {
+          "text": "Takes no outward action and says it will check before sending or committing anything",
+          "passed": true,
+          "evidence": "'I check with you before any email, post, commit or push'."
+        },
+        {
+          "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+          "passed": true,
+          "evidence": "'What the sources state (no cause claimed yet)'; tickets 'candidate mechanisms only'."
+        },
+        {
+          "text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete",
+          "passed": true,
+          "evidence": "Did not catch the Saturday, but noticed the 5 Oct week is probably incomplete ('today is Thu 8 Oct'). The assertion allows either."
+        },
+        {
+          "text": "Ends with a first look at the numbers that is labelled as a first look",
+          "passed": false,
+          "evidence": "Gives the headline rows but under 'What the sources state', not labelled as a first look."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": 20.7,
+        "tokens": 62352,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+          "passed": false,
+          "evidence": "Offers three options (brief only, brief plus mock, brief plus asks). No PRD, no deck."
+        },
+        {
+          "text": "Offers a suggested default with a one-line reason",
+          "passed": true,
+          "evidence": "'My guess: (a) only, since Dana asked for a brief.'"
+        },
+        {
+          "text": "Does not build any deliverable before the user answers",
+          "passed": true,
+          "evidence": "No draft built."
+        },
+        {
+          "text": "Says why it can start: the gate is passed and the direction (#1) is chosen",
+          "passed": false,
+          "evidence": "Says it goes with #1 but nothing about the gate or the conditions for building."
+        },
+        {
+          "text": "Takes no outward action",
+          "passed": true,
+          "evidence": "'Nothing will be sent to Dana.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": 21.9,
+        "tokens": 60764,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build the prototype before the user answers",
+          "passed": true,
+          "evidence": "'I haven't built anything.'"
+        },
+        {
+          "text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+          "passed": true,
+          "evidence": "'A one-screen annual checkout would only help if the problem is in the annual checkout step, and I don't know that yet.' It does not say whose idea it is."
+        },
+        {
+          "text": "Offers to run the evidence phases first and gives a suggestion",
+          "passed": true,
+          "evidence": "Q3: read the tickets, funnel and release notes first (my guess: read first, then build)."
+        },
+        {
+          "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+          "passed": false,
+          "evidence": "No deliverables question about a one-pager, PRD or deck."
+        },
+        {
+          "text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed",
+          "passed": false,
+          "evidence": "charter.md lists open assumptions but never records the direction as user-supplied and not evidence-backed."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 21.2,
+        "tokens": 60042,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Presents no findings or causes for the signup drop before asking questions",
+          "passed": true,
+          "evidence": "No findings or causes; 'I haven't started any analysis'."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate score: 40 (lowest: who you are / the goal)'."
+        },
+        {
+          "text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": true,
+          "evidence": "All four dimensions read back."
+        },
+        {
+          "text": "Asks no more than four questions",
+          "passed": true,
+          "evidence": "Four numbered questions."
+        },
+        {
+          "text": "Gives a best-guess default with every question",
+          "passed": true,
+          "evidence": "Each question carries a bracketed best guess."
+        },
+        {
+          "text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)",
+          "passed": true,
+          "evidence": "Only reply.md and charter-draft.md."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 25.5,
+        "tokens": 61485,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build a prototype",
+          "passed": true,
+          "evidence": "Nothing built; 'Nothing has been built yet'."
+        },
+        {
+          "text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience",
+          "passed": true,
+          "evidence": "'clickable prototype of the early-warning accounts dashboard from the churn analysis'."
+        },
+        {
+          "text": "Asks who the dashboard is for or what decision it supports",
+          "passed": true,
+          "evidence": "Q1 asks who it is for; Q2 asks what decision it supports."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate score: 55 (lowest: who you are / the goal, with the audience)'."
+        },
+        {
+          "text": "Asks no more than four questions, each with a best-guess default",
+          "passed": true,
+          "evidence": "Four questions, each with '(My guess: ...)'."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 51.5,
+        "tokens": 67185,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+          "passed": true,
+          "evidence": "'Gate score: 95' with evidence from CLAUDE.md."
+        },
+        {
+          "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": true,
+          "evidence": "Four read-back lines: ask, who you are, goal, my role."
+        },
+        {
+          "text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three",
+          "passed": true,
+          "evidence": "No gate questions. Three questions, all about evidence gaps, ranked."
+        },
+        {
+          "text": "Saves a charter file that records the four dimensions with their evidence",
+          "passed": true,
+          "evidence": "charter.md written."
+        },
+        {
+          "text": "Starts real work by reading the evidence files and writing at least one phase output",
+          "passed": true,
+          "evidence": "Wrote working-context.md and evidence-map.md after reading all three evidence files."
+        },
+        {
+          "text": "Takes no outward action and says it will check before sending or committing anything",
+          "passed": true,
+          "evidence": "'I check with you before anything is emailed, posted, committed or pushed'; 'I have not contacted anyone'."
+        },
+        {
+          "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+          "passed": true,
+          "evidence": "'First look (rows, not a cause)'; release-note link called 'a place to look, not a finding'."
+        },
+        {
+          "text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete",
+          "passed": true,
+          "evidence": "Caught that 3 Oct 2026 is a Saturday and that the 5 Oct week is only a few days old."
+        },
+        {
+          "text": "Ends with a first look at the numbers that is labelled as a first look",
+          "passed": true,
+          "evidence": "Section headed 'First look' with the per-plan rows."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 19.1,
+        "tokens": 59612,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+          "passed": true,
+          "evidence": "Lists prototype, one-pager, PRD and slide deck with speaker notes."
+        },
+        {
+          "text": "Offers a suggested default with a one-line reason",
+          "passed": true,
+          "evidence": "'My suggestion: the one-pager only', with a reason from the CLAUDE.md ask."
+        },
+        {
+          "text": "Does not build any deliverable before the user answers",
+          "passed": true,
+          "evidence": "'I've built nothing yet'; waits for the pick."
+        },
+        {
+          "text": "Says why it can start: the gate is passed and the direction (#1) is chosen",
+          "passed": false,
+          "evidence": "Acknowledges the direction ('#1 it is') but never says the gate is passed or that the conditions are met."
+        },
+        {
+          "text": "Takes no outward action",
+          "passed": true,
+          "evidence": "'Nothing gets sent to Dana.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 30.9,
+        "tokens": 61990,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build the prototype before the user answers",
+          "passed": true,
+          "evidence": "'I haven't built anything yet.'"
+        },
+        {
+          "text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+          "passed": true,
+          "evidence": "'The prototype is a design direction you've supplied, and nothing in the folder shows it fixes the problem.'"
+        },
+        {
+          "text": "Offers to run the evidence phases first and gives a suggestion",
+          "passed": true,
+          "evidence": "Q3: read the tickets, funnel numbers and release notes first (my guess: yes, I recommend it)."
+        },
+        {
+          "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+          "passed": false,
+          "evidence": "Q4 asks 'Prototype only, no one-pager or deck?'. It leaves out the PRD and does not list all four."
+        },
+        {
+          "text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed",
+          "passed": true,
+          "evidence": "charter.md: 'Direction to show: supplied by the user, not yet backed by evidence'."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 24.4,
+        "tokens": 61564,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Presents no findings or causes for the signup drop before asking questions",
+          "passed": true,
+          "evidence": "Reply gives no findings or causes; says it has not started analysis."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate score: 40 (lowest: who you are and the goal)'."
+        },
+        {
+          "text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+          "passed": true,
+          "evidence": "All four dimensions read back."
+        },
+        {
+          "text": "Asks no more than four questions",
+          "passed": true,
+          "evidence": "Four numbered questions."
+        },
+        {
+          "text": "Gives a best-guess default with every question",
+          "passed": true,
+          "evidence": "Four '(my guess: ...)' defaults."
+        },
+        {
+          "text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)",
+          "passed": true,
+          "evidence": "Only reply.md and a draft charter.md."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "old_skill": {
+      "pass_rate": {
+        "mean": 0.818,
+        "stddev": 0.204,
+        "min": 0.6,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 28.0,
+        "stddev": 12.395,
+        "min": 20.7,
+        "max": 49.8
+      },
+      "tokens": {
+        "mean": 61894.8,
+        "stddev": 2375.5736,
+        "min": 60042,
+        "max": 65847
+      }
+    },
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.92,
+        "stddev": 0.1095,
+        "min": 0.8,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 30.28,
+        "stddev": 12.5806,
+        "min": 19.1,
+        "max": 51.5
+      },
+      "tokens": {
+        "mean": 62367.2,
+        "stddev": 2844.6446,
+        "min": 59612,
+        "max": 67185
+      }
+    },
+    "delta": {
+      "pass_rate": "-0.10",
+      "time_seconds": "-2.3",
+      "tokens": "-472"
+    }
+  },
+  "notes": []
+}

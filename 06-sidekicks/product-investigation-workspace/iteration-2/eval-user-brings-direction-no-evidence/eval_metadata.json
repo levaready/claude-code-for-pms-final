@@ -1,0 +1,12 @@
+{
+  "eval_id": 4,
+  "eval_name": "user-brings-direction-no-evidence",
+  "prompt": "build me a clickable prototype of a simplified one-screen annual checkout for Dana. she likes seeing things.",
+  "assertions": [
+    "Does not build the prototype before the user answers",
+    "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+    "Offers to run the evidence phases first and gives a suggestion",
+    "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+    "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed"
+  ]
+}

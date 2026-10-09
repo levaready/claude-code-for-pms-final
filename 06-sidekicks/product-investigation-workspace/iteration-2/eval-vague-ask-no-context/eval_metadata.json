@@ -1,0 +1,13 @@
+{
+  "eval_id": 0,
+  "eval_name": "vague-ask-no-context",
+  "prompt": "signups are way down the last few weeks and my boss is asking about it. can you look into it",
+  "assertions": [
+    "Presents no findings or causes for the signup drop before asking questions",
+    "States a gate or confidence score below 95 and names the weakest dimension",
+    "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+    "Asks no more than four questions",
+    "Gives a best-guess default with every question",
+    "Creates no analysis or deliverable file beyond a reply (and optionally a charter)"
+  ]
+}

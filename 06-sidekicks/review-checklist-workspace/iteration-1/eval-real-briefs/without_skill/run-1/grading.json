@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "bulk-callout.txt: flags 'owner named' and no other check",
+      "passed": false,
+      "evidence": "Flags the owner, but also calls the success measure 'partial: two signals, no target', so it is not a single flag."
+    },
+    {
+      "text": "routing-override-audit-log.txt: flags 'success measure' and no other check",
+      "passed": true,
+      "evidence": "Success measure: 'no success measure at all'; owner, scope and problem fine. An extra remark about 'no date' is outside the four checks."
+    },
+    {
+      "text": "requisition-approval-chains.txt: flags 'scope stays bounded' and no other check",
+      "passed": true,
+      "evidence": "Scope break found, citing 'That's the whole ask' and the four additions. It only remarks that the owner is a team and does not call it a flag."
+    },
+    {
+      "text": "handler-phone-app.txt: flags 'problem stated before fix' and no other check",
+      "passed": false,
+      "evidence": "Problem order found, but it also calls the owner thin ('only for exploration, unstaffed') and the success measure 'weak: no baseline or target'."
+    },
+    {
+      "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+      "passed": false,
+      "evidence": "Prose bullets per brief and an overall ranking. No four-line block and no count of briefs checked and flagged."
+    },
+    {
+      "text": "Every flag quotes or points to the line in the brief that decided it",
+      "passed": true,
+      "evidence": "Quotes the deciding lines in most places ('nobody's picked it up yet', 'That's the whole ask')."
+    },
+    {
+      "text": "Does not rewrite the brief or propose replacement text",
+      "passed": true,
+      "evidence": "No rewritten text."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 3,
+    "total": 7,
+    "pass_rate": 0.57
+  }
+}

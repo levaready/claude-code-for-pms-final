@@ -1,0 +1,12 @@
+{
+  "eval_id": 3,
+  "eval_name": "direction-chosen-ask-deliverables",
+  "prompt": "ok the hypotheses are ranked and I'm going with #1, the annual checkout price bug. let's put something together for Dana.",
+  "assertions": [
+    "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+    "Offers a suggested default with a one-line reason",
+    "Does not build any deliverable before the user answers",
+    "Says why it can start: the gate is passed and the direction (#1) is chosen",
+    "Takes no outward action"
+  ]
+}

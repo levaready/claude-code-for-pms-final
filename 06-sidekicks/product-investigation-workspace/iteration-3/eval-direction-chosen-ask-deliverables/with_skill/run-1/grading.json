@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+      "passed": true,
+      "evidence": "Lists prototype, one-pager, PRD and slide deck with speaker notes."
+    },
+    {
+      "text": "Offers a suggested default with a one-line reason",
+      "passed": true,
+      "evidence": "'My suggestion: the one-pager only', with the reason that Dana asked for a one-page brief."
+    },
+    {
+      "text": "Does not build any deliverable before the user answers",
+      "passed": true,
+      "evidence": "Builds nothing; offers a facts sheet first once the user picks."
+    },
+    {
+      "text": "Starts by saying where the build conditions stand: the gate is passed and the direction (#1) is chosen",
+      "passed": true,
+      "evidence": "Opens with 'Gate passed (96, charter saved), direction chosen (#1...), so the one thing left before I build is which deliverables you want.'"
+    },
+    {
+      "text": "Takes no outward action",
+      "passed": true,
+      "evidence": "'Nothing goes to Dana or anyone else until you've read it.'"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

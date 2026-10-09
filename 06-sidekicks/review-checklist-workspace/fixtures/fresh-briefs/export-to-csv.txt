@@ -1,0 +1,31 @@
+Dashboard Export — one-pager
+Product, Analytics
+1 October 2026
+
+Problem
+
+Customers who want their dashboard numbers in a spreadsheet copy them out
+by hand. We get about 40 support tickets a month asking for a data export,
+and two enterprise renewals this quarter listed it as a blocker.
+
+Proposal
+
+Let customers export any dashboard to CSV and PDF from the dashboard menu.
+
+Owner
+
+Wei Zhang, PM for Analytics.
+
+Success measure
+
+Support tickets asking for a data export fall from about 40 a month to
+under 10 within two months of release.
+
+Scope
+
+CSV only. PDF is out of scope for this brief.
+
+Next steps
+
+Design to start on PDF page layouts this week. Engineering to estimate CSV
+and PDF export together so they can ship in one release.

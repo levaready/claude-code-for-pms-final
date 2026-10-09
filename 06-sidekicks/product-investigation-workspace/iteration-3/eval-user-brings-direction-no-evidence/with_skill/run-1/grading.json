@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Does not build the prototype before the user answers",
+      "passed": true,
+      "evidence": "Built nothing; stopped at the gate (score 80)."
+    },
+    {
+      "text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+      "passed": true,
+      "evidence": "Flags the one-screen checkout as the user's chosen direction, not an evidenced fix."
+    },
+    {
+      "text": "Offers to run the evidence phases first and gives a suggestion",
+      "passed": true,
+      "evidence": "Q2 offers to run the evidence phases first and suggests yes."
+    },
+    {
+      "text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed",
+      "passed": true,
+      "evidence": "charter.md: 'Direction to show: supplied by the user, not yet backed by evidence'."
+    },
+    {
+      "text": "Asks whether the user also wants a one-pager, a PRD or a slide deck with speaker notes, naming all three",
+      "passed": true,
+      "evidence": "Q3: 'You asked for a prototype. Do you also want a one-pager, a PRD, or a slide deck with speaker notes?'"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Does not build the prototype before the user answers",
+      "passed": true,
+      "evidence": "'I haven't built anything yet.'"
+    },
+    {
+      "text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+      "passed": true,
+      "evidence": "'The prototype is a design direction you've supplied, and nothing in the folder shows it fixes the problem.'"
+    },
+    {
+      "text": "Offers to run the evidence phases first and gives a suggestion",
+      "passed": true,
+      "evidence": "Q3: read the tickets, funnel numbers and release notes first (my guess: yes, I recommend it)."
+    },
+    {
+      "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+      "passed": false,
+      "evidence": "Q4 asks 'Prototype only, no one-pager or deck?'. It leaves out the PRD and does not list all four."
+    },
+    {
+      "text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed",
+      "passed": true,
+      "evidence": "charter.md: 'Direction to show: supplied by the user, not yet backed by evidence'."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "eval_id": 1,
+  "eval_name": "clear-ask-documented-user",
+  "prompt": "Investigate why trial-to-paid conversion dropped after the Oct 3 pricing page change. Dana needs a one-page brief by Friday to decide whether to roll back. Everything is in ./evidence.",
+  "assertions": [
+    "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+    "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+    "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three",
+    "Saves a charter file that records the four dimensions with their evidence",
+    "Starts real work by reading the evidence files and writing at least one phase output",
+    "Takes no outward action and says it will check before sending or committing anything",
+    "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+    "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete",
+    "Ends with a first look at the numbers that is labelled as a first look"
+  ]
+}

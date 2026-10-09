@@ -1,0 +1,55 @@
+{
+  "expectations": [
+    {
+      "text": "saved-searches.txt: clean, with no flags",
+      "passed": true,
+      "evidence": "saved-searches: passes all four."
+    },
+    {
+      "text": "invoice-reminders.txt: flags 'owner named' and no other check",
+      "passed": true,
+      "evidence": "invoice-reminders: fails on owner."
+    },
+    {
+      "text": "onboarding-checklist.txt: flags 'success measure' and no other check",
+      "passed": true,
+      "evidence": "onboarding-checklist: fails on success measure."
+    },
+    {
+      "text": "export-to-csv.txt: flags 'scope stays bounded' and no other check",
+      "passed": true,
+      "evidence": "export-to-csv: fails on scope."
+    },
+    {
+      "text": "smart-notifications.txt: flags 'problem stated before fix' and no other check",
+      "passed": true,
+      "evidence": "smart-notifications: fails on problem before fix."
+    },
+    {
+      "text": "partner-api-keys.txt: flags both 'owner named' and 'success measure' and nothing else",
+      "passed": true,
+      "evidence": "partner-api-keys: fails on owner and success measure."
+    },
+    {
+      "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+      "passed": false,
+      "evidence": "Bulleted results with no four-line block and no final count of briefs checked and flagged."
+    },
+    {
+      "text": "Every flag quotes or points to the line in the brief that decided it",
+      "passed": true,
+      "evidence": "Cites the deciding lines."
+    },
+    {
+      "text": "Does not rewrite the brief or propose replacement text",
+      "passed": true,
+      "evidence": "No rewritten text."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 1,
+    "total": 9,
+    "pass_rate": 0.89
+  }
+}

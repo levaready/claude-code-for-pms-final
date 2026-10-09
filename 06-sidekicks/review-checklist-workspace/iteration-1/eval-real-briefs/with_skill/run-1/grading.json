@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "bulk-callout.txt: flags 'owner named' and no other check",
+      "passed": true,
+      "evidence": "owner NO \u2014 flagged; the other three yes (success 'yes' with a baseline note). Sofia called a stakeholder, not an owner."
+    },
+    {
+      "text": "routing-override-audit-log.txt: flags 'success measure' and no other check",
+      "passed": true,
+      "evidence": "success measure NO \u2014 flagged; owner yes (Marcus's team); scope and problem yes."
+    },
+    {
+      "text": "requisition-approval-chains.txt: flags 'scope stays bounded' and no other check",
+      "passed": true,
+      "evidence": "scope NO \u2014 flagged, citing 'That's the whole ask' then four additions; the other three yes."
+    },
+    {
+      "text": "handler-phone-app.txt: flags 'problem stated before fix' and no other check",
+      "passed": true,
+      "evidence": "problem-before-fix NO \u2014 flagged; owner yes with a 'not yet staffed' note; the other two yes."
+    },
+    {
+      "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+      "passed": true,
+      "evidence": "Four-line block per brief, then '4 briefs checked, 4 flagged.'"
+    },
+    {
+      "text": "Every flag quotes or points to the line in the brief that decided it",
+      "passed": true,
+      "evidence": "Every flag quotes the deciding line ('nobody's picked it up yet', 'while we're building...', 'Proposal: We should build...')."
+    },
+    {
+      "text": "Does not rewrite the brief or propose replacement text",
+      "passed": true,
+      "evidence": "No rewritten text; only descriptions of what is missing."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  }
+}

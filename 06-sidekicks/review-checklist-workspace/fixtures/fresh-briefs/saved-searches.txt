@@ -1,0 +1,33 @@
+Saved Searches for the Agent Inbox — one-pager
+Product, Support Tools
+21 September 2026
+
+Problem
+
+Support agents re-type the same filters dozens of times a day: "billing,
+open, waiting on us, last 7 days". In the August time study, agents spent
+about 9% of each shift rebuilding filters, and the three most senior agents
+named it as the first thing they would fix. New agents get it wrong more
+often, which is why some tickets sit in the wrong queue for hours.
+
+Proposal
+
+Let an agent save any filter combination in the inbox with a name, and pick
+it from a list the next time. Saved searches belong to the agent who made
+them.
+
+Owner
+
+Priya Nair, PM for Support Tools. Engineering lead: Tomas Ek.
+
+Success measure
+
+Median time from opening the inbox to the first reply on a filtered queue
+drops from 6.1 minutes to under 4 minutes within eight weeks of release. We
+will also track the share of tickets that land in the wrong queue (7% today).
+
+Scope
+
+Saved searches for the agent inbox only, private to each agent. No sharing
+between agents, no admin view, no saved searches in the reporting tool.
+Those may be follow-ups but are not part of this brief.

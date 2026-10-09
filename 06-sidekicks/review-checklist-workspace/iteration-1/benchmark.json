@@ -1,0 +1,349 @@
+{
+  "metadata": {
+    "skill_name": "review-checklist",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-09T00:24:10Z",
+    "evals_run": [
+      0,
+      1
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 19.3,
+        "tokens": 60168,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "saved-searches.txt: clean, with no flags",
+          "passed": true,
+          "evidence": "saved-searches: clean."
+        },
+        {
+          "text": "invoice-reminders.txt: flags 'owner named' and no other check",
+          "passed": true,
+          "evidence": "invoice-reminders: owner flagged ('To be decided once the quarter's roadmap is set'); header names only the department."
+        },
+        {
+          "text": "onboarding-checklist.txt: flags 'success measure' and no other check",
+          "passed": true,
+          "evidence": "onboarding-checklist: success measure flagged ('feel more confident')."
+        },
+        {
+          "text": "export-to-csv.txt: flags 'scope stays bounded' and no other check",
+          "passed": true,
+          "evidence": "export-to-csv: scope flagged (CSV and PDF, then CSV only, then PDF in next steps)."
+        },
+        {
+          "text": "smart-notifications.txt: flags 'problem stated before fix' and no other check",
+          "passed": true,
+          "evidence": "smart-notifications: problem-before-fix flagged (Proposal precedes Problem)."
+        },
+        {
+          "text": "partner-api-keys.txt: flags both 'owner named' and 'success measure' and nothing else",
+          "passed": true,
+          "evidence": "partner-api-keys: owner and success measure both flagged, nothing else."
+        },
+        {
+          "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+          "passed": true,
+          "evidence": "Four-line block per brief, then '6 briefs checked, 5 flagged.'"
+        },
+        {
+          "text": "Every flag quotes or points to the line in the brief that decided it",
+          "passed": true,
+          "evidence": "Each flag cites the deciding line."
+        },
+        {
+          "text": "Does not rewrite the brief or propose replacement text",
+          "passed": true,
+          "evidence": "No rewritten text."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 21.1,
+        "tokens": 60917,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "bulk-callout.txt: flags 'owner named' and no other check",
+          "passed": true,
+          "evidence": "owner NO \u2014 flagged; the other three yes (success 'yes' with a baseline note). Sofia called a stakeholder, not an owner."
+        },
+        {
+          "text": "routing-override-audit-log.txt: flags 'success measure' and no other check",
+          "passed": true,
+          "evidence": "success measure NO \u2014 flagged; owner yes (Marcus's team); scope and problem yes."
+        },
+        {
+          "text": "requisition-approval-chains.txt: flags 'scope stays bounded' and no other check",
+          "passed": true,
+          "evidence": "scope NO \u2014 flagged, citing 'That's the whole ask' then four additions; the other three yes."
+        },
+        {
+          "text": "handler-phone-app.txt: flags 'problem stated before fix' and no other check",
+          "passed": true,
+          "evidence": "problem-before-fix NO \u2014 flagged; owner yes with a 'not yet staffed' note; the other two yes."
+        },
+        {
+          "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+          "passed": true,
+          "evidence": "Four-line block per brief, then '4 briefs checked, 4 flagged.'"
+        },
+        {
+          "text": "Every flag quotes or points to the line in the brief that decided it",
+          "passed": true,
+          "evidence": "Every flag quotes the deciding line ('nobody's picked it up yet', 'while we're building...', 'Proposal: We should build...')."
+        },
+        {
+          "text": "Does not rewrite the brief or propose replacement text",
+          "passed": true,
+          "evidence": "No rewritten text; only descriptions of what is missing."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 20.1,
+        "tokens": 60017,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "bulk-callout.txt: flags 'owner named' and no other check",
+          "passed": true,
+          "evidence": "owner NO \u2014 flagged; the other three yes (success 'yes' with a baseline note). Sofia called a stakeholder, not an owner."
+        },
+        {
+          "text": "routing-override-audit-log.txt: flags 'success measure' and no other check",
+          "passed": true,
+          "evidence": "success measure NO \u2014 flagged; owner yes (Marcus's team); scope and problem yes."
+        },
+        {
+          "text": "requisition-approval-chains.txt: flags 'scope stays bounded' and no other check",
+          "passed": true,
+          "evidence": "scope NO \u2014 flagged, citing 'That's the whole ask' then four additions; the other three yes."
+        },
+        {
+          "text": "handler-phone-app.txt: flags 'problem stated before fix' and no other check",
+          "passed": true,
+          "evidence": "problem-before-fix NO \u2014 flagged; owner yes with a 'not yet staffed' note; the other two yes."
+        },
+        {
+          "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+          "passed": true,
+          "evidence": "Four-line block per brief, then '4 briefs checked, 4 flagged.'"
+        },
+        {
+          "text": "Every flag quotes or points to the line in the brief that decided it",
+          "passed": true,
+          "evidence": "Every flag quotes the deciding line ('nobody's picked it up yet', 'while we're building...', 'Proposal: We should build...')."
+        },
+        {
+          "text": "Does not rewrite the brief or propose replacement text",
+          "passed": true,
+          "evidence": "No rewritten text; only descriptions of what is missing."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.89,
+        "passed": 8,
+        "failed": 1,
+        "total": 9,
+        "time_seconds": 15.6,
+        "tokens": 56754,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "saved-searches.txt: clean, with no flags",
+          "passed": true,
+          "evidence": "saved-searches: passes all four."
+        },
+        {
+          "text": "invoice-reminders.txt: flags 'owner named' and no other check",
+          "passed": true,
+          "evidence": "invoice-reminders: fails on owner."
+        },
+        {
+          "text": "onboarding-checklist.txt: flags 'success measure' and no other check",
+          "passed": true,
+          "evidence": "onboarding-checklist: fails on success measure."
+        },
+        {
+          "text": "export-to-csv.txt: flags 'scope stays bounded' and no other check",
+          "passed": true,
+          "evidence": "export-to-csv: fails on scope."
+        },
+        {
+          "text": "smart-notifications.txt: flags 'problem stated before fix' and no other check",
+          "passed": true,
+          "evidence": "smart-notifications: fails on problem before fix."
+        },
+        {
+          "text": "partner-api-keys.txt: flags both 'owner named' and 'success measure' and nothing else",
+          "passed": true,
+          "evidence": "partner-api-keys: fails on owner and success measure."
+        },
+        {
+          "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+          "passed": false,
+          "evidence": "Bulleted results with no four-line block and no final count of briefs checked and flagged."
+        },
+        {
+          "text": "Every flag quotes or points to the line in the brief that decided it",
+          "passed": true,
+          "evidence": "Cites the deciding lines."
+        },
+        {
+          "text": "Does not rewrite the brief or propose replacement text",
+          "passed": true,
+          "evidence": "No rewritten text."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.57,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 26.5,
+        "tokens": 58039,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "bulk-callout.txt: flags 'owner named' and no other check",
+          "passed": false,
+          "evidence": "Flags the owner, but also calls the success measure 'partial: two signals, no target', so it is not a single flag."
+        },
+        {
+          "text": "routing-override-audit-log.txt: flags 'success measure' and no other check",
+          "passed": true,
+          "evidence": "Success measure: 'no success measure at all'; owner, scope and problem fine. An extra remark about 'no date' is outside the four checks."
+        },
+        {
+          "text": "requisition-approval-chains.txt: flags 'scope stays bounded' and no other check",
+          "passed": true,
+          "evidence": "Scope break found, citing 'That's the whole ask' and the four additions. It only remarks that the owner is a team and does not call it a flag."
+        },
+        {
+          "text": "handler-phone-app.txt: flags 'problem stated before fix' and no other check",
+          "passed": false,
+          "evidence": "Problem order found, but it also calls the owner thin ('only for exploration, unstaffed') and the success measure 'weak: no baseline or target'."
+        },
+        {
+          "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+          "passed": false,
+          "evidence": "Prose bullets per brief and an overall ranking. No four-line block and no count of briefs checked and flagged."
+        },
+        {
+          "text": "Every flag quotes or points to the line in the brief that decided it",
+          "passed": true,
+          "evidence": "Quotes the deciding lines in most places ('nobody's picked it up yet', 'That's the whole ask')."
+        },
+        {
+          "text": "Does not rewrite the brief or propose replacement text",
+          "passed": true,
+          "evidence": "No rewritten text."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 20.1667,
+        "stddev": 0.9018,
+        "min": 19.3,
+        "max": 21.1
+      },
+      "tokens": {
+        "mean": 60367.3333,
+        "stddev": 481.9754,
+        "min": 60017,
+        "max": 60917
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.73,
+        "stddev": 0.2263,
+        "min": 0.57,
+        "max": 0.89
+      },
+      "time_seconds": {
+        "mean": 21.05,
+        "stddev": 7.7075,
+        "min": 15.6,
+        "max": 26.5
+      },
+      "tokens": {
+        "mean": 57396.5,
+        "stddev": 908.6322,
+        "min": 56754,
+        "max": 58039
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.27",
+      "time_seconds": "-0.9",
+      "tokens": "+2971"
+    }
+  },
+  "notes": []
+}

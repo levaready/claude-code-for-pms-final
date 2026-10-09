@@ -1,0 +1,55 @@
+{
+  "expectations": [
+    {
+      "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+      "passed": true,
+      "evidence": "'Confidence gate: 95' with evidence from CLAUDE.md."
+    },
+    {
+      "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+      "passed": true,
+      "evidence": "Four read-back lines."
+    },
+    {
+      "text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three",
+      "passed": true,
+      "evidence": "No gate questions. Three questions about evidence and owners."
+    },
+    {
+      "text": "Saves a charter file that records the four dimensions with their evidence",
+      "passed": true,
+      "evidence": "charter.md written."
+    },
+    {
+      "text": "Starts real work by reading the evidence files and writing at least one phase output",
+      "passed": true,
+      "evidence": "Wrote working-context.md and evidence-map.md."
+    },
+    {
+      "text": "Takes no outward action and says it will check before sending or committing anything",
+      "passed": true,
+      "evidence": "'I check with you before any email, post, commit or push'."
+    },
+    {
+      "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+      "passed": true,
+      "evidence": "'What the sources state (no cause claimed yet)'; tickets 'candidate mechanisms only'."
+    },
+    {
+      "text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete",
+      "passed": true,
+      "evidence": "Did not catch the Saturday, but noticed the 5 Oct week is probably incomplete ('today is Thu 8 Oct'). The assertion allows either."
+    },
+    {
+      "text": "Ends with a first look at the numbers that is labelled as a first look",
+      "passed": false,
+      "evidence": "Gives the headline rows but under 'What the sources state', not labelled as a first look."
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 1,
+    "total": 9,
+    "pass_rate": 0.89
+  }
+}

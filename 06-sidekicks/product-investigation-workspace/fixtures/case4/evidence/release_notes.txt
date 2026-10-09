@@ -1,0 +1,1 @@
+Oct 3: New pricing page. Plan cards redesigned; annual discount badge moved into the checkout step; "Studio" and "Team" plan descriptions shortened.

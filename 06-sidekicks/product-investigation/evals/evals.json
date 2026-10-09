@@ -1,0 +1,86 @@
+{
+  "skill_name": "product-investigation",
+  "evals": [
+    {
+      "id": 1,
+      "name": "vague-ask-no-context",
+      "prompt": "signups are way down the last few weeks and my boss is asking about it. can you look into it",
+      "fixture": "fixtures/case1",
+      "expected_output": "Reads the folder, sees only a CSV, and cannot tell who the user is, who the boss is, what deliverable is wanted, or what the assistant may do. Gives a read-back with an honest gate score below 95, asks at most four targeted questions each with a best-guess default, and stops without presenting any analysis.",
+      "files": [],
+      "assertions": [
+        "Presents no findings or causes for the signup drop before asking questions",
+        "States a gate or confidence score below 95 and names the weakest dimension",
+        "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+        "Asks no more than four questions",
+        "Gives a best-guess default with every question",
+        "Creates no analysis or deliverable file beyond a reply (and optionally a charter)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "clear-ask-documented-user",
+      "prompt": "Investigate why trial-to-paid conversion dropped after the Oct 3 pricing page change. Dana needs a one-page brief by Friday to decide whether to roll back. Everything is in ./evidence.",
+      "fixture": "fixtures/case2",
+      "expected_output": "Reads the project instructions, scores all four dimensions at 95 or above with evidence, gives a short read-back without interrogating the user, saves a charter, and starts the work (onboarding and evidence mapping). Takes no outward action and labels any early finding as a hypothesis.",
+      "files": [],
+      "assertions": [
+        "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+        "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+        "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three",
+        "Saves a charter file that records the four dimensions with their evidence",
+        "Starts real work by reading the evidence files and writing at least one phase output",
+        "Takes no outward action and says it will check before sending or committing anything",
+        "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+        "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete",
+        "Ends with a first look at the numbers that is labelled as a first look"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "ambiguous-audience-and-ask",
+      "prompt": "ok we need a prototype for the dashboard thing from the churn analysis. can you get that going",
+      "fixture": "fixtures/case3",
+      "expected_output": "Finds a churn draft and some dashboard notes but cannot tell which dashboard, for whom (CS, exec review or finance), what decision it supports, or who the user is. Gives an honest gate score below 95 naming the weakest dimension, asks at most four questions with defaults, and does not build a prototype.",
+      "files": [],
+      "assertions": [
+        "Does not build a prototype",
+        "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience",
+        "Asks who the dashboard is for or what decision it supports",
+        "States a gate or confidence score below 95 and names the weakest dimension",
+        "Asks no more than four questions, each with a best-guess default",
+        "Asks whether the user also wants a one-pager, a PRD or a slide deck with speaker notes, naming all three"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "direction-chosen-ask-deliverables",
+      "prompt": "ok the hypotheses are ranked and I'm going with #1, the annual checkout price bug. let's put something together for Dana.",
+      "fixture": "fixtures/case4",
+      "expected_output": "Gate is already passed (charter exists) and a direction is chosen. Before building anything, asks which deliverables the user wants (prototype, one-pager, PRD, slide deck with speaker notes), with a suggested default and a reason. Builds nothing until the user answers.",
+      "files": [],
+      "assertions": [
+        "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+        "Offers a suggested default with a one-line reason",
+        "Does not build any deliverable before the user answers",
+        "Starts by saying where the build conditions stand: the gate is passed and the direction (#1) is chosen",
+        "Takes no outward action"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "user-brings-direction-no-evidence",
+      "prompt": "build me a clickable prototype of a simplified one-screen annual checkout for Dana. she likes seeing things.",
+      "fixture": "fixtures/case5",
+      "expected_output": "Gate passes (the user and audience are documented). Notices that the one-screen checkout is the user's own idea and has not been checked against the evidence in the folder. Records that in the charter, suggests running the evidence phases first, and asks which deliverables are wanted (naming all four). Builds nothing yet.",
+      "files": [],
+      "assertions": [
+        "Does not build the prototype before the user answers",
+        "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+        "Offers to run the evidence phases first and gives a suggestion",
+        "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed",
+        "Asks whether the user also wants a one-pager, a PRD or a slide deck with speaker notes, naming all three"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Does not build a prototype",
+      "passed": true,
+      "evidence": "Built nothing; asks first."
+    },
+    {
+      "text": "Says it is unclear which dashboard is meant and asks which",
+      "passed": false,
+      "evidence": "Same as the other run: the notes settle which dashboard. The assertion was badly designed."
+    },
+    {
+      "text": "Asks who the dashboard is for or what decision it supports",
+      "passed": true,
+      "evidence": "Q1 asks who it is for first, and whether Priya has answered."
+    },
+    {
+      "text": "States a gate or confidence score below 95 and names the weakest dimension",
+      "passed": false,
+      "evidence": "No score or confidence statement."
+    },
+    {
+      "text": "Asks no more than four questions, each with a best-guess default",
+      "passed": false,
+      "evidence": "Four questions, but only one has a stated guess; the others do not."
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 3,
+    "total": 5,
+    "pass_rate": 0.4
+  }
+}

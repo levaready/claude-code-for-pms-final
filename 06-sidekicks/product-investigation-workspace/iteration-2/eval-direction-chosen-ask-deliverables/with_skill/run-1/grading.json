@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+      "passed": true,
+      "evidence": "Lists prototype, one-pager, PRD and slide deck with speaker notes."
+    },
+    {
+      "text": "Offers a suggested default with a one-line reason",
+      "passed": true,
+      "evidence": "'My suggestion: the one-pager only', with a reason from the CLAUDE.md ask."
+    },
+    {
+      "text": "Does not build any deliverable before the user answers",
+      "passed": true,
+      "evidence": "'I've built nothing yet'; waits for the pick."
+    },
+    {
+      "text": "Says why it can start: the gate is passed and the direction (#1) is chosen",
+      "passed": false,
+      "evidence": "Acknowledges the direction ('#1 it is') but never says the gate is passed or that the conditions are met."
+    },
+    {
+      "text": "Takes no outward action",
+      "passed": true,
+      "evidence": "'Nothing gets sent to Dana.'"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

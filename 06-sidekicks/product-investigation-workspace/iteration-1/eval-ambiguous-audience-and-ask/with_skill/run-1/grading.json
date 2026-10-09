@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Does not build a prototype",
+      "passed": true,
+      "evidence": "No prototype built; outputs are reply.md and a draft charter marked gate not passed."
+    },
+    {
+      "text": "Says it is unclear which dashboard is meant and asks which",
+      "passed": false,
+      "evidence": "The notes name one dashboard (early-warning accounts), so it did not say which dashboard was unclear. It questioned the audience and the question it answers instead. The assertion was badly designed because the fixture settles which dashboard."
+    },
+    {
+      "text": "Asks who the dashboard is for or what decision it supports",
+      "passed": true,
+      "evidence": "Q1 asks who the first audience is; Q3 asks what it needs to do and by when."
+    },
+    {
+      "text": "States a gate or confidence score below 95 and names the weakest dimension",
+      "passed": true,
+      "evidence": "'Gate score: 55 (lowest: Who you are / the goal, the audience for the dashboard)'."
+    },
+    {
+      "text": "Asks no more than four questions, each with a best-guess default",
+      "passed": true,
+      "evidence": "Four questions, each with '(my guess: ...)'."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

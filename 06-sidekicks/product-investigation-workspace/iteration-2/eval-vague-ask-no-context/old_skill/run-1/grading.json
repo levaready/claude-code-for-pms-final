@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Presents no findings or causes for the signup drop before asking questions",
+      "passed": true,
+      "evidence": "No findings or causes; 'I haven't started any analysis'."
+    },
+    {
+      "text": "States a gate or confidence score below 95 and names the weakest dimension",
+      "passed": true,
+      "evidence": "'Gate score: 40 (lowest: who you are / the goal)'."
+    },
+    {
+      "text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+      "passed": true,
+      "evidence": "All four dimensions read back."
+    },
+    {
+      "text": "Asks no more than four questions",
+      "passed": true,
+      "evidence": "Four numbered questions."
+    },
+    {
+      "text": "Gives a best-guess default with every question",
+      "passed": true,
+      "evidence": "Each question carries a bracketed best guess."
+    },
+    {
+      "text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)",
+      "passed": true,
+      "evidence": "Only reply.md and charter-draft.md."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

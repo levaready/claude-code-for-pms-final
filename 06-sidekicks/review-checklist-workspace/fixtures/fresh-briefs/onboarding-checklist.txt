@@ -1,0 +1,30 @@
+Onboarding Checklist — one-pager
+Product, Growth
+30 September 2026
+
+Problem
+
+New accounts often stall in the first week. Of the accounts created in
+August, 38% never connected their first data source, and those accounts
+churn at three times the rate of the others. Customer success hears the
+same thing in calls: people do not know what to do first.
+
+Proposal
+
+Add a short checklist on the home screen for the first 14 days: connect a
+data source, invite a teammate, create a first report. Each step ticks off
+as it is completed.
+
+Owner
+
+Jamal Rivera, PM for Growth.
+
+Success measure
+
+We will know it is working when customers feel more confident about getting
+started and onboarding feels smoother.
+
+Scope
+
+The checklist on the home screen for new accounts only. No changes to the
+sign-up flow, no emails, no changes for existing accounts.

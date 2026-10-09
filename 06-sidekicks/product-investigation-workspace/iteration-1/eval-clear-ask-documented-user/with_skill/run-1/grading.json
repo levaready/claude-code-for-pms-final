@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message",
+      "passed": true,
+      "evidence": "'Gate: passed at 95'; charter cites CLAUDE.md lines and the user's message."
+    },
+    {
+      "text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role",
+      "passed": true,
+      "evidence": "Four read-back lines: ask, who you are, goal, my role."
+    },
+    {
+      "text": "Does not interrogate the user: asks no blocking question (at most one non-blocking)",
+      "passed": true,
+      "evidence": "No question about who the user is or what they want. It does ask four questions about gaps in the evidence (metric definition, rollout, other changes, checking the price); none blocked the work. The assertion wording is ambiguous, so this is graded on intent."
+    },
+    {
+      "text": "Saves a charter file that records the four dimensions with their evidence",
+      "passed": true,
+      "evidence": "charter.md has the four sections, each with evidence and a score."
+    },
+    {
+      "text": "Starts real work by reading the evidence files and writing at least one phase output",
+      "passed": true,
+      "evidence": "Wrote working-context.md and evidence-map.md after reading all three evidence files."
+    },
+    {
+      "text": "Takes no outward action and says it will check before sending or committing anything",
+      "passed": true,
+      "evidence": "'I haven't sent anything'; role line says it checks before anything is emailed, posted, committed or pushed."
+    },
+    {
+      "text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact",
+      "passed": true,
+      "evidence": "'No cause named'; tickets 'hint at things to check, not proof'."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  }
+}

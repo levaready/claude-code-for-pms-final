@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "product-investigation", "runs": [{"id": "eval-ambiguous-audience-and-ask-old_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter (DRAFT, gate not passed)\nDate: 2026-10-08   Gate score: 40 (lowest: who they are)\n\n## The ask\nClickable prototype of an early-warning dashboard for at-risk accounts, from the churn analysis.\nEvidence: user message \"prototype for the dashboard thing from the churn analysis\"; dashboard-notes.txt \"something that shows early-warning accounts\".   Score: 70\n\n## Who they are\nUnknown. No role, manager or reader stated. \"ask Priya\" in notes hints Priya decides (unconfirmed).   Score: 40\n\n## The goal\nUnknown. Audience undecided: notes say \"maybe for CS? maybe for the exec review?\" and \"check whether finance wants the same view\".   Score: 50\n\n## My role\nDo on my own: read, analyze, draft, build prototype in the outputs folder.\nCheck first: anything sent, posted, committed, pushed.\nOff limits: no project instructions seen; assuming nothing outside the folder.   Score: 85 (default, unconfirmed)\n\n## Assumptions still open\n- Audience (CS vs exec vs finance): close with answer to Q1.\n- Who Priya is and whether she asked for this: Q2.\n- User's role and decision the dashboard supports: Q3.\n- Deliverable type, deadline, simulated data labelled: Q4.\n- Churn analysis is a 2 Oct draft; its numbers are unverified.\n"}, {"name": "reply.md", "type": "text", "content": "I'll get this going, but I can't yet say who the dashboard is for, so I'm not building anything. I've only read the two files in the folder: `churn-analysis.md` (the 2 Oct draft) and `dashboard-notes.txt`.\n\n**Before I start, here is what I understand. Gate score: 55 (lowest: who you are / the audience).**\n\n- **Your ask:** a clickable prototype of an early-warning dashboard for at-risk accounts, based on the churn analysis. (Score about 70. \"The dashboard thing\" most likely means the idea in `dashboard-notes.txt`. I don't know what the dashboard has to answer or what is out of scope.)\n- **Who you are:** I don't know. Nothing in the folder says your role, who you report to or who reads this. Your notes end with \"ask Priya\", so Priya may be the person who decides, but I'm only guessing. (Score about 40.)\n- **What you're trying to achieve:** unclear. Your notes say \"maybe for CS? maybe for the exec review?\" and \"check whether finance wants the same view\", so the audience is undecided. The audience changes what the dashboard shows. CS needs a list of named accounts to call this week. An exec review needs a trend and a few numbers. (Score about 50.)\n- **My role:** I would read, analyze and build the prototype on my own. I'd check with you before anything is sent, posted or committed. Nothing leaves the folder. (Score about 85. This is my default, not something you've confirmed.)\n\n**What the churn analysis supports (not yet checked against any data).** Churn rose from 3.1% to 4.4% over 8 weeks. The largest rise is among accounts under 90 days old, at 5.9%. The draft's open questions (onboarding drop-off, pricing change, support wait times) are still open. A prototype can show early-warning signals, but it can't claim any of those is the cause. I'd label the example data in it as simulated.\n\n**Questions** (a plain \"yes\" to my guess is a full answer):\n1. Who is the first audience? CS, the exec review or finance? (my guess: CS, because \"early-warning accounts\" reads as a working list, and I'd build that first, with the layout kept simple enough to adapt for the exec review later)\n2. Has Priya decided or asked for this, and who gets the finished thing? (my guess: Priya is your manager or the decision-maker, and the prototype is for you to show her next)\n3. What is your role, and what should the dashboard help someone decide or do? (my guess: you are the product owner, and it should help CS pick which new accounts to contact first)\n4. Is a clickable prototype with simulated example data the right deliverable, with no live data connection? (my guess: yes, by when? I'm assuming no fixed deadline)\n\nI've saved a draft charter with these as open assumptions (`charter.md` in the outputs folder). Once you answer, I'll update it and start on the prototype.\n"}], "grading": {"expectations": [{"text": "Does not build a prototype", "passed": true, "evidence": "Nothing built."}, {"text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience", "passed": true, "evidence": "'The dashboard thing most likely means the idea in dashboard-notes.txt'."}, {"text": "Asks who the dashboard is for or what decision it supports", "passed": true, "evidence": "Q1 audience, Q3 what it should help someone decide."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 55 (lowest: who you are / the audience)'."}, {"text": "Asks no more than four questions, each with a best-guess default", "passed": true, "evidence": "Four questions, each with '(my guess: ...)'."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-ambiguous-audience-and-ask-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter (DRAFT, gate not passed)\nDate: 2026-10-08   Gate score: 55 (lowest: audience / who they are / goal)\n\n## The ask\nA clickable prototype of the \"early-warning accounts\" dashboard from the churn analysis.\nEvidence: \"we need a prototype for the dashboard thing from the churn analysis\"; dashboard-notes.txt: \"something that shows early-warning accounts\".   Score: 60\nDeliverables: prototype (named by the user)\nDirection to show: supplied by the user, not yet backed by evidence\n\n## Who they are\nUnknown. Notes mention \"Priya\" (role unknown).   Evidence: dashboard-notes.txt \"ask Priya\".   Score: 40\n\n## The goal\nUnknown. Audience undecided: CS, exec review, or finance.   Evidence: dashboard-notes.txt \"maybe for CS? maybe for the exec review?\"   Score: 45\n\n## My role\nDo on my own: read, analyze, draft, build once gate and build conditions are met\nCheck first: anything sent, posted, published, committed, pushed\nOff limits: contacting Priya or finance on the user's behalf   Evidence: skill defaults; no project instructions in folder   Score: 80\n\n## Assumptions still open\n- Audience is Customer Success (close with Q1)\n- Decision supported: which accounts under 90 days old to contact first (Q2)\n- User's role and Priya's role (Q3)\n- Evidence phases first vs. straight to prototype; availability of account-level data (Q4)\n- Churn analysis is a draft (2 Oct); causes unconfirmed\n"}, {"name": "reply.md", "type": "text", "content": "Happy to get the prototype going. I read the two files in the folder first (`churn-analysis.md` and `dashboard-notes.txt`), and they leave a few things open that would change what I build. I'd rather check now than hand you a polished dashboard for the wrong reader.\n\nBefore I start, here is what I understand. Gate score: 55 (lowest: who you are / the goal, with the audience).\n\n- Your ask: a clickable prototype of the \"early-warning accounts\" dashboard from the churn analysis. Your message says \"prototype\" and `dashboard-notes.txt` describes the idea (\"something that shows early-warning accounts\"). Not yet clear: which accounts count as \"early warning\", and what the dashboard should let someone do.\n- Who you are: I don't know your role or who you report to. The notes mention \"Priya\" as the person to ask, but I don't know if she is your boss, a stakeholder or a colleague.\n- What you're trying to achieve: unknown. The notes say \"maybe for CS? maybe for the exec review?\" and \"check whether finance wants the same view\". No decision or deadline is written down.\n- My role: I will read, analyze and draft on my own, and build the prototype once the conditions below are met. I'll check with you before sending, posting, publishing or committing anything. I won't contact Priya or finance myself.\n\nAssumptions I'm making (none confirmed):\n- The dashboard is built on the churn finding in `churn-analysis.md`: churn rose from 3.1% to 4.4% over 8 weeks, with the biggest rise among accounts under 90 days old (5.9%). That analysis is marked draft, and its causes are open questions (onboarding drop-off, pricing change, support wait times). So I'd treat \"what signals an at-risk account\" as a hypothesis, not a finding.\n- Your idea of the dashboard comes from you, not from evidence yet. I'll record it as \"direction supplied by the user, not yet backed by evidence\".\n\nQuestions:\n1. Who is the dashboard for: Customer Success working accounts day to day, the exec review, or finance? The notes say \"maybe\" for each, and a CS working view and an exec summary look very different. (My guess: Customer Success, since \"early-warning accounts\" sounds like a worklist.)\n2. What decision or action should it support, and by when? For example, \"CS picks which new accounts to call this week\", or \"execs see churn risk at the review on <date>\". (My guess: helping CS decide which accounts under 90 days old to contact first. No deadline known.)\n3. Who are you in this, and who is Priya? Do you own this, and does she need to approve the audience? (My guess: you're the PM or analyst who owns the churn follow-up, and Priya is the person who decides the audience.)\n4. Do you want me to run the evidence phases first (what actually predicts churn in the data), or go straight to a prototype of your idea? If you only have the draft analysis and no account-level data, the prototype will have to use made-up example data, labelled as such. (My guess: a quick evidence pass first if you have account-level data, otherwise prototype with clearly labelled example data.)\n\nA yes or a one-line correction to each is plenty. Nothing has been built yet, and I haven't analyzed anything beyond reading those two files.\n\nOnce the gate is passed I'll also ask you to pick deliverables, unless you've already told me. Your message names a prototype, so I'll take that as chosen unless you want a one-pager, PRD or deck as well. I've saved a draft charter (`charter.md`) with the open assumptions listed so we can pick up from there.\n"}], "grading": {"expectations": [{"text": "Does not build a prototype", "passed": true, "evidence": "Nothing built; 'Nothing has been built yet'."}, {"text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience", "passed": true, "evidence": "'clickable prototype of the early-warning accounts dashboard from the churn analysis'."}, {"text": "Asks who the dashboard is for or what decision it supports", "passed": true, "evidence": "Q1 asks who it is for; Q2 asks what decision it supports."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 55 (lowest: who you are / the goal, with the audience)'."}, {"text": "Asks no more than four questions, each with a best-guess default", "passed": true, "evidence": "Four questions, each with '(My guess: ...)'."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-clear-ask-documented-user-old_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter\nDate: 2026-10-08   Gate score: 95 (lowest: The goal)\n\n## The ask\nOne-page brief recommending whether to roll back the pricing page shipped Fri 3 Oct. Question: why did trial-to-paid conversion drop after the change, and is rollback the right call? Out of scope (assumed): building fixes, anything sent to anyone.\nEvidence: user message \"Investigate why trial-to-paid conversion dropped after the Oct 3 pricing page change... one-page brief by Friday\"; CLAUDE.md \"Current work\". Score: 97\n\n## Who they are\nMaya Chen, PM for Checkout at Brightfold (subscription billing tool for small studios). Reports to Dana Ortiz, VP of Product. Knows funnel and pricing model well; not an analyst, wants rows behind every number and plain writing. Readers: Maya first, then Dana. Dana and the team see nothing Maya has not read.\nEvidence: CLAUDE.md lines 3-5, \"How I want you to work\". Score: 97\n\n## The goal\nDana decides rollback or not in Monday's (12 Oct) product review; brief due Fri 9 Oct. \"Good\" = a recommendation Maya can defend, with causes labelled as guesses unless the data supports them.\nEvidence: CLAUDE.md \"Current work\". Score: 95 (what Dana will accept as support for a \"roll back / don't\" is inferred; see assumptions)\n\n## My role\nDo on my own: read ./evidence, map it, analyze, draft files in the outputs folder.\nCheck first: any email, post, commit, push; showing anything to Dana or the team.\nOff limits: writing into the fixture/evidence folder; naming a cause before data supports it.\nEvidence: CLAUDE.md. Score: 97\n\n## Assumptions still open\n- \"Friday\" = tomorrow, 9 Oct (today is Thu 8 Oct). Close: Maya confirms.\n- Brief may offer partial options (e.g. fix the checkout price bug rather than full rollback), not only yes/no. Close: Maya confirms.\n- The only data are the three files in ./evidence; more can be requested. Close: Maya names owners.\n"}, {"name": "evidence-map.md", "type": "text", "content": "# Evidence map (phase 2). 2026-10-08\n\nAssumes reader is Maya (non-analyst). Weakest gate dimension: the goal (what Dana needs to see to decide).\n\n## Sources\n| Source | Covers | Items | Made by / why | Does not cover |\n|---|---|---|---|---|\n| evidence/release_notes.txt | 3 Oct change | 1 line | unknown author | No rollout method (all users or test?), no checkout/price logic changes, nothing about earlier changes |\n| evidence/tickets.txt | 6-8 Oct | 5 tickets, 5 filers (apparently) | Support, unknown triage | Silent users; no total ticket volume or baseline; no pre-3 Oct tickets |\n| evidence/funnel_weekly.csv | weeks starting 7 Sep to 5 Oct; all / annual / monthly | 15 rows (4 weeks before, 1 after, x3 cuts) | unknown (analytics) | One post-change week only; no daily grain; no checkout-step events; no tier (Studio/Team) cut; no traffic source; no prior-year |\n| CLAUDE.md | user, deadline, rules | n/a | Maya | n/a |\n\n## Stated by sources (not inference)\n- Change shipped 3 Oct. Annual discount badge moved to checkout step.\n- Week of 5 Oct rows: all 0.22 (was 0.30-0.31); annual 0.20 (was 0.35-0.36); monthly 0.23 (was 0.27). Trial starts and page views flat (e.g. all 538 vs 529-541).\n- Tickets: 2 on price shown vs charged (T-101, T-105), 1 on missing discount (T-102), 1 on plan re-pick (T-103), 1 on unclear tier content (T-104).\n\n## Contradictions\n1. Release notes say the discount badge moved to checkout; T-102 reports it missing, and T-101 says checkout price differed from the page. Either users do not see it at checkout, or it is displayed inconsistently. Unresolved.\n2. T-104 praises the design while describing a real usability gap; one voice, mixed signal.\n3. Data vs. definition: the week of 5 Oct has a trial-to-paid figure, yet that week is only partly elapsed (today is 8 Oct), and trial starts that week look like a full week (538 vs ~530). If trials last more than a few days, trials started this week cannot have finished. So either trial_to_paid is counted by something other than trial start cohort, or the week is incomplete/partial. Cannot tell which.\n4. Rows reconcile: all-plan trial starts = annual + monthly each week (538 = 215 + 323). No conflict there.\n\n## Missing, owner (guess), draft question\n| Gap | Likely owner | Draft question (not sent) |\n|---|---|---|\n| Definition of trial_to_paid; trial length; is the Oct 5 week complete | Analytics / data owner | \"How is trial_to_paid calculated, how long is a trial, and what dates does the 5 Oct row cover?\" |\n| Daily data, 28 Sep to now | Analytics | \"Can we get daily trial starts and conversions by plan from 28 Sep?\" |\n| Rollout method: everyone at once or a split test | Eng / growth | \"Was the new page shown to all visitors from 3 Oct, or was any traffic held back on the old page?\" |\n| Is the checkout price mismatch a bug (T-101, T-105) and how many were charged wrong | Engineering + billing | \"Can you check orders since 3 Oct where the charged plan differs from the plan chosen?\" |\n| Checkout-step funnel (plan selected -> payment) | Analytics | \"Drop-off per checkout step before and after 3 Oct\" |\n| Total ticket volume and baseline | Support | \"How many pricing/checkout tickets per week, before and after?\" |\n| Year-ago / seasonality baseline for early October | Analytics | \"Early October trial-to-paid last year?\" |\n| What else shipped 29 Sep - 8 Oct | Eng | \"Any other release, price or campaign change?\" |\n\n## Gate: every source read (3 of 3 plus CLAUDE.md); each gap has a guessed owner (names unknown, to be confirmed by Maya).\n"}, {"name": "reply.md", "type": "text", "content": "Maya, I read CLAUDE.md and all three files in ./evidence (release notes, 5 tickets, weekly funnel CSV) before doing anything else. Nothing is sent or shared; everything below is a draft in the outputs folder.\n\n**Confidence gate: 95, lowest dimension is the goal.**\n- Your ask: a one-page brief for Dana on why trial-to-paid dropped after the 3 Oct pricing page and whether to roll back.\n- Who you are: PM for Checkout, reporting to Dana Ortiz (VP Product). You know the funnel, not analysis, so I show rows and keep it plain. You read it first; Dana only sees what you have read.\n- Goal: Dana decides in Monday's (12 Oct) product review; brief due Fri 9 Oct, i.e. tomorrow. Good means a recommendation you can defend, with guesses labelled.\n- My role: read, map, analyze and draft in the outputs folder. I check with you before any email, post, commit or push. I won't name a cause before the data supports one.\n\nSince the gate is passed I carried on through phase 1 (working context) and phase 2 (evidence map), then stopped. Files: charter.md, working-context.md, evidence-map.md.\n\n**What the sources state (no cause claimed yet)**\n- The 3 Oct release changed three things at once: redesigned plan cards, the annual discount badge moved into checkout, and shorter Studio/Team descriptions.\n- Week of 5 Oct, trial-to-paid: all plans 0.22 (0.30-0.31 the four weeks before); annual 0.20 (was 0.35-0.36); monthly 0.23 (was 0.27). Trial starts and pricing page views stayed flat, so the drop is after the trial starts, not in getting people in. Annual fell far more than monthly.\n- The 5 tickets map to those changes: price at checkout differs from the page (T-101), wrong charge, monthly instead of annual (T-105), discount gone (T-102), plan picker loops (T-103), unclear Studio vs Team (T-104). These are candidate mechanisms only. Five tickets say nothing about how many people are affected.\n\n**Things that worry me about the data**\n1. Only one week after the change, and it is probably incomplete (today is Thu 8 Oct) yet looks like a full week of trial starts. If trials last more than a few days, those trials cannot have finished. Nobody has stated how trial_to_paid is calculated. This is the most important gap, because it decides whether the 0.22 can be trusted yet.\n2. Release notes say the discount moved to checkout, while a user says it vanished. Unresolved.\n3. Three changes shipped together, so even good data would not separate which one did it without checkout-step or daily data.\n\n**Questions for you (best guesses in brackets; a plain \"yes\" works)**\n1. Can you ask the data owner how trial_to_paid is defined, the trial length, and what dates the 5 Oct row covers? [I drafted this question in the evidence map; you or I send it only if you say so.]\n2. Is a partial option acceptable in the brief, such as \"keep the page, fix the checkout price bug\", rather than only roll back yes/no? [yes]\n3. Who owns analytics, engineering and support for these questions? [unknown to me; I have no names]\n\nI have not started phase 3 (counting tickets) or phase 4 (numbers) in depth. Phase 3 here is small (5 tickets), and phase 4 starts with the per-plan before/after rows. I'm waiting on your answers to 1-3, especially 1, since the definition changes how I read every number.\n"}, {"name": "working-context.md", "type": "text", "content": "# Working context (Brightfold, Checkout). Written 2026-10-08. Status goes stale first.\n\n## Company and product\nBrightfold: subscription billing tool for small studios. Funnel: pricing page -> trial start -> trial-to-paid. Plans: annual and monthly; named tiers \"Studio\" and \"Team\". (Stated in CLAUDE.md, release notes, data.)\n\n## People\n- Maya Chen: PM Checkout, my user, writes the brief.\n- Dana Ortiz: VP Product, Maya's boss, decides Monday 12 Oct.\n- Owners of data, engineering, support: not named anywhere in the folder (gap).\n\n## Vocabulary\n- trial_to_paid: share of trials that become paid. Exact definition (cohort by trial start week or by conversion week? trial length?) is NOT stated anywhere. Inference only.\n- plan column: all / annual / monthly.\n\n## Where things stand (stated)\n- Fri 3 Oct: new pricing page. Plan cards redesigned; annual discount badge moved into checkout step; Studio and Team descriptions shortened (release_notes.txt).\n- Five tickets, 6-8 Oct (tickets.txt). Funnel CSV has 5 weeks, 7 Sep to 5 Oct week, three plan cuts.\n- Decision pending: roll back or not.\n- No cause established.\n\n## Inference (labelled)\n- Tickets T-101, T-105 (price mismatch/wrong charge), T-102 (discount gone), T-103 (plan re-pick loop), T-104 (tier content unclear) are candidate mechanisms, each tied to a release-note change. Guesses, not findings.\n\n## How to work with me\nRows behind every number; plain words; no cause until data supports; guesses labelled; check before any outward action.\n\n## Confidentiality\nNothing sensitive noted. Keep any customer detail out of drafts.\n"}], "grading": {"expectations": [{"text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message", "passed": true, "evidence": "'Confidence gate: 95' with evidence from CLAUDE.md."}, {"text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "Four read-back lines."}, {"text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three", "passed": true, "evidence": "No gate questions. Three questions about evidence and owners."}, {"text": "Saves a charter file that records the four dimensions with their evidence", "passed": true, "evidence": "charter.md written."}, {"text": "Starts real work by reading the evidence files and writing at least one phase output", "passed": true, "evidence": "Wrote working-context.md and evidence-map.md."}, {"text": "Takes no outward action and says it will check before sending or committing anything", "passed": true, "evidence": "'I check with you before any email, post, commit or push'."}, {"text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact", "passed": true, "evidence": "'What the sources state (no cause claimed yet)'; tickets 'candidate mechanisms only'."}, {"text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete", "passed": true, "evidence": "Did not catch the Saturday, but noticed the 5 Oct week is probably incomplete ('today is Thu 8 Oct'). The assertion allows either."}, {"text": "Ends with a first look at the numbers that is labelled as a first look", "passed": false, "evidence": "Gives the headline rows but under 'What the sources state', not labelled as a first look."}], "summary": {"passed": 8, "failed": 1, "total": 9, "pass_rate": 0.89}}}, {"id": "eval-clear-ask-documented-user-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter\nDate: 8 Oct 2026   Gate score: 95 (lowest: Your role / Who they are, both 95)\n\n## The ask\nOne-page brief recommending whether to roll back the new pricing page (shipped 3 Oct), based on why trial-to-paid conversion dropped. Out of scope: building a prototype, PRD or deck; any outward action.\nEvidence: message \"Investigate why trial-to-paid conversion dropped after the Oct 3 pricing page change... one-page brief by Friday\"; CLAUDE.md \"one-page brief by Friday 9 Oct recommending whether to roll back\". Score: 96\nDeliverables: named by the user: one-page brief only.\nDirection to show: chosen after phase 5 (no direction yet).\n\n## Who they are\nMaya Chen, PM for Checkout at Brightfold (subscription billing for small studios). Reports to Dana Ortiz, VP Product. Knows the funnel and pricing model well; not an analyst, wants rows behind every number and plain writing. Readers: Maya first, then Dana.\nEvidence: CLAUDE.md lines 3-5. Score: 96\n\n## The goal\nDana decides roll back or not at Monday's (12 Oct) product review. Brief due Fri 9 Oct. Good = a recommendation Dana can act on, with honest confidence and what would change it.\nEvidence: CLAUDE.md \"She will decide in Monday's product review\". Score: 95\n\n## My role\nDo on my own: read ./evidence, analyze, draft in the outputs folder.\nCheck first: email, post, commit, push, anything Dana or the team would see. Maya reads everything before anyone else.\nOff limits: naming a cause before data supports it; writing outside the outputs folder; changing the fixture/evidence.\nEvidence: CLAUDE.md \"How I want you to work\". Score: 96\n\n## Assumptions still open\n- \"Monday's review\" = Mon 12 Oct (inferred from Friday 9 Oct; closes if Maya confirms).\n- Brief is one page of plain prose plus a small rows table (assumption).\n- Rollback is a binary decision for Dana; partial options (e.g. restore only the annual badge) are acceptable to mention as options (assumption).\n"}, {"name": "evidence-map.md", "type": "text", "content": "# Evidence map (8 Oct 2026)\n\n| Source | Range | Items | Covers | Made by / why | Cannot tell you |\n|---|---|---|---|---|---|\n| evidence/funnel_weekly.csv | weeks of 7 Sep to 5 Oct | 15 rows (5 weeks x all/annual/monthly) | Trial starts, trial_to_paid, pricing page views | Unknown (analytics export?) | Daily timing, who converted, why, cohort definition, anything before 7 Sep, plan tier (Studio vs Team) |\n| evidence/tickets.txt | 6-8 Oct | 5 tickets (T-101 to T-105) | Customers who wrote in after the change | Support | How many were affected; no pre-change tickets to compare; no severity |\n| evidence/release_notes.txt | 3 Oct | 1 entry | What changed on the page | Product/eng | Anything else shipped that week; behaviour of checkout |\n\nSanity checks\n- Weekday: week_starting dates are Mondays (7 Sep, 5 Oct). 3 Oct = Saturday, so it falls in the week of 28 Sep, whose row shows no drop (0.30). The drop first appears in week of 5 Oct.\n- Parts vs total: week of 5 Oct, 215 annual + 323 monthly = 538 = all. Weighted rate (0.20x215 + 0.23x323)/538 = 0.218 -> 0.22. OK. Week of 7 Sep: (0.36x210 + 0.27x310)/520 = 0.306 -> 0.31. OK.\n- Latest period: 5 Oct week is at most 4 days old as of today (8 Oct) and may be partial. If conversion happens after a trial period (length unknown), trials starting this week may not have had time to convert, which would lower the rate on its own. Definition unknown.\n- Units: trial_to_paid is a fraction; views and starts are counts.\n\n## Contradictions\n1. 3 Oct weekday (above).\n2. Week of 28 Sep contains 3 Oct (a Saturday, change day) yet shows no drop, while week of 5 Oct shows a large one. Fits a lag (trials started before the change convert later) or a cohort definition we do not know; not yet explained.\n3. Tickets say price at checkout differed from pricing page (T-101), annual charged as monthly (T-105): these could be display or billing defects, not \"page design\" issues. Release notes mention neither.\n\n## Missing (owner, draft question)\n- Definition of trial_to_paid, trial length, and whether 5 Oct week is complete. Owner: analytics/data. \"Is trial_to_paid measured on the cohort that started that week, and how long do they have to convert? Is the 5 Oct row partial?\"\n- Daily data from 28 Sep to now by plan. Owner: analytics. \"Can I get daily trial starts and conversions, annual vs monthly?\"\n- Other changes in the same week (campaigns, pricing, checkout, billing code). Owner: Maya / eng lead. \"Did anything else ship or run from 1 Oct?\"\n- Ticket volume baseline and total (are 5 all the tickets?). Owner: support.\n- Studio vs Team split. Owner: analytics.\n- Prior-year or longer baseline (seasonality). Owner: analytics.\n\n## First look (not a cause)\n- The drop is not even. Annual fell 0.35 -> 0.20 (about 15 points); monthly fell 0.27 -> 0.23 (about 4 points). Headline 0.30 -> 0.22 hides that annual carries most of it.\n- Page views (2250 -> 2260) and trial starts (529 -> 538) did not move, so volume at the top is steady; the change is in conversion.\n- 4 of 5 tickets (T-101, 102, 103, 105) concern price/discount/checkout; 1 (T-104) concerns plan descriptions. Annual-related: T-101, T-102, T-105. These point at where to look, they are not proof; 5 tickets cannot show scale.\n"}, {"name": "reply.md", "type": "text", "content": "Hi Maya. I read your CLAUDE.md and all three files in ./evidence (funnel_weekly.csv, tickets.txt, release_notes.txt) before doing anything else.\n\n**Before I start, here is what I understand. Gate score: 95 (lowest: the goal and my role, both 95).**\n\n- Your ask: a one-page brief for Dana on whether to roll back the 3 Oct pricing page, based on why trial-to-paid dropped. I am not building a prototype, PRD or deck.\n- Who you are: PM for Checkout, reporting to Dana Ortiz (VP Product). You know the funnel; you are not an analyst, so every number comes with its rows and the writing stays plain. You read first, then Dana.\n- What you're trying to achieve: Dana decides at Monday's review (I assume Mon 12 Oct) after you hand in the brief Fri 9 Oct. Good = a recommendation she can act on, with how sure we are and what would change it.\n- My role: I read, analyze and draft, writing only into the outputs folder. I check with you before anything is emailed, posted, committed or pushed. I won't name a cause the data does not support, and I label guesses.\n\nAssumptions: \"Monday\" is 12 Oct, and mentioning a partial fix as an option is fine alongside a roll back / keep recommendation. Tell me if either is wrong. Otherwise I'm continuing.\n\n**What I did (phases 1 and 2, onboarding and evidence map)**\n\nFiles in the outputs folder: charter.md, working-context.md, evidence-map.md.\n\n**First look** (rows, not a cause):\n\n| Week starting | All | Annual | Monthly |\n|---|---|---|---|\n| 7 Sep | 0.31 | 0.36 | 0.27 |\n| 14 Sep | 0.30 | 0.35 | 0.27 |\n| 21 Sep | 0.31 | 0.36 | 0.27 |\n| 28 Sep | 0.30 | 0.35 | 0.27 |\n| 5 Oct | 0.22 | 0.20 | 0.23 |\n\n- The drop is not even. Annual fell about 15 points; monthly about 4. The all-plans number hides that annual carries most of it.\n- Pricing page views (about 2,250) and trial starts (about 530 a week) did not move. What changed is the share who convert.\n- 4 of the 5 tickets (6-8 Oct) are about price or discount or the checkout, 3 of them about annual plans. For example, T-102: \"Where did the annual discount go? It used to say 'save 20%'.\" Five tickets cannot tell us scale. The release notes mention the annual badge moving into checkout, which is a place to look, not a finding.\n\n**Things that could bend the numbers**\n- Your notes say Fri 3 Oct, but 3 Oct 2026 is a Saturday. One of the two is off. The weeks in the data start on Mondays, so 3 Oct falls in the 28 Sep week, which shows no drop.\n- The 5 Oct week is only a few days old. If trials need time to convert, that row may be partly unfinished, which would lower the rate by itself. I can't tell from the file how trial_to_paid is calculated.\n- Several tickets describe wrong prices or the wrong plan being charged (T-101, T-105). That could be a bug rather than a design problem, and the release notes don't cover it.\n\n**Three questions, most important first** (a plain \"yes\" is fine where I gave a guess):\n1. How is trial_to_paid calculated, and is the 5 Oct row complete? (My guess: share of trials started that week who have paid so far, so the latest week is partial. Who in analytics can confirm, and can they send daily numbers by plan from 28 Sep?)\n2. Did anything else change from about 1 Oct (a campaign, billing or checkout code, a price)? (My guess: no, but I only have the one release note.)\n3. Is the 3 Oct date right, with the weekday wrong, or was it really Friday 2 Oct? (My guess: 3 Oct is right and \"Fri\" is a slip.)\n\nI'm stopping here until you answer. I have not contacted anyone, and I haven't drafted a conclusion; the next step is counting the tickets and checking the split by plan more closely, then hypotheses, so the brief reflects what the data supports. If question 1 can't be answered by Friday, the brief will say plainly that the latest week may be incomplete.\n"}, {"name": "working-context.md", "type": "text", "content": "# Working context (8 Oct 2026). Stated = from files; Inferred = mine.\n\n## Company and product (stated)\nBrightfold: subscription billing tool for small studios. Maya Chen is PM for Checkout; reports to Dana Ortiz (VP Product). Plans named in evidence: Studio, Team; billing choices annual and monthly.\n\n## Where things stand (stated)\n- Fri 3 Oct per CLAUDE.md / \"Oct 3\" per release notes: new pricing page. Plan cards redesigned; annual discount badge moved into the checkout step; Studio and Team descriptions shortened.\n- Trial-to-paid, all plans: 0.30-0.31 for four weeks, then 0.22 in week of 5 Oct.\n- Annual: 0.35-0.36 -> 0.20. Monthly: 0.27 -> 0.23.\n- 5 tickets, 6-8 Oct.\n- Decision: roll back or not, Dana, Monday.\n\n## Not known\nCause. How trial_to_paid is defined and whether the 5 Oct week is complete. Whether anything else changed that week (other releases, campaigns, billing/price changes). Anything from before 7 Sep.\n\n## Conflicts flagged\n- CLAUDE.md says \"Fri 3 Oct\"; 3 Oct 2026 is a Saturday (weeks in the CSV start Monday 7 Sep, 5 Oct). Release notes only say \"Oct 3\". Either the day or the date is off; matters for which week the change belongs to.\n\n## How to work with Maya\nPlain words, rows behind every number, no cause until data supports it, label guesses, nothing outward without her say-so.\n\n## Confidentiality\nNone stated. Ticket text has no personal detail; keep it that way.\n"}], "grading": {"expectations": [{"text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message", "passed": true, "evidence": "'Gate score: 95' with evidence from CLAUDE.md."}, {"text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "Four read-back lines: ask, who you are, goal, my role."}, {"text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three", "passed": true, "evidence": "No gate questions. Three questions, all about evidence gaps, ranked."}, {"text": "Saves a charter file that records the four dimensions with their evidence", "passed": true, "evidence": "charter.md written."}, {"text": "Starts real work by reading the evidence files and writing at least one phase output", "passed": true, "evidence": "Wrote working-context.md and evidence-map.md after reading all three evidence files."}, {"text": "Takes no outward action and says it will check before sending or committing anything", "passed": true, "evidence": "'I check with you before anything is emailed, posted, committed or pushed'; 'I have not contacted anyone'."}, {"text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact", "passed": true, "evidence": "'First look (rows, not a cause)'; release-note link called 'a place to look, not a finding'."}, {"text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete", "passed": true, "evidence": "Caught that 3 Oct 2026 is a Saturday and that the 5 Oct week is only a few days old."}, {"text": "Ends with a first look at the numbers that is labelled as a first look", "passed": true, "evidence": "Section headed 'First look' with the per-plan rows."}], "summary": {"passed": 9, "failed": 0, "total": 9, "pass_rate": 1.0}}}, {"id": "eval-direction-chosen-ask-deliverables-old_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "reply.md", "type": "text", "content": "Got it: we go with #1 (the annual checkout price bug) as the direction. Before I draft anything, one quick check on what \"something for Dana\" should be. The charter still says \"deliverables: not chosen yet\", and I'd rather not guess.\n\n**What I have so far (from your CLAUDE.md, the charter and the evidence folder)**\n- Dana wants a one-page brief by Fri 9 Oct on whether to roll back the 3 Oct pricing page. She decides at Monday's review.\n- Annual trial-to-paid fell from 0.35 to 0.20 (215 trial starts in the week of 5 Oct). Monthly fell from 0.27 to 0.23 (323 starts). Everything is one post-change week, so that's all we can say.\n- Tickets T-101 and T-105 support #1 directly (different price at checkout, charged monthly after picking annual). T-103 (checkout keeps re-asking for a plan) may be related.\n\n**Questions (my guess in brackets, so \"yes\" is enough)**\n1. **Which deliverables?** Options: (a) the one-page brief only, (b) the brief plus a small clickable mock of the fixed annual checkout, (c) the brief plus a short \"what we need from Billing/Engineering\" list. [My guess: (a) only, since Dana asked for a brief. A prototype can come later if she wants one.]\n2. **What should the brief recommend?** Right now #1 is a hypothesis at medium confidence, and billing logs would raise it. Should the brief present it as \"likely cause, here's what would confirm it\" and recommend a decision from there (for example, fix forward vs. roll back)? [My guess: yes. I won't state it as a confirmed cause.]\n3. **Anything out of scope?** Hypotheses #2 (the badge moved) and #3 (shortened plan descriptions) would appear as one line each under \"other things we haven't ruled out\". Monthly also dropped, and #1 alone doesn't explain that. [My guess: yes, mention briefly.]\n\n**Two things I'll flag in the draft either way**\n- Only one week of data exists after the change, so it can't separate the page change from anything else that week.\n- I'd list \"billing logs for the week of 5 Oct\" as the thing to ask for. It's the test that could prove #1 wrong.\n\nNothing will be sent to Dana. I'll save the draft in the output folder for you to read first.\n\nReply \"yes\" to all three, or tell me what to change, and I'll start the draft.\n"}], "grading": {"expectations": [{"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": false, "evidence": "Offers three options (brief only, brief plus mock, brief plus asks). No PRD, no deck."}, {"text": "Offers a suggested default with a one-line reason", "passed": true, "evidence": "'My guess: (a) only, since Dana asked for a brief.'"}, {"text": "Does not build any deliverable before the user answers", "passed": true, "evidence": "No draft built."}, {"text": "Says why it can start: the gate is passed and the direction (#1) is chosen", "passed": false, "evidence": "Says it goes with #1 but nothing about the gate or the conditions for building."}, {"text": "Takes no outward action", "passed": true, "evidence": "'Nothing will be sent to Dana.'"}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}}}, {"id": "eval-direction-chosen-ask-deliverables-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "reply.md", "type": "text", "content": "Got it. #1 it is, the annual checkout price bug. Before I build anything for Dana, one question. I've built nothing yet.\n\n**Which of these do you want?**\n- Prototype (clickable and shareable)\n- One-pager (for Dana)\n- PRD\n- Slide deck with speaker notes\n\n**My suggestion: the one-pager only.** Dana's ask in your CLAUDE.md is \"a one-page brief by Friday 9 Oct\" on whether to roll back, and she decides in Monday's review. A prototype, PRD or deck would answer a different question. If you want any of the others on top, tell me and I'll add them after the one-pager, so they all tell the same story.\n\nThree things I noticed while re-reading, so nothing surprises you in the draft:\n\n1. **The brief will be framed around Dana's decision, not just the bug.** She is deciding on a rollback. The brief will say what #1 does and doesn't tell her about that, and the answer isn't a clean yes or no yet. (This is my framing for the draft, not a finding.)\n2. **#1 is still medium confidence, and the brief will say so.** The funnel file has only one week since the change (w/c 5 Oct). Annual trial-to-paid went from 0.35 (w/c 28 Sep) to 0.20, and monthly from 0.27 to 0.23. We have no billing logs, which are what would confirm or kill it. The brief will show these rows and put \"get the billing logs for 5-8 Oct\" at the top of what would raise confidence. Do you know who can pull them? I'd name that person in the brief.\n3. **One correction to hypotheses.md.** It cites T-101, T-103 and T-105 as price-mismatch tickets. Only T-101 (price differs at checkout) and T-105 (charged monthly when annual was selected) describe that. T-103 is about checkout asking you to pick a plan again, which is a different symptom. I'd count 2 tickets for #1, not 3, and mention T-103 as a possible separate checkout problem. Is that OK?\n\nAlso worth knowing: annual trial starts and page views are flat (215 vs about 214). People are still choosing annual and then not converting. That fits #1, but it is a pattern in the numbers, not proof of a price bug. The monthly dip (0.27 to 0.23) isn't explained by #1 at all, so the brief will say that too.\n\nNothing gets sent to Dana. Once you pick, I'll write the draft into the output folder for you to read first.\n"}], "grading": {"expectations": [{"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": true, "evidence": "Lists prototype, one-pager, PRD and slide deck with speaker notes."}, {"text": "Offers a suggested default with a one-line reason", "passed": true, "evidence": "'My suggestion: the one-pager only', with a reason from the CLAUDE.md ask."}, {"text": "Does not build any deliverable before the user answers", "passed": true, "evidence": "'I've built nothing yet'; waits for the pick."}, {"text": "Says why it can start: the gate is passed and the direction (#1) is chosen", "passed": false, "evidence": "Acknowledges the direction ('#1 it is') but never says the gate is passed or that the conditions are met."}, {"text": "Takes no outward action", "passed": true, "evidence": "'Nothing gets sent to Dana.'"}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "eval-user-brings-direction-no-evidence-old_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter (draft, gate not passed)\nDate: 2026-10-08   Gate score: 65 (lowest: goal)\n\n## The ask\nClickable prototype of a simplified one-screen annual checkout for Dana. Open: purpose and relation to the rollback brief.\nEvidence: user message; CLAUDE.md \"one-page brief ... recommending whether to roll back\". Score: 70\n\n## Who they are\nMaya Chen, PM Checkout, reports to Dana Ortiz (VP Product); not an analyst; wants rows and plain words. Evidence: CLAUDE.md. Score: 95\n\n## The goal\nUnclear how the prototype serves Monday's rollback decision (brief due Fri 9 Oct). Evidence: CLAUDE.md only. Score: 65\n\n## My role\nDo on my own: read evidence, draft into output folder.\nCheck first: email, post, commit, push; anything Dana would see.\nOff limits: writing outside the output folder; sending to Dana.\nEvidence: CLAUDE.md \"How I want you to work\". Score: 90\n\n## Assumptions still open\n- Prototype accompanies the rollback brief (close: Maya answers Q1)\n- Prototype is a sketch, not evidence (close: Q2)\n- Read evidence before designing (close: Q3)\n"}, {"name": "reply.md", "type": "text", "content": "Before I start, here is what I understand. Gate score: 65 (lowest: the goal).\n\n- Your ask: a clickable, one-screen annual checkout prototype that Dana can click through. \"she likes seeing things\" tells me the format, but not what the prototype is meant to show her or answer.\n- Who you are: Maya Chen, PM for Checkout at Brightfold. You report to Dana Ortiz, VP of Product. You know the funnel and pricing well, you are not an analyst, and you want the rows behind any number in plain writing. Dana is the reader. (From your CLAUDE.md.)\n- What you're trying to achieve: unclear. Your CLAUDE.md says Dana wants a one-page brief by Fri 9 Oct on whether to roll back the pricing page that shipped 3 Oct. She decides at Monday's product review. I can't tell how a simplified annual checkout fits into that.\n- My role: I will read the evidence folder and draft files, writing only to the output folder. I'll check with you before anything is emailed, posted, committed or pushed, and Dana sees nothing you haven't read. I won't send anything to Dana myself.\n\nAssumptions I'm making (not confirmed):\n- The prototype is a proposed fix or alternative, shown next to the rollback decision, not a replacement for it.\n- It is a design sketch with placeholder content. It would not be evidence that a design works.\n\nI've seen that the evidence folder holds tickets, a weekly funnel file and release notes. I haven't analysed any of it. I don't want to design around a cause nobody has checked yet, such as a price mismatch, a missing discount badge or a plan-selection loop. A one-screen annual checkout would only help if the problem is in the annual checkout step, and I don't know that yet.\n\nQuestions:\n1. Is the prototype meant to go with the rollback brief for Monday's review, as \"here is what we'd do instead of or alongside a rollback\"? (my guess: yes, with the brief still the main deliverable due Friday)\n2. What should Dana take from it: how a simplified annual checkout would look, or that it fixes what went wrong after 3 Oct? (my guess: a rough look at a possible fix, clearly marked as a sketch and not as proof)\n3. Should I first read the tickets, funnel and release notes so the screen targets what the data shows, or do you already know what it needs to contain? (my guess: read first, then build)\n4. Can I put it in the output folder as a single HTML file you open and review before Dana sees it? (my guess: yes)\n\nI'll stop here until you answer. I haven't built anything and haven't started the analysis. A \"yes\" to all four is enough.\n"}], "grading": {"expectations": [{"text": "Does not build the prototype before the user answers", "passed": true, "evidence": "'I haven't built anything.'"}, {"text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder", "passed": true, "evidence": "'A one-screen annual checkout would only help if the problem is in the annual checkout step, and I don't know that yet.' It does not say whose idea it is."}, {"text": "Offers to run the evidence phases first and gives a suggestion", "passed": true, "evidence": "Q3: read the tickets, funnel and release notes first (my guess: read first, then build)."}, {"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": false, "evidence": "No deliverables question about a one-pager, PRD or deck."}, {"text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed", "passed": false, "evidence": "charter.md lists open assumptions but never records the direction as user-supplied and not evidence-backed."}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}}}, {"id": "eval-user-brings-direction-no-evidence-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter\nDate: 2026-10-08   Gate score: 70 (lowest: The goal)   STATUS: gate open, nothing built\n\n## The ask\nClickable prototype of a simplified one-screen annual checkout, for Dana.\nEvidence: user message \"build me a clickable prototype of a simplified one-screen annual checkout for Dana. she likes seeing things.\"   Score: 75\n(Open: is it a visual to go with the Friday brief, or instead of it? Is the one-screen design Dana's request or Maya's idea?)\nDeliverables: prototype (named by the user)\nDirection to show: supplied by the user, not yet backed by evidence\n\n## Who they are\nMaya Chen, PM for Checkout at Brightfold; reports to Dana Ortiz, VP of Product. Knows funnel and pricing well, not an analyst; wants rows behind numbers, plain writing.\nEvidence: CLAUDE.md.   Score: 95\n\n## The goal\nCLAUDE.md: one-page brief by Fri 9 Oct recommending whether to roll back the pricing page shipped Fri 3 Oct; Dana decides at Monday's product review. The prototype's link to that decision is not stated.\nEvidence: CLAUDE.md \"Current work\".   Score: 70\n\n## My role\nDo on my own: read ./evidence, write drafts into the output folder only.\nCheck first: email, post, commit, push. Dana and team must not see anything Maya has not read.\nOff limits: naming a cause before data supports one; unlabelled guesses.\nEvidence: CLAUDE.md \"How I want you to work\".   Score: 95\n\n## Assumptions still open\n- Prototype supports the Friday rollback brief (close: Maya confirms).\n- Any prototype carries the caveat \"direction supplied by the user, not yet backed by evidence\".\n- Evidence phases (folder holds tickets, weekly funnel, release notes) not yet run; offered.\n"}, {"name": "reply.md", "type": "text", "content": "I haven't built anything yet. Before I do, here is what I understand, and one thing I'd like to check.\n\n**Before I start, here is what I understand. Gate score: 70 (lowest: the goal).**\n\n- **Your ask:** a clickable prototype of a simplified one-screen annual checkout, to show Dana.\n- **Who you are:** Maya, PM for Checkout, reporting to Dana (VP of Product). You know the funnel and pricing; you want plain writing and the rows behind any number. (Your CLAUDE.md.)\n- **What you're trying to achieve:** this is where I'm unsure. Your CLAUDE.md says Dana wants a one-page brief by Friday 9 Oct on whether to roll back the 3 Oct pricing page, and she decides Monday. The prototype isn't mentioned there.\n- **My role:** I read the evidence folder and write drafts only into the output folder. I check with you before anything is emailed, posted, committed or pushed, and Dana sees nothing you haven't read.\n\n**Why I'm pausing.** The prototype is a design direction you've supplied, and nothing in the folder shows it fixes the problem. I'll record it as \"direction supplied by the user, not yet backed by evidence\" and carry that label into anything I build. I've skimmed the evidence folder, and there is a lot in it that bears on annual checkout. These are what the files say, not conclusions:\n- Annual trial-to-paid went from about 0.35 (weeks of 7 Sep to 28 Sep) to 0.20 (week of 5 Oct). Monthly went from 0.27 to 0.23.\n- All five tickets (T-101 to T-105, 6 to 8 Oct) mention checkout or plan details. Three involve annual: a price that differs from the pricing page, a missing \"save 20%\", and a monthly charge after choosing annual.\n- The release notes say the annual discount badge moved into the checkout step on 3 Oct.\n\nWhether that is the cause, I can't say yet. The five tickets are a small, self-selected sample, and one week of data after the change is not much. A one-screen checkout might still be a good idea, but if the real issue is a pricing mismatch, a prettier screen could show Dana the wrong thing.\n\n**Questions** (a plain \"yes\" works for each):\n1. Is the prototype meant to go alongside Friday's rollback brief, as a \"here's what we could do instead\" visual for Monday's review? (my guess: yes)\n2. Was the one-screen annual checkout Dana's idea, or yours? If yours, should the brief and prototype argue for it? (my guess: yours, shown as an option, not a decision)\n3. Would you like me to read the tickets, funnel numbers and release notes first, so the prototype is built on what they show? It's quick, and I'd lay out the rows. (my guess: yes, I recommend it)\n4. Prototype only, no one-pager or deck? (my guess: prototype only, since you named it)\n\nI'll wait for your answers before doing the analysis or building. I've saved the working notes as a charter in the outputs folder, marked \"gate open\".\n"}], "grading": {"expectations": [{"text": "Does not build the prototype before the user answers", "passed": true, "evidence": "'I haven't built anything yet.'"}, {"text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder", "passed": true, "evidence": "'The prototype is a design direction you've supplied, and nothing in the folder shows it fixes the problem.'"}, {"text": "Offers to run the evidence phases first and gives a suggestion", "passed": true, "evidence": "Q3: read the tickets, funnel numbers and release notes first (my guess: yes, I recommend it)."}, {"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": false, "evidence": "Q4 asks 'Prototype only, no one-pager or deck?'. It leaves out the PRD and does not list all four."}, {"text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed", "passed": true, "evidence": "charter.md: 'Direction to show: supplied by the user, not yet backed by evidence'."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "eval-vague-ask-no-context-old_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter-draft.md", "type": "text", "content": "# Charter (DRAFT, gate not passed)\nDate: 2026-10-08   Gate score: 40\n\n## The ask\nInvestigate why signups fell in recent weeks; output for the user's boss.   Evidence: \"signups are way down the last few weeks and my boss is asking about it. can you look into it\"   Score: 60\n## Who they are\nUnknown.   Evidence: fixture has only signups_by_week.csv   Score: 20\n## The goal\nUnknown; presumably an answer for the boss.   Score: 40\n## My role\nDo on my own: read, analyze, draft. Check first: anything sent/posted/committed/deleted. Off limits: unknown.   Score: 60\n## Assumptions still open\n- CSV is the only data (ask user)\n- Deadline and deliverable format (ask)\n- Whether any known changes occurred (ask)\n"}, {"name": "reply.md", "type": "text", "content": "Happy to dig into this. I've had a look at what's in the folder: one file, `signups_by_week.csv` (weekly signups and paid ads spend, 3 Aug to 28 Sep). There are no notes, project instructions or other documents, so I don't yet know much about you or your boss. I haven't started any analysis. Before I do, here's what I understand and what I'd like to check.\n\n**Before I start, here is what I understand. Gate score: 40 (lowest: who you are / the goal).**\n\n- **Your ask:** Work out why signups have fallen over the last few weeks, and give you something you can take to your boss. (Fairly clear, but \"look into it\" could mean a quick answer or a full write-up.)\n- **Who you are:** I don't know. I can't tell your role, who your boss is, or how well you know the product.\n- **What you're trying to achieve:** Presumably an answer for your boss. I don't know by when, or what decision hangs on it.\n- **My role:** I'll read and analyze the files in this folder and draft things for you. I'll check with you before anything is sent, posted, committed or deleted. I won't send anything to your boss myself.\n\n**Assumptions I'm making (none confirmed):**\n- The CSV is the only data. If signups come from other places (product analytics, a CRM, support tickets), I haven't seen them.\n- \"Signups\" means what the CSV column means. I don't know how it's defined.\n- Your boss wants to know why it happened and what you're doing about it, not just that it happened.\n\n**Questions (my best guess in brackets, so \"yes\" is a complete answer):**\n1. What do you want to hand your boss, and by when? (A one-page summary of what's likely behind the drop, plus what we'd check next, by the end of this week.)\n2. Who are you and who is your boss? What's your role, and what product or funnel do the signups belong to? (You own the product or growth, and your boss is a head of product or marketing who wants a short, plain-language answer.)\n3. Has anything changed on your side in the last few weeks that you already know about, such as a release, pricing change, campaign change or site change? And is there any other data or notes you can add to the folder? (Nothing you know of, and the CSV is all there is for now.)\n4. Is it fine for me to read and analyze files here and write drafts into the folder, with me asking before anything goes out? (Yes.)\n\nOnce you answer, I'll save this as a short charter so we don't have to redo it, and then start on the numbers.\n"}], "grading": {"expectations": [{"text": "Presents no findings or causes for the signup drop before asking questions", "passed": true, "evidence": "No findings or causes; 'I haven't started any analysis'."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 40 (lowest: who you are / the goal)'."}, {"text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "All four dimensions read back."}, {"text": "Asks no more than four questions", "passed": true, "evidence": "Four numbered questions."}, {"text": "Gives a best-guess default with every question", "passed": true, "evidence": "Each question carries a bracketed best guess."}, {"text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)", "passed": true, "evidence": "Only reply.md and charter-draft.md."}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-vague-ask-no-context-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "charter.md", "type": "text", "content": "# Charter (DRAFT, gate not passed)\nDate: 2026-10-08   Gate score: 40 (lowest: who they are 30)\n\n## The ask\nFind out why signups are down over the last few weeks.   Evidence: \"signups are way down the last few weeks and my boss is asking about it. can you look into it\"   Score: 60\nDeliverables: not chosen yet: ask at the build trigger\nDirection to show: none yet\n\n## Who they are\nUnknown. No notes in folder; only file is signups_by_week.csv.   Score: 30\n\n## The goal\nPresumably an answer for their boss; decision and deadline unknown.   Evidence: \"my boss is asking about it\"   Score: 40\n\n## My role\nDo on my own: read, analyze, draft.\nCheck first: anything sent, posted, committed or deleted.\nOff limits: modifying source files.   Evidence: default; nothing in folder says otherwise.   Score: 70\n\n## Assumptions still open\n- \"Signups\" = the CSV's signups column. Closes with: user confirms.\n- Audience is the boss; format and deadline unknown. Closes with: Q1, Q3.\n- Whether other evidence (funnel, releases, tickets) exists. Closes with: Q4.\n"}, {"name": "reply.md", "type": "text", "content": "Happy to dig in. Before I analyze anything, I want to make sure I answer the question your boss is actually asking. Here is what I understand so far.\n\n**Before I start, here is what I understand. Gate score: 40 (lowest: who you are and the goal).**\n\n- **Your ask:** Work out why signups are down over the last few weeks. I'm not sure yet whether you want a quick explanation, a root cause, or something to hand your boss. (Score about 60)\n- **Who you are:** I don't know. The folder has no notes or project instructions, so I can't tell your role, what you own, or who your boss is. (Score about 30)\n- **What you're trying to achieve:** Presumably an answer for your boss. I don't know the decision it feeds or when you need it. (Score about 40)\n- **My role:** I'll read and analyze what's in this folder on my own. I'll check with you before sending, posting or committing anything. I won't change your source files. (Score about 70)\n\n**What I found when I looked around (reading only, no analysis yet):** the folder contains a single file, `signups_by_week.csv`, with weekly signups and paid ad spend for nine weeks. There are no notes, tickets, release history, or anything saying what the product is. I've deliberately not drawn any conclusions from it yet. Which question I answer, and how, depends on your answers below.\n\n**Assumptions I'm making:** that \"signups\" means the numbers in that CSV, and that the \"last few weeks\" is the recent end of it. Please correct me if not.\n\n**Four quick questions.** A plain \"yes\" to each is fine:\n\n1. **What do you need to give your boss?** A short written summary of what happened and what we can say about why, by the end of the week? (my guess: yes, a one-page brief that separates what we know from what we're guessing)\n2. **What's your role and who is your boss?** For example, product manager for the signup flow, reporting to a head of product or growth? (my guess: yes, you own signups and your boss wants an explanation, not a fix yet)\n3. **What is the decision behind the question?** Is your boss deciding whether to act (pause a launch, change the signup flow, move ad budget), or just wants to understand? (my guess: they want to understand first and decide after)\n4. **What else exists beyond this CSV?** Release or change history, funnel data (visits to signups), ticket or support feedback, marketing campaign notes, anything on what changed in the past couple of months? (my guess: there is some of this somewhere, and I should ask you to add it rather than work from this one file alone)\n\nOnce you answer, I'll save this as a short charter, so we don't have to cover it again, and start on the evidence. I'm not starting the analysis while this is open, because a polished answer to the wrong question is the thing most likely to go wrong here.\n\nIf you'd rather skip the questions and have me go ahead, I can. I'd keep to reading and analysis only, write down my assumptions, and flag that the gate score is 40 on everything I produce.\n"}], "grading": {"expectations": [{"text": "Presents no findings or causes for the signup drop before asking questions", "passed": true, "evidence": "Reply gives no findings or causes; says it has not started analysis."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 40 (lowest: who you are and the goal)'."}, {"text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "All four dimensions read back."}, {"text": "Asks no more than four questions", "passed": true, "evidence": "Four numbered questions."}, {"text": "Gives a best-guess default with every question", "passed": true, "evidence": "Four '(my guess: ...)' defaults."}, {"text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)", "passed": true, "evidence": "Only reply.md and a draft charter.md."}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {"eval-ambiguous-audience-and-ask-with_skill-run-1": [{"name": "charter.md", "type": "text", "content": "# Charter (DRAFT, gate not passed)\nDate: 2026-10-08   Gate score: 55 (lowest: who they are / goal-audience)\n\n## The ask\nPrototype of an early-warning-accounts dashboard from the churn analysis. Evidence: user message; dashboard-notes.txt. Score: 60 (audience and question unclear)\n\n## Who they are\nUnknown. Evidence: none in folder; notes say \"ask Priya\". Score: 40\n\n## The goal\nUnknown audience: CS vs exec review vs finance. Evidence: dashboard-notes.txt \"maybe for CS? maybe for the exec review?\". Score: 50. No deadline given.\n\n## My role\nDo on my own: read, draft, build mock with labelled example data\nCheck first: any sharing, sending, publishing, committing\nOff limits: contacting Priya or finance. Score: 75 (assumed default)\n\n## Assumptions still open\n- Audience is CS (closes on user answer to Q1)\n- User's role and Priya's role (Q2)\n- Deadline and \"good\" (Q3)\n- Mock with example data is acceptable (Q4)\n- churn-analysis.md is a 2 Oct draft; cause of churn rise unresolved, so no cause shown on dashboard\n"}, {"name": "reply.md", "type": "text", "content": "I've read the two files in the folder (churn-analysis.md and dashboard-notes.txt) and I'm not starting the prototype yet. Two things in your own notes decide what it should be, and I'd be guessing on both.\n\nBefore I start, here is what I understand. Gate score: 55 (lowest: Who you are / the goal, the audience for the dashboard).\n\n- Your ask: a clickable prototype of an early-warning-accounts dashboard, following from the churn analysis. Not yet clear: which question it answers (which accounts are at risk, or why churn rose).\n- Who you are: I can't tell. Nothing in the folder says your role, who you report to, or who reads this. Your notes say \"ask Priya\" and I don't know who she is.\n- What you're trying to achieve: unclear. Your notes say \"maybe for CS? maybe for the exec review?\" and \"check whether finance wants the same view\". Those are three different users, so three different dashboards. CS needs a worklist of accounts to call. An exec review needs a trend and a few numbers. Finance needs revenue at risk.\n- My role: I'll build the prototype myself in a separate file. I'll check with you before sharing, sending or publishing anything, and I won't contact Priya or finance.\n\nWhat I read, so you know where the numbers come from:\n- churn-analysis.md (draft, 2 Oct): churn rose from 3.1% to 4.4% over 8 weeks. It's highest among accounts under 90 days old, at 5.9%. The cause is still open: onboarding drop-off, a pricing change or support wait times. It names no cause, so the dashboard shouldn't imply one.\n- There is no account-level data in the folder. Any prototype would use made-up example accounts, and I'd label them as made up.\n\nQuestions (a plain \"yes\" to each works):\n1. Who is the first audience for this dashboard? (my guess: CS, as a daily worklist of at-risk accounts, with the exec view as a later step. Finance is not in scope until Priya says otherwise.)\n2. Who are you, and who is Priya? (my guess: you're the product owner for this, and Priya is the person who decides who the dashboard is for.)\n3. What does the dashboard need to do, and by when? (my guess: let someone spot at-risk accounts, starting with those under 90 days old, in time for a review next week. I'd show it as a clickable mock with example data, not a working tool.)\n4. Is it okay to keep this to a mock with clearly labelled example data, and to hold off on telling Priya or finance anything until you've seen it? (my guess: yes.)\n\nOnce you answer, I'll save the charter and build the prototype. If you want to skip the questions, say so. I'll then build the CS worklist version, record my assumptions in the charter, and mark the audience as unconfirmed on the prototype.\n"}], "eval-ambiguous-audience-and-ask-without_skill-run-1": [{"name": "reply.md", "type": "text", "content": "I read both files in the folder before starting. I haven't built anything yet, because the one decision that shapes the prototype is still open.\n\n**What I found**\n- `churn-analysis.md` (draft, 2 Oct): churn rose from 3.1% to 4.4% over 8 weeks. The biggest rise is in accounts under 90 days old, at 5.9%. The causes are open: onboarding drop-off, a pricing change, or support wait times.\n- `dashboard-notes.txt`: the idea is \"something that shows early-warning accounts.\" The audience isn't settled. The note says \"maybe for CS? maybe for the exec review? ask Priya.\" It also says to check whether finance wants the same view.\n\n**Why I'm stopping**\nThe note says to ask Priya and I don't see her answer anywhere. A CS dashboard and an exec-review dashboard are different things:\n- **CS:** a worklist of individual accounts to call this week. It has account names, risk signals, owners, and filters.\n- **Exec review:** a few headline numbers and trends. It shows the 3.1% to 4.4% move and the under-90-day cohort, with little per-account detail.\n- **Finance:** probably framed around revenue at risk.\n\nIf I guess, there's a good chance I build the wrong one.\n\n**Questions**\n1. Who is this for first: CS, the exec review, or finance? Has Priya answered yet? If you can ask her, that settles it.\n2. What does \"early-warning\" mean here? The analysis doesn't name any account-level signals. It only says accounts under 90 days old churn more, and the causes (onboarding, pricing, support waits) are unconfirmed. Do you have specific signals in mind, such as low usage, a long support wait, or a missed onboarding step? Or should the prototype use the under-90-day cohort as a placeholder?\n3. Is there any account-level data I can use? I only have the summary numbers. If there's none, I'll build it with clearly fake sample data and label it as such.\n4. Format: should I make a clickable HTML mock you can open in a browser, or do you want a sketch or wireframe?\n\n**If you want me to start now**\nTell me \"just pick\" and I'll build the CS version as an HTML mock. It would have the 3.1% to 4.4% trend at the top, an \"accounts under 90 days\" at-risk list with sample data, and the three open questions as placeholder filter chips. It would be easy to restyle into an exec view later. I'd label it as a draft built on an assumed audience.\n"}], "eval-clear-ask-documented-user-with_skill-run-1": [{"name": "charter.md", "type": "text", "content": "# Charter\nDate: 8 Oct 2026   Gate score: 95 (lowest: Who they are / what Dana already knows)\n\n## The ask\nA one-page brief recommending whether to roll back the pricing page that shipped Fri 3 Oct, built from trial-to-paid conversion evidence in ./evidence. Out of scope: building the rollback, emailing or posting anything, redesigning the page.\nEvidence: message \"one-page brief by Friday to decide whether to roll back\"; CLAUDE.md \"one-page brief by Friday 9 Oct recommending whether to roll back\". Score: 97\n\n## Who they are\nMaya Chen, PM for Checkout at Brightfold (subscription billing for small studios). Reports to Dana Ortiz, VP of Product. Knows the funnel and pricing model well; not an analyst, wants rows behind numbers and plain writing. Dana reads the brief.\nEvidence: CLAUDE.md lines 3-5. Score: 96\n\n## The goal\nDana decides in Monday's (12 Oct) product review whether to roll back. Maya needs the draft by Fri 9 Oct. Good = a recommendation Dana can act on, with honest confidence, rows shown, no cause named beyond what the data supports.\nEvidence: CLAUDE.md \"She will decide in Monday's product review\". Score: 95\n\n## My role\nDo on my own: read ./evidence, analyze, write drafts into the outputs folder.\nCheck first: any email, post, commit, push; anything Dana or the team would see. Maya reads everything first.\nOff limits: writing outside the output folder; sending anything; naming a cause the data doesn't support.\nEvidence: CLAUDE.md \"How I want you to work\". Score: 98\n\n## Assumptions still open\n- Brief format/length: one page, plain prose plus a small table (default). Closes on Maya's reaction to the draft.\n- What Dana already believes about the cause: unknown. Closes if Maya tells me.\n"}, {"name": "evidence-map.md", "type": "text", "content": "# Evidence map (phase 2). Read: all 3 files in ./evidence (the whole folder).\n\n| Source | What it is | Range | Size | Covers | Doesn't cover |\n|---|---|---|---|---|---|\n| funnel_weekly.csv | trial starts, trial_to_paid, pricing page views, by plan (all / annual / monthly) | weeks starting 7 Sep to 5 Oct | 15 rows (5 weeks x 3 cuts) | every trial, split annual vs monthly | per-tier (Studio/Team), per-day, per-step in checkout, device, new vs returning |\n| tickets.txt | 5 support tickets | 6 to 8 Oct | 5 | people who wrote in after the change | anyone who stayed silent; nothing before 6 Oct for comparison |\n| release_notes.txt | one line on the 3 Oct change | 3 Oct | 1 line | what changed on the page | any other release that week, rollout method (all users at once or staged?), the checkout code |\n\n## Quick consistency check (arithmetic only)\nWeekly \"all\" rows equal the trial-weighted mix of annual and monthly (e.g. w/c 5 Oct: 215x0.20 + 323x0.23 = ~117 of 538 = 0.22), and trial starts add up. The file is internally consistent.\n\n## Contradictions / tensions between sources\n1. Release note says the annual discount badge MOVED to checkout; T-102 says \"where did the annual discount go?\" Same fact seen two ways. Consistent with the discount being less visible on the page; not proof of why people don't convert.\n2. T-101 and T-105 report checkout price differing from the page / monthly charged on annual selection. A release note about a layout change does not say pricing logic changed. Either a display/bug problem or a mismatch between page and checkout; unverified.\n3. T-104 says they \"love the new page design\", while T-104 also can't tell Studio from Team: the design may be liked and still unclear.\n\n## Missing, with likely owner and draft question (not sent)\n| Gap | Owner (guess) | Draft question |\n|---|---|---|\n| Definition of trial_to_paid and trial length. If trials run 14+ days, trials started 5 Oct cannot have finished converting by 8 Oct. Is the 0.22 a partial reading? | Data/analytics (Maya to say who) | \"How is trial_to_paid computed, what is the trial length, and as of what date was the w/c 5 Oct row pulled?\" |\n| Daily or per-step checkout data (page view -> plan select -> payment) | Data/analytics | \"Can we get daily plan-select and checkout-completion counts from 28 Sep onward?\" |\n| Whether the change was staged / A-B tested, i.e. a control group | Whoever shipped it (engineering) | \"Did 100% of traffic get the new page on 3 Oct? Any holdout?\" |\n| Anything else shipped or changed 28 Sep to 8 Oct (pricing, promos, email, traffic sources) | Maya / Eng / Marketing | \"Anything else that changed in that window?\" |\n| Do the ticket checkout-price reports reproduce? | Engineering/QA | \"Can someone try annual checkout and compare the price to the page?\" |\n| Year-ago or prior-period baseline for early October | Data/analytics | \"What did early October look like last year?\" |\n| Ticket volume baseline (5 tickets is high or normal?) | Support | \"How many pricing/checkout tickets in a typical week?\" |\n\n## What the evidence map already tells us about scope (not yet analysis)\nOnly ONE post-change week exists, and it is the current, possibly incomplete week. Pricing page views and trial starts did not visibly move; conversion did. That points the question at what happens after the page, not at traffic, but this is for phase 4, not a finding.\n"}, {"name": "reply.md", "type": "text", "content": "Hi Maya. I read your CLAUDE.md and everything in ./evidence (three files: the weekly funnel CSV, five tickets, one line of release notes). Nothing else is in the folder.\n\n**Gate: passed at 95, so I'm going ahead.** Here is what I understand:\n\n- Your ask: a one-page brief for Dana on whether to roll back the 3 Oct pricing page, based on the trial-to-paid drop.\n- Who you are: Checkout PM, reporting to Dana Ortiz (VP Product). You know the funnel, not the stats, so I'll show the rows and keep it plain. Dana reads the brief.\n- Goal: the draft by Fri 9 Oct, so Dana can decide at Monday's product review.\n- My role: I read, analyze and draft, only in the output folder. I check with you before anything is emailed, posted, committed or pushed. I won't name a cause the data doesn't support.\n\nAssumption: one page of plain prose plus a small table. Say if you want something else. Saved: `charter.md`.\n\n**Phase 1 (onboard) and phase 2 (evidence map) are done**, in `working-context.md` and `evidence-map.md`. I'm stopping here because of what phase 2 found.\n\n**What I can say so far (from the files, no cause named):**\n- Conversion was steady at 0.30 to 0.31 for four weeks, then 0.22 in the week starting 5 Oct. Page views and trial starts look flat.\n- Annual and monthly are split in the file. I haven't analyzed the split yet, but I can see the two cuts do not look the same size, and the tickets mostly mention annual. That is for the next phase.\n- The tickets (5, all from 6 to 8 Oct) mention a different price at checkout, the annual discount gone, repeated plan selection, and unclear Studio vs Team. They hint at things to check, not proof.\n\n**The gaps that matter, in order:**\n1. There is only one post-change week, and today is 8 Oct, so it is probably not a full week. If your trials last more than a few days, trials that started 5 Oct may not have finished converting yet. That could overstate the drop, or hide how bad it is.\n2. There is no control group, and I don't know whether anything else changed that week.\n3. Two tickets say the checkout charged or showed a different price. That would be a bug, not a design preference, and it changes the rollback question. Nobody has checked it.\n\n**Questions, with my guess so a \"yes\" is enough:**\n1. How is trial_to_paid calculated, and how long is the trial? (My guess: the share of that week's trial starts that become paid, with a 14-day trial, so the 5 Oct number is not final.) Who can confirm?\n2. Did 100% of traffic get the new page on 3 Oct, with no holdout? (My guess: yes.)\n3. Did anything else change between 28 Sep and 8 Oct (promos, emails, pricing, traffic sources)? (My guess: no.)\n4. Can someone try the annual checkout today and compare the price to the page?\n\nI've drafted these as questions in `evidence-map.md`. I haven't sent anything. Tell me who should get them, or answer any you already know.\n\n**Next, once you've answered or told me to go ahead:** phase 3 (group and count the tickets, and say whom five tickets don't cover) and phase 4 (the rows by plan, and what the weekly average might hide). For the brief to Dana I'd expect to give a recommendation with a confidence score and what would raise it, given how little post-change data exists.\n\nFiles are in `/Users/blurokfarm/Rook industries/06-sidekicks/product-investigation-workspace/iteration-1/eval-clear-ask-documented-user/with_skill/outputs/`: `charter.md`, `working-context.md`, `evidence-map.md`, `reply.md`.\n"}, {"name": "working-context.md", "type": "text", "content": "# Working context (8 Oct 2026). Stated = from a file; Inference = mine, labelled.\n\n## Company/product (stated)\nBrightfold: subscription billing tool for small studios. Maya Chen is PM for Checkout; reports to Dana Ortiz (VP Product). Plans seen in evidence: annual and monthly billing; tiers named Studio and Team.\n\n## Metric (stated, definition NOT stated)\ntrial_to_paid = share of trials converting to paid, by week of trial start (column \"week_starting\"). Exact cohort/window definition is not documented (see evidence-map gaps).\n\n## Where things stand (stated)\n- 3 Oct: new pricing page. Plan cards redesigned; annual discount badge moved into the checkout step; Studio and Team descriptions shortened. (release_notes.txt, one line)\n- Weekly conversion, all plans: 0.31, 0.30, 0.31, 0.30 for the four weeks starting 7 to 28 Sep, then 0.22 for the week starting 5 Oct.\n- 5 tickets, 6 to 8 Oct, mention the checkout price, the annual discount, and plan confusion.\n- Decision: roll back or not, Monday 12 Oct.\n\n## Inference (hypotheses, not findings)\n- The page change and the drop coincide in time; coincidence is not cause. Not yet tested.\n\n## Not known\nCause. Whether the 5 Oct week is complete/matured. Any other changes that week.\n\n## How to work (from Maya's CLAUDE.md)\nShow rows. Plain words. Label guesses. Write only to outputs. Ask before anything outward.\n\n## Confidentiality\nNo personal detail in the evidence so far; tickets carry no names.\n"}], "eval-clear-ask-documented-user-without_skill-run-1": [{"name": "analysis-notes.md", "type": "text", "content": "# Analysis notes (working, for Maya)\n\nSource: evidence/funnel_weekly.csv (15 rows), tickets.txt (5), release_notes.txt (1 line).\n\n## Rows behind the numbers\n| plan | weeks 7 Sep-28 Sep trial_to_paid | week of 5 Oct | change | trial_starts 5 Oct |\n|---|---|---|---|---|\n| all | .31 .30 .31 .30 (avg ~.305) | .22 | -8 to -9 pts | 538 |\n| annual | .36 .35 .36 .35 (avg ~.355) | .20 | -15.5 pts | 215 |\n| monthly | .27 .27 .27 .27 | .23 | -4 pts | 323 |\n\nBaseline is very stable (range .30-.31 overall), so the drop is well outside normal wobble.\n\nRough paid-conversion arithmetic (trial_starts x rate), 5 Oct week vs baseline rate:\n- annual: 215 x (.355-.20) = ~33 fewer paid\n- monthly: 323 x (.27-.23) = ~13 fewer paid\n- total ~46 fewer paid; about 70% of the gap is annual. Check: 215*.20+323*.23 = 117 paid = 21.8% of 538, matches the .22 reported.\n\nTraffic did not move: trial_starts 529-541 -> 538; pricing_page_views 2250 -> 2260. So fewer people are not arriving; fewer are converting.\n\n## Tickets (5, all 6-8 Oct, all after the change)\n- Price at checkout differs from pricing page (T-101), charged monthly when annual selected (T-105): possible price/plan bug\n- Annual discount badge can't be found (T-102): matches release note (badge moved into checkout)\n- Checkout re-asks for plan (T-103): possible bug\n- Can't tell Studio vs Team (T-104): matches release note (descriptions shortened)\n5 tickets is anecdote, not a rate. No baseline ticket count to compare.\n\n## What fits / doesn't prove\n- Annual hit hardest + annual-specific complaints + badge moved is a consistent story. It is a hypothesis, not a finding.\n- Nothing here separates \"page change caused it\" from other things that changed that week.\n\n## Caveats / open questions\n1. Date: Oct 3 2026 is a Saturday, not Friday (Maya's CLAUDE.md says Fri 3 Oct). Need the actual deploy time.\n2. Week of 5 Oct is Mon-Thu so far (today Thu 8 Oct) -> partial week, and the week of 28 Sep contains Oct 3-4 post-change days but looks normal (.30). Needs daily data.\n3. Trial-to-paid for trials started this week may not be matured: if trials are 14 days, most of 5 Oct cohort hasn't reached the decision point. Unclear how the metric is computed (cohort by trial start vs by conversion date). If it's cohort-by-start and immature, the drop could be partly artefact. Biggest thing to confirm with data owner.\n4. Was there an A/B test or staged rollout? Any other changes (pricing, email, promotions, outage) the same week? Release notes list only one entry.\n5. Are the checkout price mismatch / wrong-charge reports real bugs? Engineering/support can check billing records.\n6. Are there refunds/chargebacks among annual that were mischarged monthly?\n"}, {"name": "reply.md", "type": "text", "content": "Maya, I read your CLAUDE.md and all three files in ./evidence (funnel_weekly.csv, tickets.txt, release_notes.txt). I wrote nothing outside my outputs folder and sent nothing to anyone. Here is where things stand, and one thing I need from you before I draft the brief.\n\n## What the data shows (rows in analysis-notes.md)\n\nTrial-to-paid, weeks starting:\n\n| plan | 7 Sep | 14 Sep | 21 Sep | 28 Sep | 5 Oct |\n|---|---|---|---|---|---|\n| all | 0.31 | 0.30 | 0.31 | 0.30 | **0.22** |\n| annual | 0.36 | 0.35 | 0.36 | 0.35 | **0.20** |\n| monthly | 0.27 | 0.27 | 0.27 | 0.27 | **0.23** |\n\n- The drop is real relative to a very steady baseline (0.30-0.31 for four weeks).\n- Traffic did not change: trial starts (529-541 -> 538) and pricing page views (about 2,250 -> 2,260). People are arriving as before; fewer are converting.\n- It is mostly an annual-plan problem: annual fell about 15 points, monthly about 4. Using trial starts x rate, that is roughly 33 fewer annual and 13 fewer monthly paid conversions, so about 70% of the gap is annual. (My arithmetic, rough.)\n\n## What the tickets and release note say\n\nThe release note says the annual discount badge moved into checkout and the Studio/Team descriptions were shortened. All 5 tickets (6-8 Oct) line up with that: two can't find the discount or tell Studio from Team, and three describe checkout problems (price differs from the pricing page, plan reselection loop, charged monthly after choosing annual). Those last ones sound like possible bugs, not just design.\n\nThis is a consistent story, but it's a guess, not a finding. Five tickets with no baseline count prove nothing about scale, and nothing here separates the page change from anything else that changed that week.\n\n## Things that could change the answer\n\n1. **Date check.** Your notes say the page shipped Fri 3 Oct, but 3 Oct 2026 is a Saturday. I need the real deploy time.\n2. **The week of 5 Oct is only Mon-Thu.** If trials run a couple of weeks, many of the trials started this week haven't reached the decision to pay, so 0.22 may be understated. The week of 28 Sep (which includes 3-4 Oct) looks normal, which fits a Saturday ship or a lag in the metric. I can't tell how the rate is calculated from the file.\n3. **No daily data and no control.** I can't see whether it fell the day the page changed. I also don't know whether it was an A/B test or a full rollout, or whether anything else shipped or ran (promo, emails, outage) that week.\n\n## What I'd ask you for\n\n- Trial length and how \"trial_to_paid\" is computed (by trial start week, or by when they paid)?\n- Daily funnel data from 28 Sep onward, if available, split by plan.\n- Whether engineering/billing can confirm the checkout price mismatch and wrong-charge reports (T-101, T-105), and how many accounts were affected.\n- Anything else that changed the same week.\n\n## Questions for you before I draft\n\nDo you want me to draft the one-page brief now with these gaps flagged, or wait for the data above? My lean: draft it now, but frame it as \"evidence points at annual checkout; here is what we know and what we need Monday\" rather than a firm roll back or keep. If the wrong-charge tickets are confirmed, there's a separate case for fixing that immediately whatever Dana decides on the rollback.\n\nFiles in the outputs folder: reply.md (this), analysis-notes.md (rows and arithmetic).\n"}], "eval-vague-ask-no-context-with_skill-run-1": [{"name": "charter.md", "type": "text", "content": "# Charter (DRAFT, gate not passed)\nDate: 2026-10-08   Gate score: ~40\n\n## The ask\nFind out why signups are down and give the user something for their boss. Evidence: \"signups are way down the last few weeks and my boss is asking about it. can you look into it\"   Score: 60\n\n## Who they are\nUnknown. Evidence: none in folder (only signups_by_week.csv).   Score: <40\n\n## The goal\nUnknown; presumably an answer for their boss. Deadline and format unknown.   Score: <40\n\n## My role\nDo on my own: read, analyze, draft.\nCheck first: anything sent, posted, shared.\nOff limits: not stated.   Evidence: none; default conventions assumed.   Score: 75\n\n## Assumptions still open\n- Deliverable and deadline (closed by user's answer to Q1)\n- User's role and the readers (Q2)\n- Whether other evidence exists beyond the CSV (Q3)\n- Autonomy boundaries (Q4)\n"}, {"name": "reply.md", "type": "text", "content": "Happy to dig in. I've only opened the folder and looked at what's in it (one file, `signups_by_week.csv`, nine weeks of signups and ad spend). I haven't analyzed anything yet. I'd rather check four things with you first, because the right answer depends on who it's for.\n\n**Before I start, here is what I understand. Gate score: about 40 (lowest: who you are, and the goal).**\n\n- **Your ask:** work out why weekly signups have fallen and what to tell your boss. I'm not sure whether you want an explanation, a recommended fix, or just a short update. (about 60)\n- **Who you are:** I don't know your role, what your boss expects, or whether they or someone else will read what I produce. Nothing in the folder says. (below 40)\n- **What you're trying to achieve:** I'd guess you need something to say to your boss soon. I don't know when, or what \"good\" looks like. (below 40)\n- **My role:** I'd read and analyze the file and draft notes and a short write-up on my own, and check with you before anything is sent, posted or shared. (about 75)\n\n**Assumptions I'm making:** the folder has everything there is to work with. I don't yet know whether that is true. It's one file, with no tickets, release notes or other context.\n\n**Questions** (a plain \"yes\" is fine for any where my guess is right):\n1. What do you need to hand your boss, and by when? (my guess: a short written summary of what happened and what we're doing about it, by end of this week)\n2. What's your role, and is your boss the only reader? (my guess: you own the product or growth, and your boss reads it directly)\n3. Do you have anything else on this: product changes or launches in the last two months, marketing campaign changes, support complaints, or your boss's actual message? (my guess: no, only this CSV)\n4. Is it fine for me to go and read and analyze on my own, and to ask before sending or sharing anything? (my guess: yes)\n\nOne caution: I won't name a cause yet. Whatever the file shows, one table can't tell us why. The first useful step after you answer is to see which data would separate the likely explanations.\n\nI'll wait for your answers before going further. I've saved a draft charter with these open assumptions so we can pick up from it.\n"}], "eval-vague-ask-no-context-without_skill-run-1": [{"name": "reply.md", "type": "text", "content": "I found one file in this folder, `signups_by_week.csv`, so I looked at that. It has weekly signups and paid ads spend from 3 Aug to 28 Sep 2026. I haven't opened anything else.\n\n**What the numbers show**\n\n| Week starting | Signups | Ads spend |\n|---|---|---|\n| 3 Aug \u2013 31 Aug (5 weeks) | 389\u2013412 (avg ~401) | ~5,200 |\n| 7 Sep | 371 | 5,200 |\n| 14 Sep | 296 | 5,200 |\n| 21 Sep | 281 | 5,100 |\n| 28 Sep | 274 | 5,200 |\n\n- Signups were steady at about 400 a week for five weeks.\n- They slipped a little in the week of 7 Sep (-7.5% vs. the August average).\n- They then fell sharply in the week of 14 Sep (296, about -26%).\n- They have stayed low since, and the latest week (274) is about 32% below the August baseline.\n- This looks like a step down that started around 7\u201314 Sep, not a slow decline. It also hasn't recovered or gotten worse since.\n- Paid ads spend is flat at about 5,200 a week the whole time. So the drop isn't explained by a budget cut, at least for paid ads.\n\n**What I can't tell from this file**\n\n- What a \"signup\" is here, and what product this is.\n- Whether this is all signups or one channel. The data is weekly and total only, so I can't see where the drop is coming from.\n- Whether something changed around 7\u201314 Sep that could explain a step like this. Examples: a site or signup-flow release, a change to how signups are tracked, an ad campaign or creative change, an SEO or ranking shift, a pricing change, or a seasonal pattern.\n- Whether the drop is real or a tracking problem. A step change that starts abruptly is a classic sign of a broken tag or a changed form, so I wouldn't rule that out yet.\n- Whether the same weeks last year looked similar.\n\nI don't want to guess at a cause or hand your boss a story I can't back up. All I can say so far is that signups dropped about 30% starting mid-September, and that ad spend didn't change.\n\n**A few questions so I can take this further**\n\n1. What is the product, and what counts as a signup (account created, email confirmed, trial started)?\n2. Did anything ship or change in early-to-mid September (site, signup flow, ads, pricing, tracking)?\n3. Can you get me a breakdown by channel, device, or country, ideally daily? Even a spreadsheet export would do. Paid ads spend is flat, but I'd want to see paid signups on their own, since spend staying the same doesn't mean the ads are working as well.\n4. What is your boss asking, exactly? Is it \"why\", or \"is this a real problem\", or \"what are we doing about it\"? That decides what I should prepare.\n\nIf you can answer even one or two of these, I'll go from there. In the meantime, I can write up the chart and the summary above as a short note for your boss. I'd label it \"drop confirmed, cause not yet known\", so you aren't stuck defending a guess.\n"}]}, "benchmark": {"metadata": {"skill_name": "product-investigation", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-10-09T00:09:58Z", "evals_run": [0, 1, 2, 3, 4], "runs_per_configuration": 3}, "runs": [{"eval_id": 2, "configuration": "old_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 26.4, "tokens": 60469, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not build a prototype", "passed": true, "evidence": "Nothing built."}, {"text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience", "passed": true, "evidence": "'The dashboard thing most likely means the idea in dashboard-notes.txt'."}, {"text": "Asks who the dashboard is for or what decision it supports", "passed": true, "evidence": "Q1 audience, Q3 what it should help someone decide."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 55 (lowest: who you are / the audience)'."}, {"text": "Asks no more than four questions, each with a best-guess default", "passed": true, "evidence": "Four questions, each with '(my guess: ...)'."}], "notes": []}, {"eval_id": 1, "configuration": "old_skill", "run_number": 1, "result": {"pass_rate": 0.89, "passed": 8, "failed": 1, "total": 9, "time_seconds": 49.8, "tokens": 65847, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message", "passed": true, "evidence": "'Confidence gate: 95' with evidence from CLAUDE.md."}, {"text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "Four read-back lines."}, {"text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three", "passed": true, "evidence": "No gate questions. Three questions about evidence and owners."}, {"text": "Saves a charter file that records the four dimensions with their evidence", "passed": true, "evidence": "charter.md written."}, {"text": "Starts real work by reading the evidence files and writing at least one phase output", "passed": true, "evidence": "Wrote working-context.md and evidence-map.md."}, {"text": "Takes no outward action and says it will check before sending or committing anything", "passed": true, "evidence": "'I check with you before any email, post, commit or push'."}, {"text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact", "passed": true, "evidence": "'What the sources state (no cause claimed yet)'; tickets 'candidate mechanisms only'."}, {"text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete", "passed": true, "evidence": "Did not catch the Saturday, but noticed the 5 Oct week is probably incomplete ('today is Thu 8 Oct'). The assertion allows either."}, {"text": "Ends with a first look at the numbers that is labelled as a first look", "passed": false, "evidence": "Gives the headline rows but under 'What the sources state', not labelled as a first look."}], "notes": []}, {"eval_id": 3, "configuration": "old_skill", "run_number": 1, "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": 20.7, "tokens": 62352, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": false, "evidence": "Offers three options (brief only, brief plus mock, brief plus asks). No PRD, no deck."}, {"text": "Offers a suggested default with a one-line reason", "passed": true, "evidence": "'My guess: (a) only, since Dana asked for a brief.'"}, {"text": "Does not build any deliverable before the user answers", "passed": true, "evidence": "No draft built."}, {"text": "Says why it can start: the gate is passed and the direction (#1) is chosen", "passed": false, "evidence": "Says it goes with #1 but nothing about the gate or the conditions for building."}, {"text": "Takes no outward action", "passed": true, "evidence": "'Nothing will be sent to Dana.'"}], "notes": []}, {"eval_id": 4, "configuration": "old_skill", "run_number": 1, "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": 21.9, "tokens": 60764, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not build the prototype before the user answers", "passed": true, "evidence": "'I haven't built anything.'"}, {"text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder", "passed": true, "evidence": "'A one-screen annual checkout would only help if the problem is in the annual checkout step, and I don't know that yet.' It does not say whose idea it is."}, {"text": "Offers to run the evidence phases first and gives a suggestion", "passed": true, "evidence": "Q3: read the tickets, funnel and release notes first (my guess: read first, then build)."}, {"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": false, "evidence": "No deliverables question about a one-pager, PRD or deck."}, {"text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed", "passed": false, "evidence": "charter.md lists open assumptions but never records the direction as user-supplied and not evidence-backed."}], "notes": []}, {"eval_id": 0, "configuration": "old_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 21.2, "tokens": 60042, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Presents no findings or causes for the signup drop before asking questions", "passed": true, "evidence": "No findings or causes; 'I haven't started any analysis'."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 40 (lowest: who you are / the goal)'."}, {"text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "All four dimensions read back."}, {"text": "Asks no more than four questions", "passed": true, "evidence": "Four numbered questions."}, {"text": "Gives a best-guess default with every question", "passed": true, "evidence": "Each question carries a bracketed best guess."}, {"text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)", "passed": true, "evidence": "Only reply.md and charter-draft.md."}], "notes": []}, {"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 25.5, "tokens": 61485, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not build a prototype", "passed": true, "evidence": "Nothing built; 'Nothing has been built yet'."}, {"text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience", "passed": true, "evidence": "'clickable prototype of the early-warning accounts dashboard from the churn analysis'."}, {"text": "Asks who the dashboard is for or what decision it supports", "passed": true, "evidence": "Q1 asks who it is for; Q2 asks what decision it supports."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 55 (lowest: who you are / the goal, with the audience)'."}, {"text": "Asks no more than four questions, each with a best-guess default", "passed": true, "evidence": "Four questions, each with '(My guess: ...)'."}], "notes": []}, {"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 9, "failed": 0, "total": 9, "time_seconds": 51.5, "tokens": 67185, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States a gate or confidence score of 95 or above, with evidence from CLAUDE.md or the message", "passed": true, "evidence": "'Gate score: 95' with evidence from CLAUDE.md."}, {"text": "Gives a read-back covering all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "Four read-back lines: ask, who you are, goal, my role."}, {"text": "The gate itself asks the user nothing about who they are or what they want; any questions are about gaps in the evidence and number at most three", "passed": true, "evidence": "No gate questions. Three questions, all about evidence gaps, ranked."}, {"text": "Saves a charter file that records the four dimensions with their evidence", "passed": true, "evidence": "charter.md written."}, {"text": "Starts real work by reading the evidence files and writing at least one phase output", "passed": true, "evidence": "Wrote working-context.md and evidence-map.md after reading all three evidence files."}, {"text": "Takes no outward action and says it will check before sending or committing anything", "passed": true, "evidence": "'I check with you before anything is emailed, posted, committed or pushed'; 'I have not contacted anyone'."}, {"text": "Labels any early finding as a hypothesis or inference and does not state a cause as fact", "passed": true, "evidence": "'First look (rows, not a cause)'; release-note link called 'a place to look, not a finding'."}, {"text": "Sanity-checks the dates: notices that 3 Oct 2026 is a Saturday, or that the latest week is only partly complete", "passed": true, "evidence": "Caught that 3 Oct 2026 is a Saturday and that the 5 Oct week is only a few days old."}, {"text": "Ends with a first look at the numbers that is labelled as a first look", "passed": true, "evidence": "Section headed 'First look' with the per-plan rows."}], "notes": []}, {"eval_id": 3, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": 19.1, "tokens": 59612, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": true, "evidence": "Lists prototype, one-pager, PRD and slide deck with speaker notes."}, {"text": "Offers a suggested default with a one-line reason", "passed": true, "evidence": "'My suggestion: the one-pager only', with a reason from the CLAUDE.md ask."}, {"text": "Does not build any deliverable before the user answers", "passed": true, "evidence": "'I've built nothing yet'; waits for the pick."}, {"text": "Says why it can start: the gate is passed and the direction (#1) is chosen", "passed": false, "evidence": "Acknowledges the direction ('#1 it is') but never says the gate is passed or that the conditions are met."}, {"text": "Takes no outward action", "passed": true, "evidence": "'Nothing gets sent to Dana.'"}], "notes": []}, {"eval_id": 4, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": 30.9, "tokens": 61990, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not build the prototype before the user answers", "passed": true, "evidence": "'I haven't built anything yet.'"}, {"text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder", "passed": true, "evidence": "'The prototype is a design direction you've supplied, and nothing in the folder shows it fixes the problem.'"}, {"text": "Offers to run the evidence phases first and gives a suggestion", "passed": true, "evidence": "Q3: read the tickets, funnel numbers and release notes first (my guess: yes, I recommend it)."}, {"text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes", "passed": false, "evidence": "Q4 asks 'Prototype only, no one-pager or deck?'. It leaves out the PRD and does not list all four."}, {"text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed", "passed": true, "evidence": "charter.md: 'Direction to show: supplied by the user, not yet backed by evidence'."}], "notes": []}, {"eval_id": 0, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 24.4, "tokens": 61564, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Presents no findings or causes for the signup drop before asking questions", "passed": true, "evidence": "Reply gives no findings or causes; says it has not started analysis."}, {"text": "States a gate or confidence score below 95 and names the weakest dimension", "passed": true, "evidence": "'Gate score: 40 (lowest: who you are and the goal)'."}, {"text": "Covers all four dimensions: the ask, who the user is, the goal, and the assistant's role", "passed": true, "evidence": "All four dimensions read back."}, {"text": "Asks no more than four questions", "passed": true, "evidence": "Four numbered questions."}, {"text": "Gives a best-guess default with every question", "passed": true, "evidence": "Four '(my guess: ...)' defaults."}, {"text": "Creates no analysis or deliverable file beyond a reply (and optionally a charter)", "passed": true, "evidence": "Only reply.md and a draft charter.md."}], "notes": []}], "run_summary": {"old_skill": {"pass_rate": {"mean": 0.818, "stddev": 0.204, "min": 0.6, "max": 1.0}, "time_seconds": {"mean": 28.0, "stddev": 12.395, "min": 20.7, "max": 49.8}, "tokens": {"mean": 61894.8, "stddev": 2375.5736, "min": 60042, "max": 65847}}, "with_skill": {"pass_rate": {"mean": 0.92, "stddev": 0.1095, "min": 0.8, "max": 1.0}, "time_seconds": {"mean": 30.28, "stddev": 12.5806, "min": 19.1, "max": 51.5}, "tokens": {"mean": 62367.2, "stddev": 2844.6446, "min": 59612, "max": 67185}}, "delta": {"pass_rate": "-0.10", "time_seconds": "-2.3", "tokens": "-472"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "expectations": [
+    {
+      "text": "saved-searches.txt: clean, with no flags",
+      "passed": true,
+      "evidence": "saved-searches: clean."
+    },
+    {
+      "text": "invoice-reminders.txt: flags 'owner named' and no other check",
+      "passed": true,
+      "evidence": "invoice-reminders: owner flagged ('To be decided once the quarter's roadmap is set'); header names only the department."
+    },
+    {
+      "text": "onboarding-checklist.txt: flags 'success measure' and no other check",
+      "passed": true,
+      "evidence": "onboarding-checklist: success measure flagged ('feel more confident')."
+    },
+    {
+      "text": "export-to-csv.txt: flags 'scope stays bounded' and no other check",
+      "passed": true,
+      "evidence": "export-to-csv: scope flagged (CSV and PDF, then CSV only, then PDF in next steps)."
+    },
+    {
+      "text": "smart-notifications.txt: flags 'problem stated before fix' and no other check",
+      "passed": true,
+      "evidence": "smart-notifications: problem-before-fix flagged (Proposal precedes Problem)."
+    },
+    {
+      "text": "partner-api-keys.txt: flags both 'owner named' and 'success measure' and nothing else",
+      "passed": true,
+      "evidence": "partner-api-keys: owner and success measure both flagged, nothing else."
+    },
+    {
+      "text": "Uses the four-line format for every brief and ends with a count of briefs checked and flagged",
+      "passed": true,
+      "evidence": "Four-line block per brief, then '6 briefs checked, 5 flagged.'"
+    },
+    {
+      "text": "Every flag quotes or points to the line in the brief that decided it",
+      "passed": true,
+      "evidence": "Each flag cites the deciding line."
+    },
+    {
+      "text": "Does not rewrite the brief or propose replacement text",
+      "passed": true,
+      "evidence": "No rewritten text."
+    }
+  ],
+  "summary": {
+    "passed": 9,
+    "failed": 0,
+    "total": 9,
+    "pass_rate": 1.0
+  }
+}

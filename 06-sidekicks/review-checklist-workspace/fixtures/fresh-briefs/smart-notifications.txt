@@ -1,0 +1,30 @@
+Smart Notifications — one-pager
+Product, Mobile
+2 October 2026
+
+Proposal
+
+We will build smart notifications that learn when each user is most likely
+to read a message and deliver it then, instead of the moment it is
+generated. The system will use each person's recent open times and rank
+pending notifications so the most useful one goes first.
+
+Problem
+
+Users ignore most of what we send. Last month 71% of active users opened no
+notification at all, and the number of people who turned notifications off
+has doubled since March.
+
+Owner
+
+Aisha Khan, PM for Mobile.
+
+Success measure
+
+The share of active users who open at least one notification a week rises
+from 29% to 40% within three months of release.
+
+Scope
+
+Delivery timing and ordering of existing notification types only. No new
+notification types and no changes to the settings screen.

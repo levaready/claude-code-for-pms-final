@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+      "passed": false,
+      "evidence": "Offers three options (brief only, brief plus mock, brief plus asks). No PRD, no deck."
+    },
+    {
+      "text": "Offers a suggested default with a one-line reason",
+      "passed": true,
+      "evidence": "'My guess: (a) only, since Dana asked for a brief.'"
+    },
+    {
+      "text": "Does not build any deliverable before the user answers",
+      "passed": true,
+      "evidence": "No draft built."
+    },
+    {
+      "text": "Says why it can start: the gate is passed and the direction (#1) is chosen",
+      "passed": false,
+      "evidence": "Says it goes with #1 but nothing about the gate or the conditions for building."
+    },
+    {
+      "text": "Takes no outward action",
+      "passed": true,
+      "evidence": "'Nothing will be sent to Dana.'"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 2,
+    "total": 5,
+    "pass_rate": 0.6
+  }
+}

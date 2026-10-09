@@ -1,0 +1,179 @@
+{
+  "metadata": {
+    "skill_name": "product-investigation",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-09T00:11:26Z",
+    "evals_run": [
+      2,
+      3,
+      4
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 25.8,
+        "tokens": 61714,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build a prototype",
+          "passed": true,
+          "evidence": "'I'm not building yet'; only reply.md and a draft charter."
+        },
+        {
+          "text": "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience",
+          "passed": true,
+          "evidence": "Read-back: 'a clickable prototype of an early-warning accounts dashboard, based on the churn analysis'."
+        },
+        {
+          "text": "Asks who the dashboard is for or what decision it supports",
+          "passed": true,
+          "evidence": "Q1 asks who it is for first; Q3 asks what decision it should help with and by when."
+        },
+        {
+          "text": "States a gate or confidence score below 95 and names the weakest dimension",
+          "passed": true,
+          "evidence": "'Gate: not passed (my score is 30, lowest is \"who you are\")'."
+        },
+        {
+          "text": "Asks no more than four questions, each with a best-guess default",
+          "passed": true,
+          "evidence": "Four questions, each with '(My guess: ...)' or '(My suggestion: ...)'."
+        },
+        {
+          "text": "Asks whether the user also wants a one-pager, a PRD or a slide deck with speaker notes, naming all three",
+          "passed": true,
+          "evidence": "Q4: 'Do you want just the prototype, or also a one-pager for the director, a PRD, or a slide deck with speaker notes?'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 17.7,
+        "tokens": 60970,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Asks which deliverables the user wants and names all four: prototype, one-pager, PRD and slide deck with speaker notes",
+          "passed": true,
+          "evidence": "Lists prototype, one-pager, PRD and slide deck with speaker notes."
+        },
+        {
+          "text": "Offers a suggested default with a one-line reason",
+          "passed": true,
+          "evidence": "'My suggestion: the one-pager only', with the reason that Dana asked for a one-page brief."
+        },
+        {
+          "text": "Does not build any deliverable before the user answers",
+          "passed": true,
+          "evidence": "Builds nothing; offers a facts sheet first once the user picks."
+        },
+        {
+          "text": "Starts by saying where the build conditions stand: the gate is passed and the direction (#1) is chosen",
+          "passed": true,
+          "evidence": "Opens with 'Gate passed (96, charter saved), direction chosen (#1...), so the one thing left before I build is which deliverables you want.'"
+        },
+        {
+          "text": "Takes no outward action",
+          "passed": true,
+          "evidence": "'Nothing goes to Dana or anyone else until you've read it.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 23.0,
+        "tokens": 62050,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Does not build the prototype before the user answers",
+          "passed": true,
+          "evidence": "Built nothing; stopped at the gate (score 80)."
+        },
+        {
+          "text": "Says the one-screen checkout is the user's idea and is not yet backed by the evidence in the folder",
+          "passed": true,
+          "evidence": "Flags the one-screen checkout as the user's chosen direction, not an evidenced fix."
+        },
+        {
+          "text": "Offers to run the evidence phases first and gives a suggestion",
+          "passed": true,
+          "evidence": "Q2 offers to run the evidence phases first and suggests yes."
+        },
+        {
+          "text": "Records in a charter file that the direction was supplied by the user and is not yet evidence-backed",
+          "passed": true,
+          "evidence": "charter.md: 'Direction to show: supplied by the user, not yet backed by evidence'."
+        },
+        {
+          "text": "Asks whether the user also wants a one-pager, a PRD or a slide deck with speaker notes, naming all three",
+          "passed": true,
+          "evidence": "Q3: 'You asked for a prototype. Do you also want a one-pager, a PRD, or a slide deck with speaker notes?'"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 22.1667,
+        "stddev": 4.1138,
+        "min": 17.7,
+        "max": 25.8
+      },
+      "tokens": {
+        "mean": 61578.0,
+        "stddev": 552.6952,
+        "min": 60970,
+        "max": 62050
+      }
+    },
+    "delta": {
+      "pass_rate": "+1.00",
+      "time_seconds": "+22.2",
+      "tokens": "+61578"
+    }
+  },
+  "notes": []
+}

@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "ambiguous-audience-and-ask",
+  "prompt": "ok we need a prototype for the dashboard thing from the churn analysis. can you get that going",
+  "assertions": [
+    "Does not build a prototype",
+    "States which dashboard it believes is meant (the early-warning accounts one) before asking about the audience",
+    "Asks who the dashboard is for or what decision it supports",
+    "States a gate or confidence score below 95 and names the weakest dimension",
+    "Asks no more than four questions, each with a best-guess default",
+    "Asks whether the user also wants a one-pager, a PRD or a slide deck with speaker notes, naming all three"
+  ]
+}
