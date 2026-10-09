@@ -8,6 +8,15 @@ Everything about Rook Industries in here is a **fictional teaching scenario**. I
 
 ---
 
+## Final report
+
+A comic-book style write-up of what Release 4.2 did, the evidence and prompts behind it, the prototype fix, and the skill that guards against a repeat.
+
+- **Shareable artifact:** https://claude.ai/artifact/BNn4dQipQc97sDa2TYRXUg (private until shared from the page's Share menu)
+- **Source file in this repo:** [`final-report.html`](final-report.html)
+
+---
+
 ## What you build, module by module
 
 | # | Module | Superpower | What lands here | Status |
