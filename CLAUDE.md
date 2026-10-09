@@ -284,3 +284,30 @@ Monthly release train, point releases numbered 4.x.
   - Suggested test: replay August with old vs new weights at a 90s timeout.
 - **Fresh numbers from a classmate (unverified):** The Undertow sits at a score of 0,
   gets ~1 offer a week, and has taken 3 of 25 since 17 Aug.
+
+### Added 8–9 Oct 2026 (module 5 builds, two skills, Monday schedule)
+- **Module 5 files (`05-super-speed/`):** director brief (`brief.md`), five clickable
+  prototypes (`prototype*.html`, incl. the superhero "Beacon Watch" redesign),
+  `simulated-hero-interviews.md`, `confidence-check.md`. The simulated interviews are
+  rehearsal, not evidence; label them as simulated anywhere they appear.
+- **Two skills live in `06-sidekicks/`, NOT installed** in `.claude/skills/`, so neither
+  triggers on its own yet. Installing is a user decision; trigger wording is untested.
+  - `product-investigation/` (SKILL.md + references/ + evals/): 95% confidence gate on
+    four things (the ask, who the user is, the goal, my role; score = lowest). Nothing is
+    built until the gate passes, there is a direction to show, and the user answers the
+    deliverables question. Always name all four options (prototype, one-pager, PRD, deck
+    with speaker notes) even if they named one. Tested over 3 iterations; build step and
+    multi-turn use are untested.
+  - `review-checklist/`: read-only check of a brief for owner named, success measure,
+    scope stays bounded, problem before fix. Tests (`review-checklist-workspace/`) were
+    self-written and the fresh briefs were easy; the baseline did nearly as well, so
+    its edge is consistent format, not catching more. Borderline cases untested.
+- **Scheduled task `review-checklist-monday`** (stored in `~/.claude/scheduled-tasks/`):
+  Mondays ~08:11 local, first run 12 Oct. Reads `06-sidekicks/briefs/`, saves
+  `06-sidekicks/reports/review-checklist-<date>.txt`, read-only. Runs only while the app
+  is open. Expect the same four flags each week (bulk-callout: owner; routing-override-
+  audit-log: success measure; requisition-approval-chains: scope; handler-phone-app:
+  problem order) until someone fixes the briefs.
+- **How the user likes to work:** answers to "who writes the evals" showed they expect me
+  to write and run tests myself and only review results. Short plain answers; ask before
+  commit/push/send, and tell them when the app must be open or a step is untested.

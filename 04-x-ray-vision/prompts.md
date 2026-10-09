@@ -124,3 +124,55 @@ According to my findings in the code, for someone who's gone quiet, they would n
 ### 27.
 
 put the message into the slack channel
+
+### 28.
+
+i want you to be creative and rethink this UI. Use bold ideas and rich super hero like colors to design this experience.
+
+### 29.
+
+we started off with an onboarding exercise to learn about rook industries, then looked at customer interview data, tickets and ping data to identify patterns and root cause of what happened in 4.2. Then we identified a hypothesis and built a prototype. if we want to follow that same framework in the future, for this rook dispatch product or something else, what could a suitable skill look like?
+
+### 30.
+
+start with the full investigation skill and make sure we have a confidence gate (e.g. you are 95% confident in my ask, who I am, what I'm trying to achieve, and your role in helping me achieve it)
+
+### 31.
+
+When does the prototype get built? the eval-loop? fix the trigger condition, then use the second version. I addition to the prototype, also ask if i want to create a one-pager, prd, slide deck with speaker notes as well.
+
+### 32.
+
+why are you asking me to write the evals?
+
+### 33.
+
+done reveiwing
+
+### 34.
+
+its fine to read my downloads folder
+
+### 35.
+
+where is the skill at right now and can we actually run it?
+
+### 36.
+
+Make a skill called review-checklist. When I point it at a brief, it checks that the brief: names who owns it, says how we'll know it worked, keeps the same scope start to finish, and explains the problem before the fix.
+
+### 37.
+
+commit and push
+
+### 38.
+
+explain to me how the review checklist works?
+
+### 39.
+
+what words or statement trigger the review checklist skill?
+
+### 40.
+
+Schedule review-checklist to run every Monday morning, and let me know what it finds. Nothing needs to be ready for it to fire today. I'm setting the habit, not waiting on the result.
